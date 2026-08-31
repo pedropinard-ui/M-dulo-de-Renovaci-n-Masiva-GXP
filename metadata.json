@@ -1,0 +1,6 @@
+{
+  "name": "Módulo de Renovación Masiva GXP",
+  "description": "Sistema corporativo para la gestión de renovación masiva de pólizas de Últimos Gastos (GXP), simulación de incrementos tarifarios, validación de cartera, comunicación automatizada y procesamiento con trazabilidad y auditoría.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

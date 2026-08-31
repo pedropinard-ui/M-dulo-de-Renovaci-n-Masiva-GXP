@@ -1,0 +1,655 @@
+import React, { useState, useMemo } from 'react';
+import { 
+  TopWorkflowBar 
+} from './components/layout/TopWorkflowBar';
+import { 
+  ExecutiveKpiBar 
+} from './components/layout/ExecutiveKpiBar';
+
+// Screens
+import { Screen1Consulta } from './components/screens/Screen1Consulta';
+import { Screen2Simulacion } from './components/screens/Screen2Simulacion';
+import { Screen3Validacion } from './components/screens/Screen3Validacion';
+import { Screen4Comunicacion } from './components/screens/Screen4Comunicacion';
+import { Screen5Procesamiento } from './components/screens/Screen5Procesamiento';
+import { ScreenDebidaDiligencia } from './components/screens/ScreenDebidaDiligencia';
+import { ScreenAuditoria } from './components/screens/ScreenAuditoria';
+import { ScreenEspecificacionFuncional } from './components/screens/ScreenEspecificacionFuncional';
+
+// Data & Types
+import { 
+  initialMockPolicies, 
+  initialProducts, 
+  initialEmailTemplate, 
+  initialAuditLogs, 
+  initialComplianceRuns 
+} from './data/mockData';
+import { 
+  PolicyRenewal, 
+  Product, 
+  EmailTemplate, 
+  AuditLogEntry, 
+  ComplianceMassRun, 
+  ProcessingExecutionSummary, 
+  WorkflowTab 
+} from './types';
+import { 
+  calculateExecutiveKPIs, 
+  calculateSinglePolicyRate, 
+  validateSinglePolicy 
+} from './utils/calculations';
+
+export default function App() {
+  // Current user in session
+  const currentUser = 'pedropinard@gmail.com';
+
+  // Global State
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [selectedProductId, setSelectedProductId] = useState<string>('prod-gxp');
+  const [currentTab, setCurrentTab] = useState<WorkflowTab>('consulta');
+  
+  // Policies State
+  const [policies, setPolicies] = useState<PolicyRenewal[]>(initialMockPolicies);
+  const [selectedPolicyIds, setSelectedPolicyIds] = useState<Set<string>>(
+    new Set(initialMockPolicies.map((p) => p.id))
+  );
+
+  // Email Template State
+  const [emailTemplate, setEmailTemplate] = useState<EmailTemplate>(initialEmailTemplate);
+
+  // Audit Logs State
+  const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>(initialAuditLogs);
+
+  // Compliance Runs State
+  const [complianceRuns, setComplianceRuns] = useState<ComplianceMassRun[]>(initialComplianceRuns);
+
+  // Processing Execution Summary
+  const [lastExecutionSummary, setLastExecutionSummary] = useState<ProcessingExecutionSummary | null>(null);
+
+  // Current active product
+  const currentProduct = products.find((p) => p.id === selectedProductId) || products[0];
+
+  // Recalculate Executive KPIs in real-time
+  const executiveKPIs = useMemo(() => {
+    return calculateExecutiveKPIs(policies, selectedPolicyIds);
+  }, [policies, selectedPolicyIds]);
+
+  // Add an audit log entry helper
+  const addAuditLog = (
+    accion: AuditLogEntry['accion'],
+    detalle: string,
+    numeroPoliza?: string,
+    valorAnterior?: string,
+    valorNuevo?: string,
+    porcentajeAplicado?: number
+  ) => {
+    const newLog: AuditLogEntry = {
+      id: `audit-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+      timestamp: new Date().toLocaleString('es-DO', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      }),
+      usuario: currentUser,
+      accion,
+      detalle,
+      numeroPoliza,
+      valorAnterior: valorAnterior || '—',
+      valorNuevo: valorNuevo || '—',
+      porcentajeAplicado,
+      origen: 'Web App GXP',
+    };
+    setAuditLogs((prev) => [newLog, ...prev]);
+  };
+
+  // HANDLERS FOR SCREEN 1 (CONSULTA)
+  const handleToggleSelectPolicy = (policyId: string) => {
+    setSelectedPolicyIds((prev) => {
+      const updated = new Set(prev);
+      if (updated.has(policyId)) {
+        updated.delete(policyId);
+      } else {
+        updated.add(policyId);
+      }
+      return updated;
+    });
+  };
+
+  const handleSelectAllPolicies = (policyIds: string[]) => {
+    setSelectedPolicyIds(new Set(policyIds));
+  };
+
+  const handleDeselectAllPolicies = () => {
+    setSelectedPolicyIds(new Set());
+  };
+
+  const handleImportExcelData = (importedRows: Partial<PolicyRenewal>[]) => {
+    const updatedPolicies = [...policies];
+    importedRows.forEach((row) => {
+      if (!row.numeroPoliza) return;
+      const existingIdx = updatedPolicies.findIndex((p) => p.numeroPoliza === row.numeroPoliza);
+      if (existingIdx >= 0) {
+        updatedPolicies[existingIdx] = {
+          ...updatedPolicies[existingIdx],
+          ...row,
+        };
+      } else {
+        const newPolicy: PolicyRenewal = {
+          id: `pol-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+          numeroPoliza: row.numeroPoliza,
+          contratante: row.contratante || 'Nuevo Contratante',
+          documentoContratante: row.documentoContratante || '101-00000-0',
+          tipoDocumento: row.tipoDocumento || 'RNC',
+          cobertura: row.cobertura || 'Plan Tradicional GXP',
+          idProducto: selectedProductId,
+          productoNombre: currentProduct.nombre,
+          tarifaActualAnual: row.tarifaActualAnual || 50000,
+          tarifaActualMensual: (row.tarifaActualAnual || 50000) / 12,
+          vigenciaDesde: row.vigenciaDesde || '2025-10-01',
+          vigenciaHasta: row.vigenciaHasta || '2026-09-30',
+          fechaRenovacion: row.fechaRenovacion || '2026-10-01',
+          tarifaRenovacionAnual: row.tarifaRenovacionAnual || (row.tarifaActualAnual || 50000) * 1.15,
+          tarifaRenovacionMensual: ((row.tarifaActualAnual || 50000) * 1.15) / 12,
+          porcentajeIncremento: row.porcentajeIncremento !== undefined ? row.porcentajeIncremento : 15,
+          esExcepcionManual: false,
+          correoCliente: row.correoCliente || 'info@cliente.com.do',
+          correoCorredor: row.correoCorredor || 'corredor@seguros.com',
+          correoSupervisor: row.correoSupervisor || 'supervisor@universal.com.do',
+          nombreCorredor: row.nombreCorredor || 'Corredor Asignado',
+          estado: 'Pendiente',
+          erroresValidacion: [],
+        };
+        updatedPolicies.push(newPolicy);
+      }
+    });
+
+    setPolicies(updatedPolicies);
+    setSelectedPolicyIds(new Set(updatedPolicies.map((p) => p.id)));
+    addAuditLog('IMPORTACION_EXCEL', `Importación masiva de ${importedRows.length} registros desde archivo Excel`);
+  };
+
+  // HANDLERS FOR SCREEN 2 (SIMULACION)
+  const handleApplyGeneralPercentage = (percentage: number) => {
+    const updated = policies.map((policy) => {
+      if (selectedPolicyIds.has(policy.id)) {
+        const actualAnual = policy.tarifaActual?.tarifaAnual ?? policy.tarifaActualAnual ?? 0;
+        const actualMensual = policy.tarifaActual?.tarifaMensual ?? policy.tarifaActualMensual ?? (actualAnual / 12);
+        const { tarifaRenovacionAnual, tarifaRenovacionMensual } = calculateSinglePolicyRate(
+          actualAnual,
+          percentage
+        );
+        return {
+          ...policy,
+          tarifaActualAnual: actualAnual,
+          tarifaActualMensual: actualMensual,
+          tarifaActual: {
+            tarifaAnual: actualAnual,
+            tarifaMensual: actualMensual,
+          },
+          porcentajeIncremento: percentage,
+          tarifaRenovacionAnual,
+          tarifaRenovacionMensual,
+          tarifaRenovacion: {
+            tarifaAnual: tarifaRenovacionAnual,
+            tarifaMensual: tarifaRenovacionMensual,
+          },
+          esExcepcionManual: false,
+          esExcepcionIndividual: false,
+          motivoExcepcion: undefined,
+        };
+      }
+      return policy;
+    });
+
+    setPolicies(updated);
+    addAuditLog(
+      'SIMULACION_INCREMENTO',
+      `Aplicado incremento general de ${percentage}% sobre ${selectedPolicyIds.size} pólizas seleccionadas`,
+      undefined,
+      'Varias',
+      `+${percentage}%`,
+      percentage
+    );
+  };
+
+  const handleUpdatePolicyException = (
+    policyId: string,
+    percentage: number,
+    manualAnnualRate?: number,
+    motivo?: string
+  ) => {
+    const targetPolicy = policies.find((p) => p.id === policyId);
+    if (!targetPolicy) return;
+
+    const actualAnual = targetPolicy.tarifaActual?.tarifaAnual ?? targetPolicy.tarifaActualAnual ?? 0;
+    const actualMensual = targetPolicy.tarifaActual?.tarifaMensual ?? targetPolicy.tarifaActualMensual ?? (actualAnual / 12);
+    let newAnnual = manualAnnualRate;
+    let newMonthly = manualAnnualRate ? manualAnnualRate / 12 : undefined;
+    let newPercent = percentage;
+
+    if (manualAnnualRate !== undefined && actualAnual > 0) {
+      newPercent = ((manualAnnualRate - actualAnual) / actualAnual) * 100;
+      newMonthly = manualAnnualRate / 12;
+    } else {
+      const calculated = calculateSinglePolicyRate(actualAnual, percentage);
+      newAnnual = calculated.tarifaRenovacionAnual;
+      newMonthly = calculated.tarifaRenovacionMensual;
+    }
+
+    const finalAnnual = newAnnual ?? (actualAnual * (1 + newPercent / 100));
+    const finalMonthly = newMonthly ?? (finalAnnual / 12);
+
+    const updated = policies.map((p) => {
+      if (p.id === policyId) {
+        return {
+          ...p,
+          tarifaActualAnual: actualAnual,
+          tarifaActualMensual: actualMensual,
+          tarifaActual: {
+            tarifaAnual: actualAnual,
+            tarifaMensual: actualMensual,
+          },
+          porcentajeIncremento: newPercent,
+          tarifaRenovacionAnual: finalAnnual,
+          tarifaRenovacionMensual: finalMonthly,
+          tarifaRenovacion: {
+            tarifaAnual: finalAnnual,
+            tarifaMensual: finalMonthly,
+          },
+          esExcepcionManual: true,
+          esExcepcionIndividual: true,
+          motivoExcepcion: motivo || 'Excepción individual autorizada',
+        };
+      }
+      return p;
+    });
+
+    setPolicies(updated);
+    addAuditLog(
+      'EXCEPCION_INDIVIDUAL',
+      `Ajuste individual: Póliza ${targetPolicy.numeroPoliza} modificada a ${newPercent.toFixed(2)}% (${motivo || 'Excepción comercial'})`,
+      targetPolicy.numeroPoliza,
+      `RD$ ${(targetPolicy.tarifaRenovacion?.tarifaAnual ?? targetPolicy.tarifaRenovacionAnual).toLocaleString()}`,
+      `RD$ ${finalAnnual.toLocaleString()}`,
+      newPercent
+    );
+  };
+
+  const handleResetPolicySimulation = (policyId: string) => {
+    const targetPolicy = policies.find((p) => p.id === policyId);
+    if (!targetPolicy) return;
+    const actualAnual = targetPolicy.tarifaActual?.tarifaAnual ?? targetPolicy.tarifaActualAnual ?? 0;
+    const actualMensual = targetPolicy.tarifaActual?.tarifaMensual ?? targetPolicy.tarifaActualMensual ?? (actualAnual / 12);
+    const { tarifaRenovacionAnual, tarifaRenovacionMensual } = calculateSinglePolicyRate(actualAnual, 0);
+
+    const updated = policies.map((p) => {
+      if (p.id === policyId) {
+        return {
+          ...p,
+          porcentajeIncremento: 0,
+          tarifaRenovacionAnual,
+          tarifaRenovacionMensual,
+          tarifaRenovacion: {
+            tarifaAnual: tarifaRenovacionAnual,
+            tarifaMensual: tarifaRenovacionMensual,
+          },
+          esExcepcionManual: false,
+          esExcepcionIndividual: false,
+          motivoExcepcion: undefined,
+        };
+      }
+      return p;
+    });
+
+    setPolicies(updated);
+    addAuditLog(
+      'SIMULACION_INCREMENTO',
+      `Excepción de la póliza ${targetPolicy.numeroPoliza} restablecida a tarifa base`,
+      targetPolicy.numeroPoliza
+    );
+  };
+
+  const handleResetSimulation = () => {
+    const reset = policies.map((p) => {
+      const actualAnual = p.tarifaActual?.tarifaAnual ?? p.tarifaActualAnual ?? 0;
+      const actualMensual = p.tarifaActual?.tarifaMensual ?? p.tarifaActualMensual ?? (actualAnual / 12);
+      const { tarifaRenovacionAnual, tarifaRenovacionMensual } = calculateSinglePolicyRate(
+        actualAnual,
+        15
+      );
+      return {
+        ...p,
+        tarifaActualAnual: actualAnual,
+        tarifaActualMensual: actualMensual,
+        tarifaActual: {
+          tarifaAnual: actualAnual,
+          tarifaMensual: actualMensual,
+        },
+        porcentajeIncremento: 15,
+        tarifaRenovacionAnual,
+        tarifaRenovacionMensual,
+        tarifaRenovacion: {
+          tarifaAnual: tarifaRenovacionAnual,
+          tarifaMensual: tarifaRenovacionMensual,
+        },
+        esExcepcionManual: false,
+        esExcepcionIndividual: false,
+        motivoExcepcion: undefined,
+      };
+    });
+    setPolicies(reset);
+    addAuditLog('SIMULACION_INCREMENTO', 'Simulación restablecida a los valores estándar de tarifa (15% GXP)');
+  };
+
+  // HANDLERS FOR SCREEN 3 (VALIDACION)
+  const handleRunValidation = () => {
+    const validated = policies.map((p) => {
+      if (selectedPolicyIds.has(p.id)) {
+        const errors = validateSinglePolicy(p);
+        return {
+          ...p,
+          erroresValidacion: errors,
+          estado: errors.some((e) => e.severidad === 'Bloqueante') ? ('Error' as const) : ('Pendiente' as const),
+        };
+      }
+      return p;
+    });
+
+    setPolicies(validated);
+    addAuditLog('VALIDACION_CARTERA', `Validación ejecutada sobre ${selectedPolicyIds.size} pólizas`);
+  };
+
+  const handleQuickFixPolicy = (policyId: string, fixes: Partial<PolicyRenewal>) => {
+    const updated = policies.map((p) => {
+      if (p.id === policyId) {
+        const patched = { ...p, ...fixes };
+        const newErrors = validateSinglePolicy(patched);
+        return {
+          ...patched,
+          erroresValidacion: newErrors,
+          estado: newErrors.some((e) => e.severidad === 'Bloqueante') ? ('Error' as const) : ('Pendiente' as const),
+        };
+      }
+      return p;
+    });
+
+    setPolicies(updated);
+    addAuditLog('VALIDACION_CARTERA', `Póliza ${policyId} subsanada en línea y revalidada`);
+  };
+
+  // HANDLERS FOR SCREEN 4 (COMUNICACION)
+  const handleSendIndividualEmail = (policyId: string, customSubject?: string, customBody?: string) => {
+    const now = new Date().toLocaleString('es-DO');
+    const updated = policies.map((p) => {
+      if (p.id === policyId) {
+        return {
+          ...p,
+          estado: 'Notificado' as const,
+          comunicacion: {
+            enviada: true,
+            fechaEnvio: now,
+            usuarioEnvio: currentUser,
+            asunto: customSubject || emailTemplate.asunto,
+            cuerpo: customBody || emailTemplate.cuerpo,
+            destinatarioPrincipal: p.correoCliente || '',
+            destinatariosCopia: [p.correoCorredor || '', p.correoSupervisor || ''].filter(Boolean),
+          },
+        };
+      }
+      return p;
+    });
+
+    setPolicies(updated);
+    const pol = policies.find((p) => p.id === policyId);
+    addAuditLog(
+      'ENVIO_INDIVIDUAL',
+      `Notificación individual enviada a ${pol?.contratante} (${pol?.correoCliente})`,
+      pol?.numeroPoliza
+    );
+  };
+
+  const handleSendMassEmails = () => {
+    const now = new Date().toLocaleString('es-DO');
+    let sentCount = 0;
+
+    const updated = policies.map((p) => {
+      if (selectedPolicyIds.has(p.id) && p.correoCliente && p.correoCliente.trim() !== '') {
+        sentCount++;
+        return {
+          ...p,
+          estado: 'Notificado' as const,
+          comunicacion: {
+            enviada: true,
+            fechaEnvio: now,
+            usuarioEnvio: currentUser,
+            asunto: emailTemplate.asunto,
+            cuerpo: emailTemplate.cuerpo,
+            destinatarioPrincipal: p.correoCliente,
+            destinatariosCopia: [p.correoCorredor || '', p.correoSupervisor || ''].filter(Boolean),
+          },
+        };
+      }
+      return p;
+    });
+
+    setPolicies(updated);
+    addAuditLog('ENVIO_MASIVO', `Despacho masivo de notificaciones completado para ${sentCount} pólizas`);
+  };
+
+  // HANDLERS FOR SCREEN 5 (PROCESAMIENTO)
+  const handleExecuteProcessing = async (): Promise<ProcessingExecutionSummary> => {
+    const startTime = new Date();
+    const runNumber = `CORR-${startTime.getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const targetList = policies.filter((p) => selectedPolicyIds.has(p.id));
+    let successCount = 0;
+    let failedCount = 0;
+    let skippedCount = 0;
+
+    const bitacoraEntries: ProcessingExecutionSummary['bitacora'] = [];
+
+    const updated = policies.map((p) => {
+      if (!selectedPolicyIds.has(p.id)) return p;
+
+      const hasBlockingError = p.erroresValidacion.some((e) => e.severidad === 'Bloqueante');
+
+      if (hasBlockingError) {
+        skippedCount++;
+        bitacoraEntries.push({
+          numeroPoliza: p.numeroPoliza,
+          contratante: p.contratante,
+          tarifaAnterior: p.tarifaActualAnual,
+          tarifaNueva: p.tarifaRenovacionAnual,
+          incremento: p.porcentajeIncremento,
+          estado: 'Omitido',
+          mensaje: p.erroresValidacion.map((e) => e.descripcion).join('; '),
+          timestamp: new Date().toLocaleString('es-DO'),
+        });
+        return p;
+      }
+
+      // Successful update in Core
+      successCount++;
+      bitacoraEntries.push({
+        numeroPoliza: p.numeroPoliza,
+        contratante: p.contratante,
+        tarifaAnterior: p.tarifaActualAnual,
+        tarifaNueva: p.tarifaRenovacionAnual,
+        incremento: p.porcentajeIncremento,
+        estado: 'Exitoso',
+        mensaje: 'Tarifa grabada en maestro ACSEL para la vigencia Q4-2026',
+        timestamp: new Date().toLocaleString('es-DO'),
+      });
+
+      return {
+        ...p,
+        estado: 'Procesado' as const,
+      };
+    });
+
+    setPolicies(updated);
+
+    const summary: ProcessingExecutionSummary = {
+      id: `proc-summary-${Date.now()}`,
+      numeroCorrida: runNumber,
+      fechaHoraInicio: startTime.toLocaleString('es-DO'),
+      fechaHoraFin: new Date().toLocaleString('es-DO'),
+      usuario: currentUser,
+      totalSeleccionadas: targetList.length,
+      totalExitosas: successCount,
+      totalFallidas: failedCount,
+      totalOmitidasErrores: skippedCount,
+      tiempoEjecucionSegundos: 1.8,
+      estado: failedCount === 0 && skippedCount === 0 ? 'Completado' : 'Completado con Advertencias',
+      bitacora: bitacoraEntries,
+    };
+
+    setLastExecutionSummary(summary);
+    addAuditLog(
+      'PROCESAMIENTO_TARIFA',
+      `Procesamiento masivo ejecutado: ${successCount} pólizas actualizadas exitosamente en ACSEL (Corrida: ${runNumber})`
+    );
+
+    return summary;
+  };
+
+  // HANDLER FOR COMPLIANCE MASS RUNS
+  const handleAddComplianceRun = (newRun: ComplianceMassRun) => {
+    setComplianceRuns((prev) => [newRun, ...prev]);
+    addAuditLog(
+      'CONSULTA',
+      `Corrida masiva de debida diligencia ${newRun.numeroCorrida} ejecutada (${newRun.totalProcesados} registros analizados)`
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-[#f1f5f9] text-slate-800 flex flex-col font-sans">
+      
+      {/* Fixed Top Workflow Navigation Bar */}
+      <TopWorkflowBar
+        currentTab={currentTab}
+        onSelectTab={setCurrentTab}
+        totalSelectedCount={selectedPolicyIds.size}
+        totalPoliciesCount={policies.length}
+      />
+
+      {/* Main Layout Body - Full Width Spacious Workspace */}
+      <div className="flex-1 flex flex-col overflow-y-auto">
+        <main className="flex-1 p-4 lg:p-6 space-y-6 max-w-7xl mx-auto w-full">
+          
+          {/* Real-time Executive KPI Bar */}
+          <ExecutiveKpiBar
+            kpis={executiveKPIs}
+            activeTab={currentTab}
+          />
+
+          {/* SCREEN ROUTER */}
+          {currentTab === 'consulta' && (
+            <Screen1Consulta
+              policies={policies}
+              products={products}
+              selectedPolicyIds={selectedPolicyIds}
+              onToggleSelectPolicy={handleToggleSelectPolicy}
+              onSelectAll={handleSelectAllPolicies}
+              onDeselectAll={handleDeselectAllPolicies}
+              onImportExcel={handleImportExcelData}
+              onGoToSimulation={() => setCurrentTab('simulacion')}
+            />
+          )}
+
+          {currentTab === 'simulacion' && (
+            <Screen2Simulacion
+              policies={policies}
+              selectedPolicyIds={selectedPolicyIds}
+              onApplyGeneralPercentage={handleApplyGeneralPercentage}
+              onApplyGeneralIncrease={handleApplyGeneralPercentage}
+              onUpdatePolicyException={handleUpdatePolicyException}
+              onUpdateIndividualPolicyRate={handleUpdatePolicyException}
+              onResetPolicySimulation={handleResetPolicySimulation}
+              onResetSimulation={handleResetSimulation}
+              onResetAllSimulation={handleResetSimulation}
+              onGoToValidation={() => setCurrentTab('validacion')}
+              onGoBackToConsulta={() => setCurrentTab('consulta')}
+            />
+          )}
+
+          {currentTab === 'validacion' && (
+            <Screen3Validacion
+              policies={policies}
+              selectedPolicyIds={selectedPolicyIds}
+              onRunValidation={handleRunValidation}
+              onQuickFixPolicy={handleQuickFixPolicy}
+              onGoToProcessing={() => setCurrentTab('procesamiento')}
+              onGoBackToSimulation={() => setCurrentTab('simulacion')}
+            />
+          )}
+
+          {currentTab === 'procesamiento' && (
+            <Screen5Procesamiento
+              policies={policies}
+              selectedPolicyIds={selectedPolicyIds}
+              lastExecutionSummary={lastExecutionSummary}
+              onExecuteProcessing={handleExecuteProcessing}
+              onGoBackToValidation={() => setCurrentTab('validacion')}
+              onGoToCommunication={() => setCurrentTab('comunicacion')}
+              onResetWorkflow={() => setCurrentTab('consulta')}
+            />
+          )}
+
+          {currentTab === 'comunicacion' && (
+            <Screen4Comunicacion
+              policies={policies}
+              selectedPolicyIds={selectedPolicyIds}
+              emailTemplate={emailTemplate}
+              onUpdateEmailTemplate={setEmailTemplate}
+              onSendIndividualEmail={handleSendIndividualEmail}
+              onSendMassEmails={handleSendMassEmails}
+              onGoBackToProcessing={() => setCurrentTab('procesamiento')}
+              onFinishWorkflow={() => setCurrentTab('consulta')}
+            />
+          )}
+
+          {currentTab === 'debida_diligencia' && (
+            <ScreenDebidaDiligencia
+              complianceRuns={complianceRuns}
+              onAddComplianceRun={handleAddComplianceRun}
+              currentUser={currentUser}
+            />
+          )}
+
+          {currentTab === 'auditoria' && (
+            <ScreenAuditoria
+              auditLogs={auditLogs}
+            />
+          )}
+
+          {currentTab === 'especificacion' && (
+            <ScreenEspecificacionFuncional />
+          )}
+
+        </main>
+      </div>
+
+      {/* Corporate Professional Status Footer */}
+      <footer className="h-10 bg-white border-t border-slate-200 px-6 flex items-center justify-between shrink-0 text-xs text-slate-500">
+        <div className="flex items-center gap-4">
+          <span className="flex items-center gap-1.5 font-medium text-slate-700">
+            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+            Core ACSEL v10.4 Conectado
+          </span>
+          <span className="text-slate-300">|</span>
+          <span>Ambiente: <strong className="text-slate-700">Producción Corporativa</strong></span>
+        </div>
+        <div className="flex items-center gap-4">
+          <span>Última sincronización: <strong className="text-slate-700 font-mono">Hoy, 10:45 AM</strong></span>
+          <span className="text-slate-300">|</span>
+          <span>Soporte: <strong className="text-blue-600">soporte.suscripcion@universal.com.do</strong></span>
+        </div>
+      </footer>
+
+    </div>
+  );
+}
