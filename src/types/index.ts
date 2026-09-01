@@ -6,7 +6,8 @@ export type WorkflowTab =
   | 'procesamiento' 
   | 'debida_diligencia' 
   | 'auditoria' 
-  | 'especificacion';
+  | 'especificacion'
+  | 'notas';
 
 export type InsuranceStatus = 'Pendiente' | 'Validado' | 'Notificado' | 'Procesado' | 'Error';
 
@@ -214,3 +215,50 @@ export interface FilterCriteria {
   estado: string;
   searchTerm: string;
 }
+
+export type NotePriority = 'Crítica' | 'Alta' | 'Media' | 'Baja';
+export type NoteStatus = 'Pendiente' | 'En Revisión' | 'En Progreso' | 'Resuelta' | 'Descartada';
+export type NoteCategory = 
+  | 'Regla de Negocio' 
+  | 'UI / UX' 
+  | 'Integración ACSEL' 
+  | 'Suscripción & Tarifas' 
+  | 'Validación & AML' 
+  | 'Plantillas & Despacho' 
+  | 'Observación General';
+
+export interface NoteComment {
+  id: string;
+  autor: string;
+  rol: string;
+  fecha: string;
+  comentario: string;
+}
+
+export interface FeedbackNote {
+  id: string;
+  pantallaId: WorkflowTab | string;
+  pantallaNombre: string;
+  asunto: string;
+  descripcion: string;
+  autor: string;
+  rolAutor: string;
+  prioridad: NotePriority;
+  categoria: NoteCategory;
+  estado: NoteStatus;
+  fechaCreacion: string;
+  fechaActualizacion?: string;
+  pinpoint?: {
+    x: number; // percentage (0 - 100)
+    y: number; // percentage (0 - 100)
+    targetLabel?: string;
+  };
+  numeroPolizaRelacionada?: string;
+  respuestas: NoteComment[];
+  resolucion?: {
+    fecha: string;
+    usuario: string;
+    detalle: string;
+  };
+}
+

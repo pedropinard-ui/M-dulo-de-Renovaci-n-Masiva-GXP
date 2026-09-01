@@ -7,7 +7,9 @@ import {
   Cpu, 
   ShieldCheck, 
   History, 
-  FileText
+  FileText,
+  MessageSquare,
+  Sparkles
 } from 'lucide-react';
 import { WorkflowTab } from '../../types';
 
@@ -16,6 +18,7 @@ export type ScreenTab = WorkflowTab;
 interface SidebarProps {
   currentTab: string;
   onSelectTab: (tab: any) => void;
+  notesCount?: number;
   badgeCounts?: {
     totalPolizas: number;
     seleccionadas: number;
@@ -29,6 +32,7 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({
   currentTab,
   onSelectTab,
+  notesCount = 8,
   badgeCounts,
   totalSelectedCount = 0,
 }) => {
@@ -94,6 +98,33 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <nav aria-label="Navegación del Flujo" className="w-56 lg:w-60 bg-white border-r border-slate-200 flex flex-col shrink-0">
       <div className="p-4 space-y-1">
+        
+        {/* Revision Funcional (Notes Module) matching user's reference */}
+        <div className="mb-3">
+          <div className="flex items-center gap-1.5 px-2 py-1 mb-1 rounded bg-amber-50/80 border border-amber-200/80 text-[10px] font-bold text-amber-900 uppercase tracking-wider">
+            <Sparkles className="w-3 h-3 text-amber-600 shrink-0" />
+            <span>Revisión Funcional</span>
+          </div>
+
+          <button
+            id="sidebar-btn-notas"
+            onClick={() => onSelectTab('notas')}
+            className={`w-full flex items-center justify-between p-2 rounded-lg text-left transition-all ${
+              currentTab === 'notas'
+                ? 'text-amber-900 bg-amber-100/90 font-bold border border-amber-300 shadow-2xs'
+                : 'text-slate-700 hover:text-amber-900 hover:bg-amber-50/60 font-medium border border-transparent'
+            }`}
+          >
+            <div className="flex items-center gap-2 truncate">
+              <MessageSquare className={`w-4 h-4 shrink-0 ${currentTab === 'notas' ? 'text-amber-700' : 'text-amber-600'}`} />
+              <span className="text-xs truncate">Centro de Notas & Feed...</span>
+            </div>
+            <span className="px-1.5 py-0.5 rounded-md bg-amber-500 text-slate-950 font-bold text-[10px] shrink-0 font-mono shadow-2xs">
+              {notesCount}
+            </span>
+          </button>
+        </div>
+
         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 mb-2">
           Flujo de Trabajo
         </p>
@@ -168,3 +199,4 @@ export const Sidebar: React.FC<SidebarProps> = ({
     </nav>
   );
 };
+

@@ -208,3 +208,32 @@ export function parseImportedExcel(file: File): Promise<any[]> {
     reader.readAsArrayBuffer(file);
   });
 }
+
+export function exportNotesToExcel(
+  notes: any[],
+  fileName = 'Registro_Notas_Feedback_Renovaciones.xlsx'
+) {
+  const data = notes.map((n, idx) => ({
+    'No.': idx + 1,
+    'Código Nota': n.id,
+    'Pantalla / Módulo': n.pantallaNombre,
+    'Asunto': n.asunto,
+    'Descripción / Detalle': n.descripcion,
+    'Autor': n.autor,
+    'Rol Autor': n.rolAutor,
+    'Prioridad': n.prioridad,
+    'Categoría': n.categoria,
+    'Estado': n.estado,
+    'Fecha Creación': n.fechaCreacion,
+    'Póliza Relacionada': n.numeroPolizaRelacionada || '—',
+    'Tiene Marcador Visual': n.pinpoint ? `Sí (X: ${n.pinpoint.x}%, Y: ${n.pinpoint.y}%)` : 'No',
+    'Total Respuestas': n.respuestas?.length || 0,
+    'Detalle Resolución': n.resolucion ? `${n.resolucion.usuario} (${n.resolucion.fecha}): ${n.resolucion.detalle}` : 'Pendiente',
+  }));
+
+  const worksheet = XLSX.utils.json_to_sheet(data);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Notas y Feedback');
+  XLSX.writeFile(workbook, fileName);
+}
+

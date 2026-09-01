@@ -10,7 +10,8 @@ import {
   FileText,
   ChevronRight,
   Sparkles,
-  Layers
+  Layers,
+  MessageSquare
 } from 'lucide-react';
 import { WorkflowTab } from '../../types';
 
@@ -20,6 +21,7 @@ interface TopWorkflowBarProps {
   totalSelectedCount?: number;
   totalPoliciesCount?: number;
   completedSteps?: string[];
+  notesCount?: number;
 }
 
 export const TopWorkflowBar: React.FC<TopWorkflowBarProps> = ({
@@ -27,6 +29,7 @@ export const TopWorkflowBar: React.FC<TopWorkflowBarProps> = ({
   onSelectTab,
   totalSelectedCount = 0,
   totalPoliciesCount = 0,
+  notesCount = 8,
 }) => {
   const steps: {
     id: WorkflowTab;
@@ -82,7 +85,16 @@ export const TopWorkflowBar: React.FC<TopWorkflowBarProps> = ({
     id: WorkflowTab;
     title: string;
     icon: React.ElementType;
+    badge?: number;
+    isHighlighted?: boolean;
   }[] = [
+    {
+      id: 'notas',
+      title: 'Centro de Notas',
+      icon: MessageSquare,
+      badge: notesCount,
+      isHighlighted: true,
+    },
     {
       id: 'debida_diligencia',
       title: 'Debida Diligencia',
@@ -165,12 +177,19 @@ export const TopWorkflowBar: React.FC<TopWorkflowBarProps> = ({
                 className={`flex items-center gap-1.5 px-2 py-1 rounded text-xs transition-all ${
                   isActive
                     ? 'bg-white text-blue-900 font-bold border border-[#9ab8db] shadow-2xs'
+                    : tool.isHighlighted
+                    ? 'bg-amber-100/70 hover:bg-amber-100 text-amber-950 border border-amber-300/60 font-medium'
                     : 'text-slate-700 hover:text-slate-900 hover:bg-[#b6cce6]'
                 }`}
                 title={tool.title}
               >
-                <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#2b6cb0]' : 'text-slate-600'}`} />
+                <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#2b6cb0]' : tool.isHighlighted ? 'text-amber-700' : 'text-slate-600'}`} />
                 <span className="hidden xl:inline">{tool.title}</span>
+                {tool.badge !== undefined && (
+                  <span className="px-1.5 py-0.2 rounded-full bg-amber-500 text-slate-950 font-bold text-[10px] leading-tight font-mono">
+                    {tool.badge}
+                  </span>
+                )}
               </button>
             );
           })}
@@ -192,3 +211,4 @@ export const TopWorkflowBar: React.FC<TopWorkflowBarProps> = ({
     </div>
   );
 };
+

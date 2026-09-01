@@ -15,6 +15,13 @@ import { Screen5Procesamiento } from './components/screens/Screen5Procesamiento'
 import { ScreenDebidaDiligencia } from './components/screens/ScreenDebidaDiligencia';
 import { ScreenAuditoria } from './components/screens/ScreenAuditoria';
 import { ScreenEspecificacionFuncional } from './components/screens/ScreenEspecificacionFuncional';
+import { ScreenCentroNotas } from './components/screens/ScreenCentroNotas';
+
+// Notes & Feedback Components
+import { FloatingNotesDock } from './components/notes/FloatingNotesDock';
+import { PinpointOverlay } from './components/notes/PinpointOverlay';
+import { CreateNoteModal } from './components/notes/CreateNoteModal';
+import { NoteDetailModal } from './components/notes/NoteDetailModal';
 
 // Data & Types
 import { 
@@ -24,6 +31,7 @@ import {
   initialAuditLogs, 
   initialComplianceRuns 
 } from './data/mockData';
+import { initialFeedbackNotes } from './data/mockNotes';
 import { 
   PolicyRenewal, 
   Product, 
@@ -31,7 +39,9 @@ import {
   AuditLogEntry, 
   ComplianceMassRun, 
   ProcessingExecutionSummary, 
-  WorkflowTab 
+  WorkflowTab,
+  FeedbackNote,
+  NoteStatus
 } from './types';
 import { 
   calculateExecutiveKPIs, 
@@ -66,6 +76,27 @@ export default function App() {
   // Processing Execution Summary
   const [lastExecutionSummary, setLastExecutionSummary] = useState<ProcessingExecutionSummary | null>(null);
 
+  // Feedback Notes & Pinpointing State
+  const [notes, setNotes] = useState<FeedbackNote[]>(initialFeedbackNotes);
+  const [isPinpointing, setIsPinpointing] = useState<boolean>(false);
+  const [showPins, setShowPins] = useState<boolean>(true);
+  const [isCreateNoteOpen, setIsCreateNoteOpen] = useState<boolean>(false);
+  const [newNotePinpoint, setNewNotePinpoint] = useState<{ x: number; y: number; targetLabel?: string } | null>(null);
+  const [selectedNoteForDetail, setSelectedNoteForDetail] = useState<FeedbackNote | null>(null);
+
+  // Screen / Tab Names Map
+  const tabNames: Record<WorkflowTab, string> = {
+    consulta: '1. Consulta & Cartera',
+    simulacion: '2. Simulación de Tarifas',
+    validacion: '3. Validación Técnica',
+    procesamiento: '4. Procesamiento Core',
+    comunicacion: '5. Comunicación & Avisos',
+    debida_diligencia: 'Debida Diligencia & AML',
+    auditoria: 'Auditoría & Logs',
+    especificacion: 'Documentación & Specs',
+    notas: 'Centro de Notas & Feedback',
+  };
+
   // Current active product
   const currentProduct = products.find((p) => p.id === selectedProductId) || products[0];
 
@@ -73,6 +104,7 @@ export default function App() {
   const executiveKPIs = useMemo(() => {
     return calculateExecutiveKPIs(policies, selectedPolicyIds);
   }, [policies, selectedPolicyIds]);
+
 
   // Add an audit log entry helper
   const addAuditLog = (
@@ -513,8 +545,149 @@ export default function App() {
     );
   };
 
+  // HANDLERS FOR NOTES & FEEDBACK MODULE
+  const handleSaveNewNote = (noteData: Omit<FeedbackNote, 'id' | 'fechaCreacion' | 'respuestas'>) => {
+    const newNoteId = `NOTA-2026-${String(notes.length + 1).padStart(3, '0')}`;
+    const nowStr = new Date().toLocaleString('es-DO', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).replace(',', '');
+
+    const newNote: FeedbackNote = {
+      ...noteData,
+      id: newNoteId,
+      fechaCreacion: nowStr,
+      respuestas: [],
+    };
+
+    setNotes((prev) => [newNote, ...prev]);
+    setIsCreateNoteOpen(false);
+    setNewNotePinpoint(null);
+
+    addAuditLog(
+      'PROCESAMIENTO_TARIFA',
+      `Nota de revisión técnica creada: [${newNote.id}] "${newNote.asunto}" (${newNote.pantallaNombre})`,
+      newNote.numeroPolizaRelacionada,
+      '—',
+      newNote.id
+    );
+  };
+
+  const handleUpdateNoteStatus = (noteId: string, newStatus: NoteStatus, resolutionDetail?: string) => {
+    const nowStr = new Date().toLocaleString('es-DO', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).replace(',', '');
+
+    setNotes((prev) =>
+      prev.map((n) => {
+        if (n.id !== noteId) return n;
+        return {
+          ...n,
+          estado: newStatus,
+          fechaActualizacion: nowStr,
+          resolucion: resolutionDetail
+            ? {
+                fecha: nowStr,
+                usuario: 'Suscripción Técnica',
+                detalle: resolutionDetail,
+              }
+            : n.resolucion,
+        };
+      })
+    );
+
+    setSelectedNoteForDetail((curr) => {
+      if (!curr || curr.id !== noteId) return curr;
+      return {
+        ...curr,
+        estado: newStatus,
+        fechaActualizacion: nowStr,
+        resolucion: resolutionDetail
+          ? {
+              fecha: nowStr,
+              usuario: 'Suscripción Técnica',
+              detalle: resolutionDetail,
+            }
+          : curr.resolucion,
+      };
+    });
+
+    addAuditLog(
+      'VALIDACION_REGLA',
+      `Estado de nota técnica ${noteId} actualizado a "${newStatus}"`,
+      undefined,
+      'Pendiente',
+      newStatus
+    );
+  };
+
+  const handleAddComment = (noteId: string, comentario: string) => {
+    const nowStr = new Date().toLocaleString('es-DO', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).replace(',', '');
+
+    const newReply = {
+      id: `resp-${Date.now()}`,
+      autor: currentUser,
+      rol: 'Suscriptor Técnico',
+      fecha: nowStr,
+      comentario,
+    };
+
+    setNotes((prev) =>
+      prev.map((n) => {
+        if (n.id !== noteId) return n;
+        return {
+          ...n,
+          respuestas: [...n.respuestas, newReply],
+        };
+      })
+    );
+
+    setSelectedNoteForDetail((curr) => {
+      if (!curr || curr.id !== noteId) return curr;
+      return {
+        ...curr,
+        respuestas: [...curr.respuestas, newReply],
+      };
+    });
+  };
+
+  const handleDeleteNote = (noteId: string) => {
+    setNotes((prev) => prev.filter((n) => n.id !== noteId));
+    addAuditLog(
+      'PROCESAMIENTO_TARIFA',
+      `Nota de revisión técnica ${noteId} eliminada`
+    );
+  };
+
+  const handleStartPinpointing = () => {
+    setIsPinpointing(true);
+  };
+
+  const handleCancelPinpointing = () => {
+    setIsPinpointing(false);
+  };
+
+  const handlePlacePinpoint = (coords: { x: number; y: number; targetLabel?: string }) => {
+    setIsPinpointing(false);
+    setNewNotePinpoint(coords);
+    setIsCreateNoteOpen(true);
+  };
+
   return (
-    <div className="min-h-screen bg-[#f1f5f9] text-slate-800 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#f1f5f9] text-slate-800 flex flex-col font-sans relative">
       
       {/* Fixed Top Workflow Navigation Bar */}
       <TopWorkflowBar
@@ -522,17 +695,20 @@ export default function App() {
         onSelectTab={setCurrentTab}
         totalSelectedCount={selectedPolicyIds.size}
         totalPoliciesCount={policies.length}
+        notesCount={notes.length}
       />
 
       {/* Main Layout Body - Full Width Spacious Workspace */}
-      <div className="flex-1 flex flex-col overflow-y-auto">
+      <div className="flex-1 flex flex-col overflow-y-auto pb-16">
         <main className="flex-1 p-4 lg:p-6 space-y-6 max-w-7xl mx-auto w-full">
           
           {/* Real-time Executive KPI Bar */}
-          <ExecutiveKpiBar
-            kpis={executiveKPIs}
-            activeTab={currentTab}
-          />
+          {currentTab !== 'notas' && (
+            <ExecutiveKpiBar
+              kpis={executiveKPIs}
+              activeTab={currentTab}
+            />
+          )}
 
           {/* SCREEN ROUTER */}
           {currentTab === 'consulta' && (
@@ -623,11 +799,80 @@ export default function App() {
             <ScreenEspecificacionFuncional />
           )}
 
+          {currentTab === 'notas' && (
+            <ScreenCentroNotas
+              notes={notes}
+              onOpenCreateNote={() => {
+                setNewNotePinpoint(null);
+                setIsCreateNoteOpen(true);
+              }}
+              onSelectNote={(n) => setSelectedNoteForDetail(n)}
+              onUpdateStatus={handleUpdateNoteStatus}
+              onNavigateToScreen={(scr) => setCurrentTab(scr)}
+              tabNames={tabNames}
+            />
+          )}
+
         </main>
       </div>
 
+      {/* Pinpoint Overlay (Interactive click to drop marker or view existing pins) */}
+      <PinpointOverlay
+        isPinpointing={isPinpointing}
+        onPlacePinpoint={handlePlacePinpoint}
+        onCancelPinpoint={handleCancelPinpointing}
+        notes={notes}
+        currentTab={currentTab}
+        showPins={showPins}
+        onSelectNote={(n) => setSelectedNoteForDetail(n)}
+      />
+
+      {/* Floating Bottom Notes Dock */}
+      <FloatingNotesDock
+        notes={notes}
+        currentTab={currentTab}
+        tabNames={tabNames}
+        onOpenCreateNote={() => {
+          setNewNotePinpoint(null);
+          setIsCreateNoteOpen(true);
+        }}
+        onStartPinpointing={handleStartPinpointing}
+        onCancelPinpointing={handleCancelPinpointing}
+        onSelectNote={(n) => setSelectedNoteForDetail(n)}
+        onOpenCentroNotas={() => setCurrentTab('notas')}
+        isPinpointing={isPinpointing}
+        showPins={showPins}
+        onToggleShowPins={() => setShowPins(!showPins)}
+      />
+
+      {/* Create Note Modal */}
+      <CreateNoteModal
+        isOpen={isCreateNoteOpen}
+        onClose={() => {
+          setIsCreateNoteOpen(false);
+          setNewNotePinpoint(null);
+        }}
+        onSaveNote={handleSaveNewNote}
+        currentTab={currentTab}
+        tabNames={tabNames}
+        pinpoint={newNotePinpoint}
+        availablePolicies={policies}
+        currentUser={currentUser}
+      />
+
+      {/* Note Detail & Discussion Modal */}
+      <NoteDetailModal
+        note={selectedNoteForDetail}
+        isOpen={!!selectedNoteForDetail}
+        onClose={() => setSelectedNoteForDetail(null)}
+        onUpdateStatus={handleUpdateNoteStatus}
+        onAddComment={handleAddComment}
+        onDeleteNote={handleDeleteNote}
+        currentUser={currentUser}
+      />
+
       {/* Corporate Professional Status Footer */}
-      <footer className="h-10 bg-white border-t border-slate-200 px-6 flex items-center justify-between shrink-0 text-xs text-slate-500">
+      <footer className="h-10 bg-white border-t border-slate-200 px-6 flex items-center justify-between shrink-0 text-xs text-slate-500 z-10">
         <div className="flex items-center gap-4">
           <span className="flex items-center gap-1.5 font-medium text-slate-700">
             <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
