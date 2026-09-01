@@ -485,7 +485,7 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
                   <th colSpan={3} className="py-1 px-3 border-r border-[#b7cde6]">
                     Fechas & Vigencias
                   </th>
-                  <th colSpan={5} className="py-1 px-3 bg-[#c9ddf2] text-[#1e4e8c] text-center">
+                  <th colSpan={4} className="py-1 px-3 bg-[#c9ddf2] text-[#1e4e8c] text-center">
                     Tarifas & Estado de Renovación
                   </th>
                 </tr>
@@ -590,14 +590,9 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
                   {/* Estado */}
                   <th 
                     onClick={() => handleSort('estado')}
-                    className="p-2 text-center border-r border-[#c3d5ea] cursor-pointer hover:bg-[#e0ecf8] min-w-[100px]"
+                    className="p-2 text-center min-w-[100px] cursor-pointer hover:bg-[#e0ecf8]"
                   >
                     Estado
-                  </th>
-
-                  {/* Acciones */}
-                  <th className="p-2 text-center min-w-[50px]">
-                    Ver
                   </th>
 
                 </tr>
@@ -607,7 +602,7 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
               <tbody className="divide-y divide-slate-200 text-slate-700 font-normal">
                 {paginatedPolicies.length === 0 ? (
                   <tr>
-                    <td colSpan={12} className="p-8 text-center text-slate-500 bg-slate-50/50">
+                    <td colSpan={11} className="p-8 text-center text-slate-500 bg-slate-50/50">
                       No se encontraron pólizas con los criterios de búsqueda seleccionados.
                     </td>
                   </tr>
@@ -687,19 +682,8 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
                         </td>
 
                         {/* Estado */}
-                        <td className="p-2 text-center border-r border-slate-200">
-                          {getStatusBadge(policy.estado, policy.erroresValidacion.length)}
-                        </td>
-
-                        {/* Acciones */}
                         <td className="p-2 text-center">
-                          <button
-                            onClick={() => onViewPolicyDetails && onViewPolicyDetails(policy)}
-                            className="p-1 rounded bg-[#eef4fb] hover:bg-[#d8e7f7] text-[#2b6cb0] transition-colors cursor-pointer"
-                            title="Ver detalle de póliza"
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                          </button>
+                          {getStatusBadge(policy.estado, policy.erroresValidacion.length)}
                         </td>
 
                       </tr>

@@ -89,6 +89,8 @@ export const Screen5Procesamiento: React.FC<Screen5ProcesamientoProps> = ({
         `[${new Date().toLocaleTimeString()}] Bitácora generada: ${result.numeroCorrida}`,
       ]);
       setIsProcessing(false);
+      // Auto switch to Bitácora Detallada tab upon processing completion
+      setActiveTab('bitacora');
 
       try {
         confetti({

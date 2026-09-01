@@ -41,7 +41,7 @@ import {
 
 export default function App() {
   // Current user in session
-  const currentUser = 'pedropinard@gmail.com';
+  const currentUser = 'demo.suscripcion@universal-demo.com.do';
 
   // Global State
   const [products, setProducts] = useState<Product[]>(initialProducts);
@@ -359,6 +359,16 @@ export default function App() {
 
   // HANDLERS FOR SCREEN 4 (COMUNICACION)
   const handleSendIndividualEmail = (policyId: string, customSubject?: string, customBody?: string) => {
+    const pol = policies.find((p) => p.id === policyId);
+    if (!pol) return;
+
+    // Must be processed OK or renewed
+    const isProcessed = pol.estado === 'Procesado' || pol.estado === 'Notificado' || pol.procesamiento?.procesado === true;
+    if (!isProcessed) {
+      alert(`La póliza ${pol.numeroPoliza} no puede ser notificada porque aún no ha sido procesada exitosamente en Core ACSEL.`);
+      return;
+    }
+
     const now = new Date().toLocaleString('es-DO');
     const updated = policies.map((p) => {
       if (p.id === policyId) {
@@ -380,7 +390,6 @@ export default function App() {
     });
 
     setPolicies(updated);
-    const pol = policies.find((p) => p.id === policyId);
     addAuditLog(
       'ENVIO_INDIVIDUAL',
       `Notificación individual enviada a ${pol?.contratante} (${pol?.correoCliente})`,
@@ -393,7 +402,9 @@ export default function App() {
     let sentCount = 0;
 
     const updated = policies.map((p) => {
-      if (selectedPolicyIds.has(p.id) && p.correoCliente && p.correoCliente.trim() !== '') {
+      // ONLY policies that are selected AND processed OK / renewed in Core ACSEL
+      const isProcessed = p.estado === 'Procesado' || p.estado === 'Notificado' || p.procesamiento?.procesado === true;
+      if (selectedPolicyIds.has(p.id) && isProcessed && p.correoCliente && p.correoCliente.trim() !== '') {
         sentCount++;
         return {
           ...p,
@@ -413,7 +424,7 @@ export default function App() {
     });
 
     setPolicies(updated);
-    addAuditLog('ENVIO_MASIVO', `Despacho masivo de notificaciones completado para ${sentCount} pólizas`);
+    addAuditLog('ENVIO_MASIVO', `Despacho masivo de notificaciones completado para ${sentCount} pólizas procesadas OK`);
   };
 
   // HANDLERS FOR SCREEN 5 (PROCESAMIENTO)

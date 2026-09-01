@@ -40,7 +40,7 @@ export const Header: React.FC<HeaderProps> = ({
   onExportAll,
   onResetData,
   onOpenDocModal,
-  currentUser = 'pedropinard@gmail.com',
+  currentUser = 'demo.suscripcion@universal-demo.com.do',
   kpis,
 }) => {
   const currentProduct = products.find((p) => p.id === selectedProductId) || products[0];
@@ -180,10 +180,10 @@ export const Header: React.FC<HeaderProps> = ({
         {/* User Pill */}
         <div className="flex items-center gap-1.5 pl-2 border-l border-blue-400/40">
           <div className="w-6 h-6 rounded bg-white text-[#2b6cb0] flex items-center justify-center font-bold text-[11px]">
-            PP
+            US
           </div>
           <span className="hidden 2xl:inline text-xs text-blue-100 font-medium">
-            pedropinard@gmail.com
+            {currentUser}
           </span>
         </div>
       </div>

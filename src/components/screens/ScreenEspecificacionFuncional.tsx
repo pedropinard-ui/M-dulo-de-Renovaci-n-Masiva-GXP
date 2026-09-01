@@ -736,7 +736,7 @@ export const ScreenEspecificacionFuncional: React.FC = () => {
 {
   "templateId": "tpl-renovacion-gxp-std",
   "polizasIds": ["pol-001", "pol-002", "pol-004"],
-  "usuarioEmisor": "pedropinard@gmail.com"
+  "usuarioEmisor": "demo.suscripcion@universal-demo.com.do"
 }`,
               },
               {

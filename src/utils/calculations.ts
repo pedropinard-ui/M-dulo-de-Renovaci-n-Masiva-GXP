@@ -111,76 +111,119 @@ export function calculateExecutiveKPIs(policies: PolicyRenewal[], selectedIds: S
 export function validateSinglePolicy(policy: PolicyRenewal): ValidationError[] {
   const errors: ValidationError[] = [];
 
-  // 1. Correo electrónico vacío o formato erróneo
+  // 1. Correo del cliente (vacío o formato erróneo)
   if (!policy.correoCliente || policy.correoCliente.trim() === '') {
     errors.push({
-      id: `err-email-${policy.id}`,
-      campo: 'Correo Electrónico Contratante',
+      id: `err-email-cliente-${policy.id}`,
+      codigo: 'VAL-TEC-01',
+      regla: 'Correo del Cliente',
+      campo: 'Correo del Cliente',
       descripcion: 'El contratante no posee una dirección de correo electrónico registrada.',
-      accionRecomendada: 'Ingresar correo corporativo o del gestor de RRHH del contratante antes del envío de comunicación.',
+      accionRecomendada: 'Registrar la dirección de correo corporativo del cliente/contratante para notificación formal.',
       severidad: 'Bloqueante',
     });
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(policy.correoCliente.trim())) {
     errors.push({
-      id: `err-email-fmt-${policy.id}`,
-      campo: 'Correo Electrónico Contratante',
-      descripcion: `Formato de correo inválido: "${policy.correoCliente}".`,
-      accionRecomendada: 'Corregir la sintaxis del correo electrónico.',
+      id: `err-email-cliente-fmt-${policy.id}`,
+      codigo: 'VAL-TEC-01',
+      regla: 'Correo del Cliente',
+      campo: 'Correo del Cliente',
+      descripcion: `Formato de correo de cliente inválido: "${policy.correoCliente}".`,
+      accionRecomendada: 'Corregir la sintaxis del correo electrónico del cliente.',
       severidad: 'Bloqueante',
     });
   }
 
-  // 2. Datos particulares vacíos (Documento/RNC/Cédula)
-  if (!policy.documentoContratante || policy.documentoContratante.trim() === '') {
-    errors.push({
-      id: `err-doc-${policy.id}`,
-      campo: 'Identificación Contratante (RNC/Cédula/Pasaporte)',
-      descripcion: 'Falta el número de documento de identidad tributario o personal del contratante.',
-      accionRecomendada: 'Completar el RNC o Cédula fiscal en el maestro de pólizas.',
-      severidad: 'Bloqueante',
-    });
-  }
-
-  // 3. Tarifa inexistente o <= 0
-  const tarifaActualAnual = policy.tarifaActual?.tarifaAnual ?? policy.tarifaActualAnual ?? 0;
-  if (tarifaActualAnual <= 0) {
-    errors.push({
-      id: `err-tarifa-${policy.id}`,
-      campo: 'Tarifa Actual',
-      descripcion: 'La prima anual actual es 0 o no se encuentra parametrizada en el Core asegurador.',
-      accionRecomendada: 'Cargar la prima técnica base o tarifa vigente en ACSEL.',
-      severidad: 'Bloqueante',
-    });
-  }
-
-  // 4. Cobertura inválida
-  if (!policy.cobertura || policy.cobertura.trim() === '') {
-    errors.push({
-      id: `err-cobertura-${policy.id}`,
-      campo: 'Plan de Cobertura GXP',
-      descripcion: 'No tiene asignado un plan de cobertura válido para Últimos Gastos.',
-      accionRecomendada: 'Asignar un plan de cobertura activo (Familiar, Ejecutivo, Básico o Senior).',
-      severidad: 'Bloqueante',
-    });
-  }
-
-  // 5. Advertencias: Correo de Corredor o Supervisor vacío
+  // 2. Correo del intermediario / corredor (vacío o formato erróneo)
   if (!policy.correoCorredor || policy.correoCorredor.trim() === '') {
     errors.push({
-      id: `warn-broker-email-${policy.id}`,
-      campo: 'Correo de Corredor (CC)',
+      id: `err-email-interm-${policy.id}`,
+      codigo: 'VAL-TEC-02',
+      regla: 'Correo del Intermediario',
+      campo: 'Correo del Intermediario',
       descripcion: 'El intermediario o corredor asignado no tiene correo electrónico configurado.',
-      accionRecomendada: 'Actualizar contacto del corredor para copia de cortesía.',
-      severidad: 'Advertencia',
+      accionRecomendada: 'Ingresar el correo corporativo del intermediario para copia y gestión comercial.',
+      severidad: 'Bloqueante',
+    });
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(policy.correoCorredor.trim())) {
+    errors.push({
+      id: `err-email-interm-fmt-${policy.id}`,
+      codigo: 'VAL-TEC-02',
+      regla: 'Correo del Intermediario',
+      campo: 'Correo del Intermediario',
+      descripcion: `Formato de correo de intermediario inválido: "${policy.correoCorredor}".`,
+      accionRecomendada: 'Corregir la sintaxis del correo del corredor/intermediario.',
+      severidad: 'Bloqueante',
     });
   }
 
+  // 3. Correo del supervisor de negocio (vacío o formato erróneo)
   if (!policy.correoSupervisor || policy.correoSupervisor.trim() === '') {
     errors.push({
-      id: `warn-supervisor-email-${policy.id}`,
-      campo: 'Correo de Supervisor de Negocio (CC)',
-      descripcion: 'Falta el correo corporativo del ejecutivo/supervisor interno de Universal.',
-      accionRecomendada: 'Asignar el correo del supervisor de suscripción para seguimiento interno.',
+      id: `err-email-sup-${policy.id}`,
+      codigo: 'VAL-TEC-03',
+      regla: 'Correo del Supervisor',
+      campo: 'Correo del Supervisor',
+      descripcion: 'Falta el correo corporativo del supervisor interno de negocios asignado a la cuenta.',
+      accionRecomendada: 'Asignar el correo del supervisor de suscripción para seguimiento interno en Universal.',
+      severidad: 'Bloqueante',
+    });
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(policy.correoSupervisor.trim())) {
+    errors.push({
+      id: `err-email-sup-fmt-${policy.id}`,
+      codigo: 'VAL-TEC-03',
+      regla: 'Correo del Supervisor',
+      campo: 'Correo del Supervisor',
+      descripcion: `Formato de correo de supervisor inválido: "${policy.correoSupervisor}".`,
+      accionRecomendada: 'Corregir la sintaxis del correo corporativo del supervisor.',
+      severidad: 'Bloqueante',
+    });
+  }
+
+  // 4. Control de clientes (lista negra / OFAC / PEP / Listas de Control)
+  const tieneCoincidenciaListaNegra = 
+    policy.enListaNegra === true ||
+    policy.debidaDiligencia?.consultaListas === 'Coincidencia con Listas de Control' ||
+    policy.debidaDiligencia?.clasificacion === 'Requiere Debida Diligencia Ampliada';
+
+  if (tieneCoincidenciaListaNegra) {
+    errors.push({
+      id: `err-lista-negra-${policy.id}`,
+      codigo: 'VAL-TEC-04',
+      regla: 'Control de Clientes (Lista Negra)',
+      campo: 'Control de Clientes',
+      descripcion: 'Coincidencia detectada en Control de Clientes / Lista Restrictiva / OFAC / PEP.',
+      accionRecomendada: 'Remitir expediente a la Unidad de Cumplimiento para debida diligencia ampliada antes de renovar.',
+      severidad: 'Bloqueante',
+    });
+  }
+
+  // 5. Saldo pendiente en Core ACSEL
+  const saldoPendiente = policy.saldoPendiente ?? 0;
+  if (saldoPendiente > 0) {
+    errors.push({
+      id: `err-saldo-pendiente-${policy.id}`,
+      codigo: 'VAL-TEC-05',
+      regla: 'Saldo Pendiente',
+      campo: 'Saldo Pendiente',
+      descripcion: `La póliza registra saldo pendiente / mora en Core ACSEL por valor de ${formatCurrency(saldoPendiente)}.`,
+      accionRecomendada: 'Aplicar y regularizar los recibos de primas pendientes antes de emitir la renovación.',
+      severidad: 'Bloqueante',
+    });
+  }
+
+  // 6. La nueva prima a renovar sea menor que la anterior
+  const primaActualAnual = policy.tarifaActual?.tarifaAnual ?? policy.tarifaActualAnual ?? 0;
+  const primaRenovacionAnual = policy.tarifaRenovacion?.tarifaAnual ?? policy.tarifaRenovacionAnual ?? (primaActualAnual * (1 + (policy.porcentajeIncremento || 0) / 100));
+  
+  if (primaActualAnual > 0 && primaRenovacionAnual < primaActualAnual) {
+    errors.push({
+      id: `warn-prima-menor-${policy.id}`,
+      codigo: 'VAL-TEC-06',
+      regla: 'Prima Renovación Menor a la Anterior',
+      campo: 'Prima a Renovar',
+      descripcion: `La nueva prima a renovar (${formatCurrency(primaRenovacionAnual)}) es menor que la prima anterior (${formatCurrency(primaActualAnual)}).`,
+      accionRecomendada: 'Verificar justificación técnica o autorización actuarial para decremento de prima.',
       severidad: 'Advertencia',
     });
   }

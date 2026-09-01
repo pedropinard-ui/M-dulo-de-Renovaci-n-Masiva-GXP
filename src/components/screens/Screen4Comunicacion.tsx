@@ -56,7 +56,16 @@ export const Screen4Comunicacion: React.FC<Screen4ComunicacionProps> = ({
 
   const handleBack = onGoBackToProcessing || onGoBackToValidation || (() => {});
 
-  const targetPolicies = policies.filter((p) => selectedPolicyIds.has(p.id));
+  // The communication dispatch is STRICTLY for policies that have been processed OK or renewed in Core ACSEL
+  const targetPolicies = policies.filter(
+    (p) =>
+      selectedPolicyIds.has(p.id) &&
+      (p.estado === 'Procesado' || p.estado === 'Notificado' || p.procesamiento?.procesado === true)
+  );
+  
+  const allSelectedCount = policies.filter((p) => selectedPolicyIds.has(p.id)).length;
+  const nonProcessedCount = allSelectedCount - targetPolicies.length;
+
   const activePreviewPolicy = policies.find((p) => p.id === selectedPreviewPolicyId) || targetPolicies[0] || policies[0];
 
   // Count communication delivery states
@@ -134,7 +143,7 @@ export const Screen4Comunicacion: React.FC<Screen4ComunicacionProps> = ({
         {/* Delivery Status Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2.5 pb-1 text-xs">
           <div className="bg-white p-2 rounded border border-[#b9d0ea] flex flex-col">
-            <span className="text-[10px] font-semibold text-slate-500">Destinatarios Totales</span>
+            <span className="text-[10px] font-semibold text-slate-500">Pólizas Procesadas OK</span>
             <span className="text-sm font-bold text-slate-800 font-mono mt-0.5">{targetPolicies.length}</span>
           </div>
 
@@ -153,6 +162,25 @@ export const Screen4Comunicacion: React.FC<Screen4ComunicacionProps> = ({
             <span className="text-sm font-bold text-amber-700 font-mono mt-0.5">{missingClientEmailCount}</span>
           </div>
         </div>
+
+        {nonProcessedCount > 0 && (
+          <div className="mt-2.5 pt-2 border-t border-[#d2e2f3] text-[11px] text-[#1e4e8c] flex items-center justify-between">
+            <div className="flex items-center gap-1.5 font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#2b6cb0]"></span>
+              <span>
+                Filtro Mandatorio Activo: El envío de comunicación aplica <strong>únicamente a pólizas procesadas OK o renovadas</strong> en Core ACSEL ({targetPolicies.length} de {allSelectedCount} seleccionadas).
+              </span>
+            </div>
+            {targetPolicies.length === 0 && (
+              <button
+                onClick={handleBack}
+                className="px-2 py-0.5 rounded bg-white hover:bg-slate-50 border border-[#b9d0ea] text-[#2b6cb0] font-bold text-[10px] cursor-pointer shadow-2xs"
+              >
+                Ir a Procesamiento Core
+              </button>
+            )}
+          </div>
+        )}
 
       </div>
 
@@ -183,7 +211,27 @@ export const Screen4Comunicacion: React.FC<Screen4ComunicacionProps> = ({
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 text-slate-700">
-                {targetPolicies.map((policy) => {
+                {targetPolicies.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="p-8 text-center text-slate-500 bg-slate-50/50">
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <Mail className="w-8 h-8 text-slate-300" />
+                        <p className="font-semibold text-slate-700">No hay pólizas procesadas OK o renovadas disponibles para notificación.</p>
+                        <p className="text-[11px] text-slate-500 max-w-sm">
+                          Complete primero el paso de <span className="font-semibold text-[#2b6cb0]">Procesamiento Core</span> para grabar las tarifas de las pólizas válidas antes de despachar las comunicaciones.
+                        </p>
+                        <button
+                          onClick={handleBack}
+                          className="mt-2 inline-flex items-center gap-1 px-3 py-1.5 rounded bg-[#2b6cb0] text-white font-bold text-xs cursor-pointer shadow-2xs hover:bg-[#235891]"
+                        >
+                          <ArrowLeft className="w-3.5 h-3.5" />
+                          <span>Ir al Paso 4: Procesamiento Core</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  targetPolicies.map((policy) => {
                   const isSelected = activePreviewPolicy?.id === policy.id;
                   const isSent = Boolean(policy.comunicacion?.enviada);
 
@@ -231,7 +279,8 @@ export const Screen4Comunicacion: React.FC<Screen4ComunicacionProps> = ({
                       </td>
                     </tr>
                   );
-                })}
+                })
+              )}
               </tbody>
             </table>
           </div>

@@ -1,18 +1,12 @@
 import React, { useState } from 'react';
 import { 
-  ShieldCheck, 
   AlertTriangle, 
   CheckCircle2, 
-  RefreshCw, 
   ArrowRight, 
   ArrowLeft, 
   Download, 
-  Edit, 
-  Check, 
   ShieldAlert,
-  X,
-  Search,
-  Filter
+  Search
 } from 'lucide-react';
 import { PolicyRenewal, ValidationError } from '../../types';
 import { exportValidationErrorsToExcel } from '../../utils/excelHelper';
@@ -20,8 +14,8 @@ import { exportValidationErrorsToExcel } from '../../utils/excelHelper';
 interface Screen3ValidacionProps {
   policies: PolicyRenewal[];
   selectedPolicyIds: Set<string>;
-  onRunValidation: () => void;
-  onQuickFixPolicy: (policyId: string, fixes: Partial<PolicyRenewal>) => void;
+  onRunValidation?: () => void;
+  onQuickFixPolicy?: (policyId: string, fixes: Partial<PolicyRenewal>) => void;
   onGoToProcessing: () => void;
   onGoToCommunication?: () => void;
   onGoBackToSimulation: () => void;
@@ -30,24 +24,14 @@ interface Screen3ValidacionProps {
 export const Screen3Validacion: React.FC<Screen3ValidacionProps> = ({
   policies,
   selectedPolicyIds,
-  onRunValidation,
-  onQuickFixPolicy,
   onGoToProcessing,
   onGoToCommunication,
   onGoBackToSimulation,
 }) => {
   const [filterSeverity, setFilterSeverity] = useState<'TODOS' | 'Bloqueante' | 'Advertencia'>('TODOS');
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [fixingPolicyId, setFixingPolicyId] = useState<string | null>(null);
   
   const handleProceedNext = onGoToProcessing || onGoToCommunication || (() => {});
-  
-  // Quick Fix temporary inputs
-  const [fixedEmail, setFixedEmail] = useState<string>('');
-  const [fixedDoc, setFixedDoc] = useState<string>('');
-  const [fixedBrokerEmail, setFixedBrokerEmail] = useState<string>('');
-  const [fixedSupervisorEmail, setFixedSupervisorEmail] = useState<string>('');
-
   const targetPolicies = policies.filter((p) => selectedPolicyIds.has(p.id));
   
   // Aggregate errors
@@ -85,24 +69,6 @@ export const Screen3Validacion: React.FC<Screen3ValidacionProps> = ({
   const blockingErrorsCount = allErrorsList.filter((e) => e.error.severidad === 'Bloqueante').length;
   const warningErrorsCount = allErrorsList.filter((e) => e.error.severidad === 'Advertencia').length;
 
-  const handleOpenFix = (policy: PolicyRenewal) => {
-    setFixingPolicyId(policy.id);
-    setFixedEmail(policy.correoCliente || `${policy.contratante.toLowerCase().replace(/[^a-z0-9]/g, '')}@empresa.com.do`);
-    setFixedDoc(policy.documentoContratante || '101-88992-3');
-    setFixedBrokerEmail(policy.correoCorredor || 'renovaciones@brokerseguros.com');
-    setFixedSupervisorEmail(policy.correoSupervisor || 'mvaldez@universal.com.do');
-  };
-
-  const handleApplyFix = (policyId: string) => {
-    onQuickFixPolicy(policyId, {
-      correoCliente: fixedEmail,
-      documentoContratante: fixedDoc,
-      correoCorredor: fixedBrokerEmail,
-      correoSupervisor: fixedSupervisorEmail,
-    });
-    setFixingPolicyId(null);
-  };
-
   const canProceed = blockingErrorsCount === 0;
 
   return (
@@ -122,15 +88,6 @@ export const Screen3Validacion: React.FC<Screen3ValidacionProps> = ({
           </div>
 
           <div className="flex items-center flex-wrap gap-1.5 text-xs">
-            <button
-              onClick={onRunValidation}
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-white hover:bg-slate-50 border border-[#b9d0ea] text-slate-700 font-medium text-xs shadow-2xs cursor-pointer"
-              title="Volver a ejecutar motor de reglas"
-            >
-              <RefreshCw className="w-3.5 h-3.5 text-[#2b6cb0]" />
-              <span>Re-evaluar Reglas</span>
-            </button>
-
             <button
               onClick={() => exportValidationErrorsToExcel(allErrorsList)}
               className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-white hover:bg-slate-50 border border-[#b9d0ea] text-slate-700 font-medium text-xs shadow-2xs cursor-pointer"
@@ -162,6 +119,40 @@ export const Screen3Validacion: React.FC<Screen3ValidacionProps> = ({
           <div className="bg-rose-50/70 p-2 rounded border border-rose-200 flex flex-col">
             <span className="text-[10px] font-bold text-rose-800">Errores Bloqueantes</span>
             <span className="text-sm font-bold text-rose-700 font-mono mt-0.5">{blockingErrorsCount}</span>
+          </div>
+        </div>
+
+        {/* 6 Technical Rules Summary Checklist */}
+        <div className="mt-2.5 pt-2 border-t border-[#d2e2f3] text-[11px] text-slate-700">
+          <div className="font-bold text-slate-800 mb-1.5 flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-[#2b6cb0]"></span>
+            <span>Reglas Técnicas de Validación Evaluadas (6 Controles Mandatorios):</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1.5">
+            <div className="p-1.5 rounded bg-white border border-[#c3d5ea] flex items-center gap-1.5 shadow-2xs">
+              <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
+              <span className="truncate font-medium" title="1. Correo del cliente">1. Correo Cliente</span>
+            </div>
+            <div className="p-1.5 rounded bg-white border border-[#c3d5ea] flex items-center gap-1.5 shadow-2xs">
+              <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
+              <span className="truncate font-medium" title="2. Correo del intermediario">2. Correo Intermediario</span>
+            </div>
+            <div className="p-1.5 rounded bg-white border border-[#c3d5ea] flex items-center gap-1.5 shadow-2xs">
+              <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
+              <span className="truncate font-medium" title="3. Correo del supervisor">3. Correo Supervisor</span>
+            </div>
+            <div className="p-1.5 rounded bg-white border border-[#c3d5ea] flex items-center gap-1.5 shadow-2xs">
+              <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
+              <span className="truncate font-medium" title="4. Control de clientes (lista negra / OFAC / PEP)">4. Control Clientes (Lista Negra)</span>
+            </div>
+            <div className="p-1.5 rounded bg-white border border-[#c3d5ea] flex items-center gap-1.5 shadow-2xs">
+              <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
+              <span className="truncate font-medium" title="5. Saldo pendiente en Core ACSEL">5. Saldo Pendiente</span>
+            </div>
+            <div className="p-1.5 rounded bg-white border border-[#c3d5ea] flex items-center gap-1.5 shadow-2xs">
+              <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
+              <span className="truncate font-medium" title="6. Nueva prima a renovar sea menor que la anterior">6. Prima Nueva &lt; Anterior</span>
+            </div>
           </div>
         </div>
 
@@ -233,8 +224,8 @@ export const Screen3Validacion: React.FC<Screen3ValidacionProps> = ({
                 <th colSpan={2} className="py-1 px-3 border-r border-[#b7cde6]">
                   Diagnóstico de Suscripción & Regla
                 </th>
-                <th colSpan={2} className="py-1 px-3 bg-[#c9ddf2] text-[#1e4e8c] text-center">
-                  Detalle de Inconsistencia & Corrección
+                <th colSpan={1} className="py-1 px-3 bg-[#c9ddf2] text-[#1e4e8c] text-center">
+                  Detalle de Inconsistencia & Hallazgo
                 </th>
               </tr>
 
@@ -255,11 +246,8 @@ export const Screen3Validacion: React.FC<Screen3ValidacionProps> = ({
                 <th className="p-2 border-r border-[#c3d5ea] min-w-[150px]">
                   Código Regla
                 </th>
-                <th className="p-2 border-r border-[#c3d5ea] min-w-[280px]">
+                <th className="p-2 min-w-[320px]">
                   Descripción del Hallazgo / Mensaje
-                </th>
-                <th className="p-2 text-center min-w-[110px]">
-                  Acción Rápida
                 </th>
               </tr>
             </thead>
@@ -268,7 +256,7 @@ export const Screen3Validacion: React.FC<Screen3ValidacionProps> = ({
             <tbody className="divide-y divide-slate-200 text-slate-700 font-normal">
               {filteredErrors.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="p-10 text-center text-slate-500 bg-slate-50/50">
+                  <td colSpan={6} className="p-10 text-center text-slate-500 bg-slate-50/50">
                     <div className="flex flex-col items-center justify-center gap-1.5">
                       <CheckCircle2 className="w-8 h-8 text-emerald-600" />
                       <span className="font-bold text-slate-800 text-sm">Sin errores para la selección actual</span>
@@ -328,18 +316,8 @@ export const Screen3Validacion: React.FC<Screen3ValidacionProps> = ({
                       </td>
 
                       {/* Descripción */}
-                      <td className="p-2 border-r border-slate-200 text-slate-800 text-xs">
+                      <td className="p-2 text-slate-800 text-xs">
                         {errorDesc}
-                      </td>
-
-                      {/* Acción Rápida */}
-                      <td className="p-2 text-center">
-                        <button
-                          onClick={() => handleOpenFix(item.policy)}
-                          className="px-2 py-0.5 rounded bg-[#eef4fb] hover:bg-[#d8e7f7] text-[#2b6cb0] text-xs font-semibold border border-[#b9d0ea] transition-colors cursor-pointer"
-                        >
-                          Corregir
-                        </button>
                       </td>
 
                     </tr>
@@ -408,83 +386,6 @@ export const Screen3Validacion: React.FC<Screen3ValidacionProps> = ({
           </button>
         </div>
       </div>
-
-      {/* QUICK FIX MODAL */}
-      {fixingPolicyId && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg border border-[#c3d5ea] shadow-xl max-w-md w-full overflow-hidden text-xs">
-            <div className="bg-[#eef4fb] p-3 border-b border-[#c3d5ea] flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-[#2b6cb0]" />
-                <h3 className="font-bold text-slate-800">Corrección Rápida de Datos</h3>
-              </div>
-              <button
-                onClick={() => setFixingPolicyId(null)}
-                className="text-slate-400 hover:text-slate-700 cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-4 space-y-3">
-              <div>
-                <label className="block text-[11px] font-bold text-slate-700 mb-1">RNC / Cédula Contratante:</label>
-                <input
-                  type="text"
-                  value={fixedDoc}
-                  onChange={(e) => setFixedDoc(e.target.value)}
-                  className="w-full bg-white border border-[#b9d0ea] rounded px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#2b6cb0]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold text-slate-700 mb-1">Correo Electrónico Contratante:</label>
-                <input
-                  type="email"
-                  value={fixedEmail}
-                  onChange={(e) => setFixedEmail(e.target.value)}
-                  className="w-full bg-white border border-[#b9d0ea] rounded px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#2b6cb0]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold text-slate-700 mb-1">Correo Electrónico Corredor:</label>
-                <input
-                  type="email"
-                  value={fixedBrokerEmail}
-                  onChange={(e) => setFixedBrokerEmail(e.target.value)}
-                  className="w-full bg-white border border-[#b9d0ea] rounded px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#2b6cb0]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold text-slate-700 mb-1">Correo Supervisor / Suscriptor:</label>
-                <input
-                  type="email"
-                  value={fixedSupervisorEmail}
-                  onChange={(e) => setFixedSupervisorEmail(e.target.value)}
-                  className="w-full bg-white border border-[#b9d0ea] rounded px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#2b6cb0]"
-                />
-              </div>
-            </div>
-
-            <div className="bg-[#eef4fb] p-3 border-t border-[#c3d5ea] flex items-center justify-end gap-2">
-              <button
-                onClick={() => setFixingPolicyId(null)}
-                className="px-3 py-1 rounded bg-white hover:bg-slate-50 border border-[#b9d0ea] text-slate-700 cursor-pointer"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={() => handleApplyFix(fixingPolicyId)}
-                className="px-3 py-1 rounded bg-[#2b6cb0] hover:bg-[#235891] text-white font-bold cursor-pointer"
-              >
-                Guardar y Revalidar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );

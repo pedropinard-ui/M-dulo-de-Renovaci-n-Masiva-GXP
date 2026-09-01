@@ -79,6 +79,9 @@ export interface PolicyRenewal {
   esExcepcionManual?: boolean;
   motivoExcepcion?: string;
   
+  saldoPendiente?: number;
+  enListaNegra?: boolean;
+  
   // Estado y validaciones
   estado: InsuranceStatus;
   erroresValidacion: ValidationError[];
