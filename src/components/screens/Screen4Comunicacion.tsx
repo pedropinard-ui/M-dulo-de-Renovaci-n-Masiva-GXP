@@ -257,30 +257,48 @@ export const Screen4Comunicacion: React.FC<Screen4ComunicacionProps> = ({
           </div>
 
           {activePreviewPolicy ? (
-            <div className="flex-1 p-4 flex flex-col justify-between space-y-3 bg-[#fafcff]">
+            <div className="flex-1 p-3 flex flex-col justify-between space-y-2.5 bg-[#fafcff]">
               
-              {/* Header Box (From/To/Subject) */}
-              <div className="bg-white border border-[#c3d5ea] rounded p-3 text-xs space-y-1.5">
-                <div className="flex items-center justify-between text-slate-500 text-[11px] pb-1.5 border-b border-slate-100">
-                  <span><strong>De:</strong> renovaciones@universal.com.do</span>
-                  <span><strong>Fecha:</strong> {new Date().toLocaleDateString('es-DO')}</span>
+              {/* Header Box (From/To/Subject) & Official Letter Container */}
+              <div className="bg-white border border-[#c3d5ea] rounded-md shadow-2xs flex flex-col overflow-hidden">
+                {/* Email Metadata */}
+                <div className="p-3 bg-white border-b border-[#e2ecf7] text-xs space-y-1.5">
+                  <div className="flex items-center justify-between text-slate-500 text-[11px] pb-1 border-b border-slate-100">
+                    <span className="font-semibold text-slate-700">Notificación Electrónica Oficial</span>
+                    <span><strong>Fecha Envío:</strong> {new Date().toLocaleDateString('es-DO')}</span>
+                  </div>
+                  <div className="text-[11px] text-slate-700">
+                    <strong>Para:</strong> {activePreviewPolicy.correoCliente || 'contacto@empresa.com.do'}
+                    {activePreviewPolicy.correoCorredor && (
+                      <span className="text-slate-500 ml-2">| <strong>CC Corredor:</strong> {activePreviewPolicy.correoCorredor}</span>
+                    )}
+                  </div>
+                  <div className="text-xs font-bold text-slate-800">
+                    <strong>Asunto:</strong> {dynamicPreviewSubject}
+                  </div>
                 </div>
-                <div className="text-[11px] text-slate-700">
-                  <strong>Para:</strong> {activePreviewPolicy.correoCliente || 'contacto@empresa.com.do'}
-                  {activePreviewPolicy.correoCorredor && <span className="text-slate-500 ml-2">| <strong>CC:</strong> {activePreviewPolicy.correoCorredor}</span>}
-                </div>
-                <div className="text-xs font-bold text-slate-800 pt-0.5">
-                  <strong>Asunto:</strong> {dynamicPreviewSubject}
-                </div>
-              </div>
 
-              {/* Letter Body Preview */}
-              <div className="bg-white border border-[#c3d5ea] rounded p-4 text-xs text-slate-800 whitespace-pre-wrap leading-relaxed shadow-2xs flex-1 overflow-y-auto max-h-[300px]">
-                {dynamicPreviewBody}
+                {/* Official Letter Document - Directly after Asunto */}
+                <div className="p-4 bg-white text-xs text-slate-800 font-sans whitespace-pre-wrap leading-relaxed overflow-y-auto max-h-[380px]">
+                  {/* SEGUROS UNIVERSAL Letterhead Logo */}
+                  <div className="flex items-center gap-2.5 pb-2.5 mb-3 border-b border-slate-200">
+                    <div className="w-6 h-6 rounded-xs bg-[#1e3a8a] text-white flex items-center justify-center font-bold text-xs shadow-2xs">
+                      U
+                    </div>
+                    <span className="font-extrabold text-xs tracking-wider text-[#1e3a8a] uppercase font-sans">
+                      SEGUROS UNIVERSAL
+                    </span>
+                  </div>
+
+                  {/* Letter Body */}
+                  <div className="text-slate-800 text-[11.5px] leading-relaxed">
+                    {dynamicPreviewBody}
+                  </div>
+                </div>
               </div>
 
               {/* Action Strip for single email */}
-              <div className="flex items-center justify-between pt-1 text-xs">
+              <div className="flex items-center justify-between pt-0.5 text-xs">
                 <div className="text-[11px] text-slate-500">
                   {activePreviewPolicy.comunicacion?.enviada ? (
                     <span className="text-emerald-700 font-semibold flex items-center gap-1">
@@ -294,7 +312,7 @@ export const Screen4Comunicacion: React.FC<Screen4ComunicacionProps> = ({
 
                 <button
                   onClick={() => onSendIndividualEmail(activePreviewPolicy.id)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#2b6cb0] hover:bg-[#235891] text-white font-bold text-xs cursor-pointer shadow-2xs"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#2b6cb0] hover:bg-[#235891] text-white font-bold text-xs cursor-pointer shadow-2xs transition-colors"
                 >
                   <Send className="w-3 h-3" />
                   <span>Enviar a este Contratante</span>
@@ -377,14 +395,14 @@ export const Screen4Comunicacion: React.FC<Screen4ComunicacionProps> = ({
               <div>
                 <div className="flex items-center justify-between mb-1">
                   <label className="block text-[11px] font-bold text-slate-700">Cuerpo del Mensaje:</label>
-                  <div className="flex items-center gap-1 text-[10px]">
+                  <div className="flex items-center gap-1 text-[10px] flex-wrap">
                     <span className="text-slate-500">Insertar:</span>
-                    {['{NOMBRE_CONTRATANTE}', '{NUMERO_POLIZA}', '{TARIFA_RENOVACION}', '{FECHA_RENOVACION}'].map((tag) => (
+                    {['{CONTRATANTE}', '{NUM_POLIZA}', '{FECHA_RENOVACION}', '{TARIFA_RENOV_MENSUAL}', '{PRODUCTO_NOMBRE}', '{MODALIDAD_PAGO}'].map((tag) => (
                       <button
                         key={tag}
                         type="button"
                         onClick={() => insertVariable(tag)}
-                        className="px-1.5 py-0.5 rounded bg-[#eef4fb] text-[#2b6cb0] border border-[#b9d0ea] hover:bg-[#d8e7f7] cursor-pointer"
+                        className="px-1.5 py-0.5 rounded bg-[#eef4fb] text-[#2b6cb0] border border-[#b9d0ea] hover:bg-[#d8e7f7] cursor-pointer font-mono"
                       >
                         {tag}
                       </button>

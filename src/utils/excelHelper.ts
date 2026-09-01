@@ -95,24 +95,51 @@ export function downloadSampleExcelTemplate() {
   const sampleData = [
     {
       'Póliza': 'GXP-2026-9041',
-      'Cantidad Asegurados': 450,
-      'Tarifa Anual': 648000,
-      'Tarifa Mensual': 54000,
+      'Producto': 'GXP',
+      'Contratante': 'EMPRESAS CORRIPIO C. POR A.',
+      'Tipo Doc': 'RNC',
+      'Documento': '101-00234-8',
+      'Cobertura': 'Plan Integral Familiar',
+      'Asegurados': 850,
+      'Corredor': 'FRANCO & ACRA TECNOSEGUROS',
+      'Supervisor': 'Carlos Mendoza',
+      'Correo Cliente': 'rrhh@corripio.com.do',
+      'Correo Corredor': 'cuentas@francoacra.com',
+      'Fecha Renovación': '2026-09-01',
+      'Tarifa Actual Anual': 1250000,
       '% Incremento': 15.0,
     },
     {
       'Póliza': 'GXP-2026-9042',
-      'Cantidad Asegurados': 1280,
-      'Tarifa Anual': 1536000,
-      'Tarifa Mensual': 128000,
-      '% Incremento': 12.5,
+      'Producto': 'GXP',
+      'Contratante': 'GRUPO RAMOS S.A.',
+      'Tipo Doc': 'RNC',
+      'Documento': '101-55829-3',
+      'Cobertura': 'Plan Senior Plus',
+      'Asegurados': 1420,
+      'Corredor': 'ROS & ASOCIADOS SRL',
+      'Supervisor': 'Carlos Mendoza',
+      'Correo Cliente': 'beneficios@gruporamos.com.do',
+      'Correo Corredor': 'corredor@ros.com.do',
+      'Fecha Renovación': '2026-09-01',
+      'Tarifa Actual Anual': 2100000,
+      '% Incremento': 15.0,
     },
     {
       'Póliza': 'GXP-2026-9043',
-      'Cantidad Asegurados': 890,
-      'Tarifa Anual': 1068000,
-      'Tarifa Mensual': 89000,
-      '% Incremento': 0.0,
+      'Producto': 'GXP',
+      'Contratante': 'INDUSTRIAS SAN MIGUEL DEL CARIBE S.A.',
+      'Tipo Doc': 'RNC',
+      'Documento': '101-89342-1',
+      'Cobertura': 'Plan Básico Funerario',
+      'Asegurados': 620,
+      'Corredor': 'PEÑA IZQUIERDO CORREDORES DE SEGUROS',
+      'Supervisor': 'Carlos Mendoza',
+      'Correo Cliente': 'seguros@ism.com.do',
+      'Correo Corredor': 'contacto@penaizquierdo.com',
+      'Fecha Renovación': '2026-09-01',
+      'Tarifa Actual Anual': 890000,
+      '% Incremento': 12.5,
     },
   ];
 
@@ -120,6 +147,46 @@ export function downloadSampleExcelTemplate() {
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Plantilla Carga GXP');
   XLSX.writeFile(workbook, 'Plantilla_Carga_Renovacion_GXP.xlsx');
+}
+
+export function exportImportErrorsToExcel(
+  rows: Array<{
+    rowNumber: number;
+    policyNumber: string;
+    contratante: string;
+    tipoDoc?: string;
+    docNumber?: string;
+    cobertura?: string;
+    asegurados?: number;
+    tarifaActualAnual?: number;
+    fechaRenovacion?: string;
+    status: 'VALID' | 'WARNING' | 'ERROR';
+    statusMessages: string[];
+  }>,
+  fileName = 'Reporte_Inconsistencias_Importacion_GXP.xlsx'
+) {
+  const errorData = rows.map((r, idx) => ({
+    'No.': idx + 1,
+    'Fila en Archivo': `Fila ${r.rowNumber}`,
+    'No. Póliza': r.policyNumber || 'NO ESPECIFICADO',
+    'Contratante': r.contratante || 'NO ESPECIFICADO',
+    'Tipo Doc': r.tipoDoc || 'RNC',
+    'No. Documento': r.docNumber || 'NO ESPECIFICADO',
+    'Cobertura': r.cobertura || 'Plan Integral Familiar',
+    'Cantidad Asegurados': r.asegurados !== undefined ? r.asegurados : 0,
+    'Tarifa Actual Anual (RD$)': r.tarifaActualAnual || 0,
+    'Fecha Renovación': r.fechaRenovacion || '2026-08-01',
+    'Severidad Validación': r.status === 'ERROR' ? 'RECHAZADO (BLOQUEANTE)' : 'ADVERTENCIA',
+    'Inconsistencias / Errores Detectados': r.statusMessages.join(' | '),
+    'Acción Requerida para Subsanar': r.status === 'ERROR'
+      ? 'Corregir datos mandatorios en el archivo Excel o actualizar nómina en Core ACSEL antes de reintentar.'
+      : 'Revisar datos o proceder con la actualización de cartera existente.',
+  }));
+
+  const worksheet = XLSX.utils.json_to_sheet(errorData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Inconsistencias de Carga');
+  XLSX.writeFile(workbook, fileName);
 }
 
 export function parseImportedExcel(file: File): Promise<any[]> {

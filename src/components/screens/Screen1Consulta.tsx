@@ -5,6 +5,7 @@ import {
   Download, 
   FileSpreadsheet, 
   RefreshCw, 
+  RotateCcw,
   ArrowUpDown, 
   ArrowUp, 
   ArrowDown, 
@@ -14,16 +15,20 @@ import {
   Calendar, 
   ArrowRight,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Database,
+  Info
 } from 'lucide-react';
 import { PolicyRenewal, Product, InsuranceStatus } from '../../types';
 import { formatCurrency } from '../../utils/calculations';
 import { exportPoliciesToExcel } from '../../utils/excelHelper';
+import { ImportExcelModal } from '../modals/ImportExcelModal';
 
 interface Screen1ConsultaProps {
   policies: PolicyRenewal[];
   products?: Product[];
   selectedPolicyIds: Set<string>;
+  isInitialPortfolio?: boolean;
   onTogglePolicySelection?: (policyId: string) => void;
   onToggleSelectPolicy?: (policyId: string) => void;
   onSelectAllPolicies?: (policyIds: string[]) => void;
@@ -33,7 +38,8 @@ interface Screen1ConsultaProps {
   onViewPolicyDetails?: (policy: PolicyRenewal) => void;
   onGoToSimulation: () => void;
   onOpenImportModal?: () => void;
-  onImportExcel?: (importedPolicies: Partial<PolicyRenewal>[]) => void;
+  onImportExcel?: (importedPolicies: PolicyRenewal[]) => void;
+  onRestoreInitialQuery?: () => void;
 }
 
 export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
@@ -45,6 +51,7 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
     { id: 'prod-acc', codigo: 'ACC', nombre: 'Accidentes Personales', activo: true, coberturasDisponibles: ['Accidentes Escolar', 'Accidentes Laboral'] },
   ],
   selectedPolicyIds,
+  isInitialPortfolio = true,
   onTogglePolicySelection,
   onToggleSelectPolicy,
   onSelectAllPolicies,
@@ -54,10 +61,15 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
   onViewPolicyDetails,
   onGoToSimulation,
   onOpenImportModal,
+  onImportExcel,
+  onRestoreInitialQuery,
 }) => {
   const handleToggle = onTogglePolicySelection || onToggleSelectPolicy || (() => {});
   const handleSelectAll = onSelectAllPolicies || onSelectAll || (() => {});
   const handleDeselectAll = onDeselectAllPolicies || onDeselectAll || (() => {});
+
+  // Modal State for Import
+  const [isInternalImportModalOpen, setIsInternalImportModalOpen] = useState<boolean>(false);
 
   // Filter States
   const [selectedProduct, setSelectedProduct] = useState<string>('prod-gxp');
@@ -249,17 +261,7 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
           </div>
 
           <div className="flex items-center flex-wrap gap-1.5 text-xs">
-            {onOpenImportModal && (
-              <button
-                onClick={onOpenImportModal}
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-white hover:bg-slate-50 border border-[#b9d0ea] text-slate-700 font-medium text-xs shadow-2xs cursor-pointer"
-                title="Importar Cartera desde Excel"
-              >
-                <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Importar</span>
-              </button>
-            )}
-
+            {/* 1. Botón Exportar */}
             <button
               onClick={() => exportPoliciesToExcel(filteredPolicies)}
               className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-white hover:bg-slate-50 border border-[#b9d0ea] text-slate-700 font-medium text-xs shadow-2xs cursor-pointer"
@@ -269,10 +271,46 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
               <span>Exportar</span>
             </button>
 
+            {/* 2. Botón Importar (Al lado derecho del botón Exportar - Sustituye consulta) */}
+            <button
+              onClick={() => {
+                if (onOpenImportModal) {
+                  onOpenImportModal();
+                } else {
+                  setIsInternalImportModalOpen(true);
+                }
+              }}
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-white hover:bg-slate-50 border border-[#b9d0ea] text-slate-700 font-medium text-xs shadow-2xs cursor-pointer"
+              title="Importar pólizas a renovar desde archivo Excel (sustituye la consulta actual)"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Importar</span>
+            </button>
+
+            {/* 3. Botón Reestablecer Consulta Inicial */}
+            {onRestoreInitialQuery && (
+              <button
+                onClick={() => {
+                  onRestoreInitialQuery();
+                  handleClearFilters();
+                }}
+                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded border text-xs shadow-2xs cursor-pointer transition-colors ${
+                  !isInitialPortfolio
+                    ? 'bg-amber-50 hover:bg-amber-100 border-amber-300 text-amber-900 font-bold'
+                    : 'bg-white hover:bg-slate-50 border-[#b9d0ea] text-slate-700 font-medium'
+                }`}
+                title="Restablecer la consulta original de pólizas desde el catálogo Core ACSEL"
+              >
+                <RotateCcw className={`w-3.5 h-3.5 ${!isInitialPortfolio ? 'text-amber-700' : 'text-[#2b6cb0]'}`} />
+                <span>Reestablecer Consulta Inicial</span>
+              </button>
+            )}
+
+            {/* 4. Botón Limpiar */}
             <button
               onClick={handleClearFilters}
               className="inline-flex items-center gap-1 px-2 py-1 rounded bg-white hover:bg-slate-50 border border-[#b9d0ea] text-slate-600 text-xs cursor-pointer"
-              title="Limpiar filtros"
+              title="Limpiar filtros de búsqueda"
             >
               <RefreshCw className="w-3 h-3" />
               <span>Limpiar</span>
@@ -402,6 +440,31 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
 
         </div>
       </div>
+
+      {/* Banner Informativo cuando la cartera ha sido sustituida por importación */}
+      {!isInitialPortfolio && (
+        <div className="bg-[#fff9eb] border border-[#f0d28d] rounded-md px-3.5 py-2 flex items-center justify-between flex-wrap gap-2 text-xs text-[#8a5d00] shadow-2xs">
+          <div className="flex items-center gap-2.5">
+            <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div>
+            <span>
+              <strong>Cartera Sustituida por Archivo Externo:</strong> Mostrando <strong className="text-slate-900">{policies.length} pólizas</strong> importadas desde Excel.
+            </span>
+          </div>
+          {onRestoreInitialQuery && (
+            <button
+              onClick={() => {
+                onRestoreInitialQuery();
+                handleClearFilters();
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1 bg-white hover:bg-amber-50 border border-[#e0bf6c] rounded text-[#8a5d00] font-bold text-[11px] cursor-pointer shadow-2xs transition-colors"
+              title="Volver al catálogo original de pólizas del Core ACSEL"
+            >
+              <RotateCcw className="w-3 h-3 text-[#b47c05]" />
+              <span>Restablecer Consulta Inicial Core ACSEL</span>
+            </button>
+          )}
+        </div>
+      )}
 
       {/* 2. MAIN DATA GRID AREA (Matching Wireframe Core Section) */}
       <div className="bg-white rounded-md border border-[#c3d5ea] shadow-2xs overflow-hidden min-h-[420px] flex flex-col min-w-0">
@@ -735,6 +798,19 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Modal de Importación de Cartera desde Excel con Validación Core ACSEL */}
+      <ImportExcelModal
+        isOpen={isInternalImportModalOpen}
+        onClose={() => setIsInternalImportModalOpen(false)}
+        products={products}
+        currentPolicies={policies}
+        onConfirmImport={(imported) => {
+          if (onImportExcel) {
+            onImportExcel(imported);
+          }
+        }}
+      />
 
     </div>
   );

@@ -126,49 +126,26 @@ export default function App() {
     setSelectedPolicyIds(new Set());
   };
 
-  const handleImportExcelData = (importedRows: Partial<PolicyRenewal>[]) => {
-    const updatedPolicies = [...policies];
-    importedRows.forEach((row) => {
-      if (!row.numeroPoliza) return;
-      const existingIdx = updatedPolicies.findIndex((p) => p.numeroPoliza === row.numeroPoliza);
-      if (existingIdx >= 0) {
-        updatedPolicies[existingIdx] = {
-          ...updatedPolicies[existingIdx],
-          ...row,
-        };
-      } else {
-        const newPolicy: PolicyRenewal = {
-          id: `pol-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
-          numeroPoliza: row.numeroPoliza,
-          contratante: row.contratante || 'Nuevo Contratante',
-          documentoContratante: row.documentoContratante || '101-00000-0',
-          tipoDocumento: row.tipoDocumento || 'RNC',
-          cobertura: row.cobertura || 'Plan Tradicional GXP',
-          idProducto: selectedProductId,
-          productoNombre: currentProduct.nombre,
-          tarifaActualAnual: row.tarifaActualAnual || 50000,
-          tarifaActualMensual: (row.tarifaActualAnual || 50000) / 12,
-          vigenciaDesde: row.vigenciaDesde || '2025-10-01',
-          vigenciaHasta: row.vigenciaHasta || '2026-09-30',
-          fechaRenovacion: row.fechaRenovacion || '2026-10-01',
-          tarifaRenovacionAnual: row.tarifaRenovacionAnual || (row.tarifaActualAnual || 50000) * 1.15,
-          tarifaRenovacionMensual: ((row.tarifaActualAnual || 50000) * 1.15) / 12,
-          porcentajeIncremento: row.porcentajeIncremento !== undefined ? row.porcentajeIncremento : 15,
-          esExcepcionManual: false,
-          correoCliente: row.correoCliente || 'info@cliente.com.do',
-          correoCorredor: row.correoCorredor || 'corredor@seguros.com',
-          correoSupervisor: row.correoSupervisor || 'supervisor@universal.com.do',
-          nombreCorredor: row.nombreCorredor || 'Corredor Asignado',
-          estado: 'Pendiente',
-          erroresValidacion: [],
-        };
-        updatedPolicies.push(newPolicy);
-      }
-    });
+  const handleImportExcelData = (importedRows: PolicyRenewal[]) => {
+    if (!importedRows || importedRows.length === 0) return;
+    
+    // Sustituir el contenido de la cartera con las pólizas importadas
+    setPolicies(importedRows);
+    setSelectedPolicyIds(new Set(importedRows.map((p) => p.id)));
+    addAuditLog(
+      'IMPORTACION_EXCEL',
+      `Importación masiva: ${importedRows.length} pólizas cargadas y validadas con el Core ACSEL (Sustituye consulta activa)`
+    );
+  };
 
-    setPolicies(updatedPolicies);
-    setSelectedPolicyIds(new Set(updatedPolicies.map((p) => p.id)));
-    addAuditLog('IMPORTACION_EXCEL', `Importación masiva de ${importedRows.length} registros desde archivo Excel`);
+  const handleRestoreInitialQuery = () => {
+    // Reestablecer a la consulta inicial del Core ACSEL
+    setPolicies(initialMockPolicies);
+    setSelectedPolicyIds(new Set(initialMockPolicies.map((p) => p.id)));
+    addAuditLog(
+      'CONFIGURACION_REGLA',
+      'Consulta inicial de cartera restablecida desde el catálogo Core ACSEL'
+    );
   };
 
   // HANDLERS FOR SCREEN 2 (SIMULACION)
@@ -552,10 +529,15 @@ export default function App() {
               policies={policies}
               products={products}
               selectedPolicyIds={selectedPolicyIds}
+              isInitialPortfolio={
+                policies.length === initialMockPolicies.length &&
+                policies.every((p, idx) => p.id === initialMockPolicies[idx]?.id)
+              }
               onToggleSelectPolicy={handleToggleSelectPolicy}
               onSelectAll={handleSelectAllPolicies}
               onDeselectAll={handleDeselectAllPolicies}
               onImportExcel={handleImportExcelData}
+              onRestoreInitialQuery={handleRestoreInitialQuery}
               onGoToSimulation={() => setCurrentTab('simulacion')}
             />
           )}

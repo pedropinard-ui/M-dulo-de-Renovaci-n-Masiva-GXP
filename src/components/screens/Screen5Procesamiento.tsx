@@ -43,7 +43,7 @@ export const Screen5Procesamiento: React.FC<Screen5ProcesamientoProps> = ({
   const [progressPercent, setProgressPercent] = useState<number>(0);
   const [currentStepLog, setCurrentStepLog] = useState<string>('');
   const [consoleLogs, setConsoleLogs] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState<'resumen' | 'bitacora' | 'consola'>('resumen');
+  const [activeTab, setActiveTab] = useState<'resumen' | 'bitacora'>('resumen');
 
   const handleBackToPrev = onGoBackToValidation || onGoBackToCommunication || (() => {});
 
@@ -126,18 +126,7 @@ export const Screen5Procesamiento: React.FC<Screen5ProcesamientoProps> = ({
             )}
           </div>
 
-          <div className="flex items-center flex-wrap gap-1.5 text-xs">
-            {lastExecutionSummary && (
-              <button
-                onClick={() => exportProcessingBitacoraToExcel(lastExecutionSummary.detalles)}
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-white hover:bg-slate-50 border border-[#b9d0ea] text-slate-700 font-medium text-xs shadow-2xs cursor-pointer"
-                title="Descargar bitácora de ejecución"
-              >
-                <Download className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Descargar Bitácora</span>
-              </button>
-            )}
-
+          <div className="flex items-center flex-wrap gap-2 text-xs">
             {/* Sub-Tabs Selector */}
             <div className="flex items-center bg-white border border-[#b9d0ea] rounded p-0.5">
               <button
@@ -160,17 +149,38 @@ export const Screen5Procesamiento: React.FC<Screen5ProcesamientoProps> = ({
               >
                 Bitácora Detallada
               </button>
-              <button
-                onClick={() => setActiveTab('consola')}
-                className={`px-2.5 py-0.5 rounded text-xs font-medium transition-colors cursor-pointer ${
-                  activeTab === 'consola'
-                    ? 'bg-[#2b6cb0] text-white font-bold'
-                    : 'text-slate-700 hover:bg-slate-100'
-                }`}
-              >
-                Consola Transaccional
-              </button>
             </div>
+
+            {/* Botón Descargar Bitácora colocado al lado derecho del botón Bitácora Detallada */}
+            <button
+              onClick={() => {
+                if (lastExecutionSummary) {
+                  exportProcessingBitacoraToExcel(lastExecutionSummary.detalles);
+                } else {
+                  exportProcessingBitacoraToExcel(
+                    targetPolicies.map((p) => ({
+                      idPoliza: p.id,
+                      numeroPoliza: p.numeroPoliza,
+                      contratante: p.contratante,
+                      tarifaAnterior: p.tarifaActual.tarifaAnual,
+                      tarifaNueva: p.tarifaRenovacion.tarifaAnual,
+                      resultado: p.erroresValidacion.some((e) => e.severidad === 'Bloqueante')
+                        ? 'Fallida'
+                        : isExecuted ? 'Exitosa' : 'Pendiente',
+                      mensaje: p.erroresValidacion.some((e) => e.severidad === 'Bloqueante')
+                        ? 'Bloqueada por inconsistencia técnica'
+                        : isExecuted ? 'Transacción confirmada en ACSEL' : 'Lista para procesar en Core',
+                      horaGrabacion: new Date().toLocaleTimeString(),
+                    }))
+                  );
+                }
+              }}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-white hover:bg-slate-50 border border-[#b9d0ea] text-slate-700 font-medium text-xs shadow-2xs cursor-pointer"
+              title="Descargar bitácora de ejecución en formato Excel"
+            >
+              <Download className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Descargar Bitácora</span>
+            </button>
           </div>
         </div>
 
@@ -286,7 +296,7 @@ export const Screen5Procesamiento: React.FC<Screen5ProcesamientoProps> = ({
                   <tr className="bg-[#d9e6f5] border-b border-[#b7cde6] text-slate-700 text-[10px] font-bold uppercase tracking-wider">
                     <th colSpan={3} className="py-1 px-3 border-r border-[#b7cde6]">Identificación de Póliza</th>
                     <th colSpan={2} className="py-1 px-3 border-r border-[#b7cde6]">Tarifas Aplicadas</th>
-                    <th colSpan={2} className="py-1 px-3 text-center">Estado de Grabación Core</th>
+                    <th colSpan={2} className="py-1 px-3 text-center">Estado de Procesamiento Core</th>
                   </tr>
                   <tr className="bg-[#eef4fb] border-b border-[#c3d5ea] text-slate-700 font-bold text-[11px]">
                     <th className="p-2 border-r border-[#c3d5ea] min-w-[120px]">No. Póliza</th>
@@ -315,7 +325,7 @@ export const Screen5Procesamiento: React.FC<Screen5ProcesamientoProps> = ({
                           {isInvalid ? (
                             <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">Omitida</span>
                           ) : isExecuted ? (
-                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Grabada OK</span>
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Procesada OK</span>
                           ) : (
                             <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200">Pendiente</span>
                           )}
@@ -328,23 +338,6 @@ export const Screen5Procesamiento: React.FC<Screen5ProcesamientoProps> = ({
                   })}
                 </tbody>
               </table>
-            </div>
-          </div>
-        )}
-
-        {/* TAB 3: CONSOLA DE TRANSACCIONES */}
-        {activeTab === 'consola' && (
-          <div className="p-3 bg-[#0f172a] text-emerald-400 font-mono text-xs flex-1 flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-800 text-slate-400 text-[11px]">
-              <span className="flex items-center gap-1.5"><Terminal className="w-3.5 h-3.5" /> ACSEL Server Engine Log Terminal</span>
-              <span>Host: ACSEL-CORE-PROD-01</span>
-            </div>
-            <div className="flex-1 overflow-y-auto pt-2 space-y-1">
-              {consoleLogs.length === 0 ? (
-                <p className="text-slate-500">Esperando inicio de procesamiento...</p>
-              ) : (
-                consoleLogs.map((log, i) => <p key={i}>{log}</p>)
-              )}
             </div>
           </div>
         )}

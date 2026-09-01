@@ -434,34 +434,26 @@ export const INITIAL_POLICIES: PolicyRenewal[] = generateInitialPolicies();
 export const INITIAL_EMAIL_TEMPLATE: EmailTemplate = {
   id: 'tpl-renovacion-gxp-std',
   nombre: 'Notificación Estándar de Renovación Masiva GXP',
-  asunto: 'Aviso Importante: Actualización y Renovación de Póliza GXP #{NUM_POLIZA} - {CONTRATANTE}',
-  cuerpo: `Estimado(a) {CONTRATANTE},
+  asunto: 'Aviso de Renovación - Póliza: {NUM_POLIZA} - {CONTRATANTE}',
+  cuerpo: `{FECHA_DOCUMENTO}
+Santo Domingo, D.N.
 
-Nos dirigimos a usted en ocasión de saludarle y a la vez notificarle el proceso de renovación anual para su póliza colectiva de Últimos Gastos (GXP) No. {NUM_POLIZA}, correspondiente a la vigencia con fecha efectiva a partir del {FECHA_RENOVACION}.
+Señores:
+{CONTRATANTE}
+Póliza: {NUM_POLIZA}
 
-De acuerdo con nuestro análisis actuarial de siniestralidad e inflación médica/servicios funerarios, se ha aplicado un ajuste tarifario de {PORC_INCREMENTO} para el nuevo período.
+Reciba un cordial saludo de parte de Seguros Universal y nuestro agradecimiento por la confianza depositada en nosotros para brindarle tranquilidad y seguridad a través de nuestras soluciones de seguros.
 
-RESUMEN DE SU RENOVACIÓN:
---------------------------------------------------
-• Póliza No.: {NUM_POLIZA}
-• Cobertura: {COBERTURA}
-• Cantidad de Asegurados: {CANTIDAD_ASEGURADOS}
-• Tarifa Actual Anual: RD$ {TARIFA_ACTUAL_ANUAL} (Mensual: RD$ {TARIFA_ACTUAL_MENSUAL})
-• Tarifa Renovada Anual: RD$ {TARIFA_RENOV_ANUAL} (Mensual: RD$ {TARIFA_RENOV_MENSUAL})
-• Incremento Aplicado: {PORC_INCREMENTO}
-• Fecha de Entrada en Vigencia: {FECHA_RENOVACION}
---------------------------------------------------
+Con el objetivo de mantener y mejorar el nivel de satisfacción de nuestros clientes con los servicios de {PRODUCTO_NOMBRE}, tenemos a bien comunicarle que, en su próxima renovación efectivo al {FECHA_RENOVACION}, la tarifa de su plan será de RD$ {TARIFA_RENOV_MENSUAL} + impuestos, correspondiente a su modalidad de pago {MODALIDAD_PAGO}. Este ajuste responde al incremento de precios que han experimentado los servicios vinculados a este producto.
 
-Copia de este comunicado ha sido remitida a su intermediario de seguros ({CORREDOR}) y a nuestro equipo de suscripción corporativa.
+Deseamos recordarle que usted cuenta con el más completo servicio funerario y de exequias (cementerio), diseñado para brindarle tranquilidad y respaldo en momentos difíciles. Nos encargamos de cubrir todos los trámites y pagos que implica llevar a un ser querido a su última morada, además de proporcionarle cobertura en asistencia emocional y psicológica en temas de duelo para los miembros del núcleo familiar.
 
-Agradecemos continuar depositando su confianza en la protección de su colectivo.
+Si desea recibir más información o tiene alguna inquietud, no dude en ponerse en contacto con su Ejecutivo de Negocios o Intermediario, o bien a través de nuestro Centro de Atención Telefónica al 809-544-7111. También puede comunicarse desde el exterior sin cargos al 877-239-5430.
 
-Atentamente,
+Agradecemos nuevamente su confianza y reafirmamos nuestro compromiso de seguir ofreciéndole los productos más completos e innovadores, siempre con el respaldo que usted merece.
 
-Gerencia de Suscripción y Renovaciones Colectivas
-Seguros Universal S.A.
-Teléfono: (809) 544-7100 | contacto@universal.com.do
-`,
+Cordialmente,
+Seguros Universal`,
 };
 
 export const INITIAL_AUDIT_LOGS: AuditLogEntry[] = [

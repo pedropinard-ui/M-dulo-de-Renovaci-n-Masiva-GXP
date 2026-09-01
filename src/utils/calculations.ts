@@ -190,17 +190,55 @@ export function validateSinglePolicy(policy: PolicyRenewal): ValidationError[] {
 
 export function populateTemplateText(template: string, policy: PolicyRenewal): string {
   let text = template;
+
+  // Format Date in Spanish for document header, e.g. "01 de marzo de 2025" or "01 de septiembre de 2026"
+  let fechaDocumento = '01 de marzo de 2025';
+  let fechaRenovacionFormatted = policy.fechaRenovacion || '1/4/2025';
+
+  try {
+    if (policy.fechaRenovacion) {
+      const parts = policy.fechaRenovacion.split('-');
+      if (parts.length === 3) {
+        const year = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10);
+        const day = parseInt(parts[2], 10);
+        const monthNames = [
+          'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+          'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+        ];
+        fechaDocumento = `${day.toString().padStart(2, '0')} de ${monthNames[month - 1] || 'marzo'} de ${year}`;
+        fechaRenovacionFormatted = `${day}/${month}/${year}`;
+      }
+    }
+  } catch (e) {
+    // fallback
+  }
+
+  const tarifaMensual = policy.tarifaRenovacion?.tarifaMensual ?? (policy.tarifaActual?.tarifaMensual || 69.58);
+  const tarifaMensualStr = tarifaMensual.toLocaleString('es-DO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
   const placeholders: Record<string, string> = {
+    '{FECHA_DOCUMENTO}': fechaDocumento,
+    '{FECHA_CARTA}': fechaDocumento,
+    '{FECHA_HOY}': fechaDocumento,
     '{NUM_POLIZA}': policy.numeroPoliza,
+    '{NUMERO_POLIZA}': policy.numeroPoliza,
+    '{POLIZA}': policy.numeroPoliza,
     '{CONTRATANTE}': policy.contratante,
+    '{NOMBRE_CONTRATANTE}': policy.contratante,
+    '{PRODUCTO_NOMBRE}': policy.productoNombre || policy.descProd || 'Últimos Gastos Plus',
+    '{PRODUCTO}': policy.productoNombre || policy.descProd || 'Últimos Gastos Plus',
     '{COBERTURA}': policy.cobertura,
-    '{CANTIDAD_ASEGURADOS}': policy.cantidadAsegurados.toLocaleString('es-DO'),
-    '{TARIFA_ACTUAL_ANUAL}': policy.tarifaActual.tarifaAnual.toLocaleString('es-DO', { minimumFractionDigits: 2 }),
-    '{TARIFA_ACTUAL_MENSUAL}': policy.tarifaActual.tarifaMensual.toLocaleString('es-DO', { minimumFractionDigits: 2 }),
-    '{TARIFA_RENOV_ANUAL}': policy.tarifaRenovacion.tarifaAnual.toLocaleString('es-DO', { minimumFractionDigits: 2 }),
-    '{TARIFA_RENOV_MENSUAL}': policy.tarifaRenovacion.tarifaMensual.toLocaleString('es-DO', { minimumFractionDigits: 2 }),
+    '{MODALIDAD_PAGO}': 'MENSUAL',
+    '{CANTIDAD_ASEGURADOS}': (policy.cantidadAsegurados || 0).toLocaleString('es-DO'),
+    '{TARIFA_ACTUAL_ANUAL}': (policy.tarifaActual?.tarifaAnual || 0).toLocaleString('es-DO', { minimumFractionDigits: 2 }),
+    '{TARIFA_ACTUAL_MENSUAL}': (policy.tarifaActual?.tarifaMensual || 0).toLocaleString('es-DO', { minimumFractionDigits: 2 }),
+    '{TARIFA_RENOV_ANUAL}': (policy.tarifaRenovacion?.tarifaAnual || 0).toLocaleString('es-DO', { minimumFractionDigits: 2 }),
+    '{TARIFA_RENOV_MENSUAL}': tarifaMensualStr,
+    '{TARIFA_RENOVACION_MENSUAL}': tarifaMensualStr,
+    '{TARIFA_RENOVACION}': tarifaMensualStr,
     '{PORC_INCREMENTO}': formatPercent(policy.porcentajeIncremento),
-    '{FECHA_RENOVACION}': policy.fechaRenovacion,
+    '{FECHA_RENOVACION}': fechaRenovacionFormatted,
     '{CORREDOR}': policy.corredor || 'Directo Universal',
     '{SUPERVISOR}': policy.supervisorNegocio || 'Oficina Corporativa',
   };
