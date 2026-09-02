@@ -40,7 +40,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     {
       id: 'consulta',
       stepNumber: '1',
-      title: 'Consulta',
+      title: 'Bandeja de Renovación',
       subtitle: 'Filtros y selección',
       icon: Search,
     },

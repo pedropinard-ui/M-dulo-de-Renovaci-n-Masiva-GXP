@@ -42,8 +42,8 @@ export const TopWorkflowBar: React.FC<TopWorkflowBarProps> = ({
     {
       id: 'consulta',
       stepNumber: 1,
-      title: '1. Consulta & Cartera',
-      shortTitle: '1. Consulta',
+      title: '1. Bandeja de Renovación',
+      shortTitle: '1. Bandeja',
       subtitle: 'Filtros y selección',
       icon: Search,
     },

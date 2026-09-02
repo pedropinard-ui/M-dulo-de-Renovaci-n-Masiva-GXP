@@ -61,7 +61,7 @@ export default function App() {
   // Policies State
   const [policies, setPolicies] = useState<PolicyRenewal[]>(initialMockPolicies);
   const [selectedPolicyIds, setSelectedPolicyIds] = useState<Set<string>>(
-    new Set(initialMockPolicies.map((p) => p.id))
+    new Set<string>()
   );
 
   // Email Template State
@@ -86,7 +86,7 @@ export default function App() {
 
   // Screen / Tab Names Map
   const tabNames: Record<WorkflowTab, string> = {
-    consulta: '1. Consulta & Cartera',
+    consulta: '1. Bandeja de Renovación',
     simulacion: '2. Simulación de Tarifas',
     validacion: '3. Validación Técnica',
     procesamiento: '4. Procesamiento Core',
@@ -173,10 +173,10 @@ export default function App() {
   const handleRestoreInitialQuery = () => {
     // Reestablecer a la consulta inicial del Core ACSEL
     setPolicies(initialMockPolicies);
-    setSelectedPolicyIds(new Set(initialMockPolicies.map((p) => p.id)));
+    setSelectedPolicyIds(new Set());
     addAuditLog(
       'CONFIGURACION_REGLA',
-      'Consulta inicial de cartera restablecida desde el catálogo Core ACSEL'
+      'Bandeja inicial de renovación restablecida desde el catálogo Core ACSEL'
     );
   };
 
@@ -856,6 +856,7 @@ export default function App() {
         currentTab={currentTab}
         tabNames={tabNames}
         pinpoint={newNotePinpoint}
+        policies={policies}
         availablePolicies={policies}
         currentUser={currentUser}
       />

@@ -84,14 +84,11 @@ export const NoteDetailModal: React.FC<NoteDetailModalProps> = ({
               >
                 Prioridad: {note.prioridad}
               </span>
-              <span className="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">
-                {note.categoria}
-              </span>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-1 rounded hover:bg-slate-800 transition-colors"
+            className="text-slate-400 hover:text-white p-1 rounded hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -121,24 +118,14 @@ export const NoteDetailModal: React.FC<NoteDetailModalProps> = ({
           </div>
 
           {/* Meta Info Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] p-2.5 bg-slate-100/70 rounded-lg border border-slate-200 text-slate-600">
+          <div className="grid grid-cols-2 gap-3 text-[11px] p-2.5 bg-slate-100/70 rounded-lg border border-slate-200 text-slate-600">
             <div>
               <span className="text-slate-400 block text-[10px]">Autor:</span>
               <strong className="text-slate-800">{note.autor}</strong>
             </div>
             <div>
-              <span className="text-slate-400 block text-[10px]">Rol / Cargo:</span>
-              <span className="text-slate-700">{note.rolAutor}</span>
-            </div>
-            <div>
               <span className="text-slate-400 block text-[10px]">Fecha Registro:</span>
               <span className="text-slate-700">{note.fechaCreacion}</span>
-            </div>
-            <div>
-              <span className="text-slate-400 block text-[10px]">Póliza Vinculada:</span>
-              <span className="font-mono font-semibold text-blue-700">
-                {note.numeroPolizaRelacionada || 'General'}
-              </span>
             </div>
           </div>
 
@@ -236,7 +223,7 @@ export const NoteDetailModal: React.FC<NoteDetailModalProps> = ({
                     className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-xs"
                   >
                     <div className="flex items-center justify-between text-[11px] mb-1">
-                      <strong className="text-slate-900">{resp.autor} <span className="font-normal text-slate-500">({resp.rol})</span></strong>
+                      <strong className="text-slate-900">{resp.autor}</strong>
                       <span className="text-[10px] text-slate-400">{resp.fecha}</span>
                     </div>
                     <p className="text-slate-700 leading-normal">{resp.comentario}</p>

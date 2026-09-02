@@ -230,7 +230,7 @@ export type NoteCategory =
 export interface NoteComment {
   id: string;
   autor: string;
-  rol: string;
+  rol?: string;
   fecha: string;
   comentario: string;
 }
@@ -242,9 +242,9 @@ export interface FeedbackNote {
   asunto: string;
   descripcion: string;
   autor: string;
-  rolAutor: string;
+  rolAutor?: string;
   prioridad: NotePriority;
-  categoria: NoteCategory;
+  categoria?: NoteCategory;
   estado: NoteStatus;
   fechaCreacion: string;
   fechaActualizacion?: string;

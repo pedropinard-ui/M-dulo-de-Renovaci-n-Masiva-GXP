@@ -19,7 +19,7 @@ import {
   Tag,
   FileSpreadsheet
 } from 'lucide-react';
-import { FeedbackNote, WorkflowTab, NotePriority, NoteStatus, NoteCategory } from '../../types';
+import { FeedbackNote, WorkflowTab, NotePriority, NoteStatus } from '../../types';
 import { exportNotesToExcel } from '../../utils/excelHelper';
 
 interface ScreenCentroNotasProps {
@@ -44,7 +44,6 @@ export const ScreenCentroNotas: React.FC<ScreenCentroNotasProps> = ({
   const [selectedScreen, setSelectedScreen] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [selectedPriority, setSelectedPriority] = useState<string>('all');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
 
   // KPI Calculations
@@ -63,8 +62,7 @@ export const ScreenCentroNotas: React.FC<ScreenCentroNotasProps> = ({
         !search ||
         note.asunto.toLowerCase().includes(search) ||
         note.descripcion.toLowerCase().includes(search) ||
-        note.autor.toLowerCase().includes(search) ||
-        (note.numeroPolizaRelacionada && note.numeroPolizaRelacionada.toLowerCase().includes(search));
+        note.autor.toLowerCase().includes(search);
 
       // Screen
       const matchScreen = selectedScreen === 'all' || note.pantallaId === selectedScreen;
@@ -75,12 +73,9 @@ export const ScreenCentroNotas: React.FC<ScreenCentroNotasProps> = ({
       // Priority
       const matchPriority = selectedPriority === 'all' || note.prioridad === selectedPriority;
 
-      // Category
-      const matchCategory = selectedCategory === 'all' || note.categoria === selectedCategory;
-
-      return matchSearch && matchScreen && matchStatus && matchPriority && matchCategory;
+      return matchSearch && matchScreen && matchStatus && matchPriority;
     });
-  }, [notes, searchTerm, selectedScreen, selectedStatus, selectedPriority, selectedCategory]);
+  }, [notes, searchTerm, selectedScreen, selectedStatus, selectedPriority]);
 
   const handleExport = () => {
     exportNotesToExcel(filteredNotes);
@@ -369,7 +364,7 @@ export const ScreenCentroNotas: React.FC<ScreenCentroNotasProps> = ({
                 <div className="pt-3 border-t border-slate-100 mt-auto">
                   <div className="flex items-center justify-between text-[11px] text-slate-500 mb-2">
                     <span className="truncate">
-                      <strong>{note.autor}</strong> ({note.rolAutor})
+                      <strong>{note.autor}</strong>
                     </span>
                     <span className="text-[10px] text-slate-400 shrink-0">{note.fechaCreacion.split(' ')[0]}</span>
                   </div>
@@ -384,7 +379,7 @@ export const ScreenCentroNotas: React.FC<ScreenCentroNotasProps> = ({
 
                     <button
                       onClick={() => onSelectNote(note)}
-                      className="px-2.5 py-1 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 rounded text-xs font-semibold transition-colors"
+                      className="px-2.5 py-1 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 rounded text-xs font-semibold transition-colors cursor-pointer"
                     >
                       Ver Detalle
                     </button>
@@ -418,7 +413,7 @@ export const ScreenCentroNotas: React.FC<ScreenCentroNotasProps> = ({
                     <td className="py-2 px-3 text-slate-600 font-medium">
                       <button
                         onClick={() => onNavigateToScreen(note.pantallaId as WorkflowTab)}
-                        className="hover:text-blue-600 hover:underline flex items-center gap-1"
+                        className="hover:text-blue-600 hover:underline flex items-center gap-1 cursor-pointer"
                       >
                         {note.pantallaNombre}
                       </button>
@@ -432,9 +427,8 @@ export const ScreenCentroNotas: React.FC<ScreenCentroNotasProps> = ({
                       </div>
                       <p className="text-slate-500 text-[11px] line-clamp-1">{note.descripcion}</p>
                     </td>
-                    <td className="py-2 px-3 text-slate-700 whitespace-nowrap">
+                    <td className="py-2 px-3 text-slate-700 whitespace-nowrap font-medium">
                       {note.autor}
-                      <span className="block text-[10px] text-slate-400">{note.rolAutor}</span>
                     </td>
                     <td className="py-2 px-3 text-center whitespace-nowrap">
                       <span 

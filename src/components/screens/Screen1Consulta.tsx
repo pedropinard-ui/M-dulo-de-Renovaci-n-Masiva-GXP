@@ -253,7 +253,7 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-[#2b6cb0]"></div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
-              Criterios de Selección & Consulta de Cartera
+              Criterios de Selección & Bandeja de Renovación
             </h3>
             <span className="px-2 py-0.5 text-[10px] font-bold bg-white text-[#2b6cb0] border border-[#bcd2eb] rounded">
               {filteredPolicies.length} pólizas
@@ -457,10 +457,10 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
                 handleClearFilters();
               }}
               className="inline-flex items-center gap-1.5 px-3 py-1 bg-white hover:bg-amber-50 border border-[#e0bf6c] rounded text-[#8a5d00] font-bold text-[11px] cursor-pointer shadow-2xs transition-colors"
-              title="Volver al catálogo original de pólizas del Core ACSEL"
+              title="Volver a la bandeja original de pólizas del Core ACSEL"
             >
               <RotateCcw className="w-3 h-3 text-[#b47c05]" />
-              <span>Restablecer Consulta Inicial Core ACSEL</span>
+              <span>Restablecer Bandeja Inicial Core ACSEL</span>
             </button>
           )}
         </div>
@@ -758,7 +758,7 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-[#2b6cb0]"></span>
             <span className="font-semibold text-slate-800">
-              Paso 1: Consulta & Definición de Cartera
+              Paso 1: Bandeja de Renovación
             </span>
           </div>
           <span className="text-slate-300 hidden md:inline">|</span>

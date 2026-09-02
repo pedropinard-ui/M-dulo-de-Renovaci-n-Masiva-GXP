@@ -624,7 +624,7 @@ export const Screen2Simulacion: React.FC<Screen2SimulacionProps> = ({
             className="inline-flex items-center gap-1 px-3 py-1.5 rounded text-xs font-medium bg-white hover:bg-slate-50 border border-[#b9d0ea] text-slate-700 cursor-pointer shadow-2xs"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Volver a Consulta</span>
+            <span>Volver a Bandeja de Renovación</span>
           </button>
 
           <button
