@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { 
   Sparkles, 
   PlusCircle, 
@@ -17,7 +17,10 @@ import {
   ShieldCheck,
   User,
   Tag,
-  FileSpreadsheet
+  FileSpreadsheet,
+  FileJson,
+  Upload,
+  RotateCcw
 } from 'lucide-react';
 import { FeedbackNote, WorkflowTab, NotePriority, NoteStatus } from '../../types';
 import { exportNotesToExcel } from '../../utils/excelHelper';
@@ -29,6 +32,8 @@ interface ScreenCentroNotasProps {
   onUpdateStatus: (noteId: string, newStatus: NoteStatus, resolutionDetail?: string) => void;
   onNavigateToScreen: (screenId: WorkflowTab) => void;
   tabNames: Record<WorkflowTab, string>;
+  onImportNotes?: (notes: FeedbackNote[]) => void;
+  onResetToSeedNotes?: () => void;
 }
 
 export const ScreenCentroNotas: React.FC<ScreenCentroNotasProps> = ({
@@ -38,6 +43,8 @@ export const ScreenCentroNotas: React.FC<ScreenCentroNotasProps> = ({
   onUpdateStatus,
   onNavigateToScreen,
   tabNames,
+  onImportNotes,
+  onResetToSeedNotes,
 }) => {
   // Filters State
   const [searchTerm, setSearchTerm] = useState('');
@@ -45,6 +52,8 @@ export const ScreenCentroNotas: React.FC<ScreenCentroNotasProps> = ({
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [selectedPriority, setSelectedPriority] = useState<string>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const [importStatusMsg, setImportStatusMsg] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // KPI Calculations
   const totalNotes = notes.length;
@@ -81,9 +90,56 @@ export const ScreenCentroNotas: React.FC<ScreenCentroNotasProps> = ({
     exportNotesToExcel(filteredNotes);
   };
 
+  const handleExportJSON = () => {
+    try {
+      const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(notes, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute('href', dataStr);
+      downloadAnchor.setAttribute('download', `notas_feedback_gxp_${new Date().toISOString().slice(0, 10)}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    } catch (err) {
+      console.error('Error al exportar JSON:', err);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const parsed = JSON.parse(event.target?.result as string);
+        if (Array.isArray(parsed) && parsed.length > 0 && onImportNotes) {
+          onImportNotes(parsed);
+          setImportStatusMsg(`¡Se importaron ${parsed.length} notas exitosamente!`);
+          setTimeout(() => setImportStatusMsg(null), 4000);
+        } else {
+          setImportStatusMsg('El archivo JSON no contiene una lista válida de notas.');
+          setTimeout(() => setImportStatusMsg(null), 4000);
+        }
+      } catch {
+        setImportStatusMsg('Error al leer el archivo JSON.');
+        setTimeout(() => setImportStatusMsg(null), 4000);
+      }
+    };
+    reader.readAsText(file);
+    if (e.target) e.target.value = '';
+  };
+
   return (
     <div id="screen-centro-notas" className="p-4 lg:p-6 space-y-5 animate-fade-in text-slate-800">
       
+      {/* Hidden file input for JSON import */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        accept=".json"
+        className="hidden"
+      />
+
       {/* Top Banner & Title */}
       <div className="bg-gradient-to-r from-[#182638] via-[#1e3a8a] to-[#1e4e8c] text-white p-5 rounded-xl shadow-lg border border-slate-700 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-start gap-3.5">
@@ -107,14 +163,43 @@ export const ScreenCentroNotas: React.FC<ScreenCentroNotasProps> = ({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
           <button
             onClick={handleExport}
-            className="px-3.5 py-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 border border-slate-600 text-slate-100 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
+            className="px-3 py-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 border border-slate-600 text-slate-100 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
+            title="Exportar notas a Excel"
           >
             <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
-            <span>Exportar a Excel</span>
+            <span className="hidden sm:inline">Excel</span>
           </button>
+          <button
+            onClick={handleExportJSON}
+            className="px-3 py-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 border border-slate-600 text-slate-100 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
+            title="Descargar copia de seguridad en archivo JSON"
+          >
+            <FileJson className="w-4 h-4 text-cyan-400" />
+            <span className="hidden sm:inline">Backup JSON</span>
+          </button>
+          {onImportNotes && (
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="px-3 py-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 border border-slate-600 text-slate-100 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
+              title="Importar notas desde archivo JSON"
+            >
+              <Upload className="w-4 h-4 text-purple-400" />
+              <span className="hidden sm:inline">Importar</span>
+            </button>
+          )}
+          {onResetToSeedNotes && (
+            <button
+              onClick={onResetToSeedNotes}
+              className="px-3 py-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 border border-slate-600 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
+              title="Restablecer a las 9 notas registradas en el repositorio"
+            >
+              <RotateCcw className="w-3.5 h-3.5 text-amber-400" />
+              <span className="hidden sm:inline">Restablecer Base</span>
+            </button>
+          )}
           <button
             onClick={onOpenCreateNote}
             className="px-4 py-2 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-bold flex items-center gap-1.5 transition-all shadow-md active:scale-95"
@@ -124,6 +209,14 @@ export const ScreenCentroNotas: React.FC<ScreenCentroNotasProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Notification if import message */}
+      {importStatusMsg && (
+        <div className="p-3 bg-blue-50 border border-blue-200 text-blue-800 text-xs rounded-lg flex items-center justify-between">
+          <span>{importStatusMsg}</span>
+          <button onClick={() => setImportStatusMsg(null)} className="font-bold hover:underline">Cerrar</button>
+        </div>
+      )}
 
       {/* KPI Cards Row */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">

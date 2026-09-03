@@ -60,14 +60,24 @@ async function saveToIndexedDB(notes: FeedbackNote[]): Promise<void> {
   }
 }
 
-// Read synchronously from local storage for instant initial render
+// Read synchronously from local storage for instant initial render, merging with fallback seed notes
 export function getInitialNotesSync(fallback: FeedbackNote[] = []): FeedbackNote[] {
   try {
     const saved = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(FALLBACK_KEY);
     if (saved) {
       const parsed = JSON.parse(saved);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
+        // Merge seed fallback notes with any local changes or user-added notes
+        const map = new Map<string, FeedbackNote>();
+        // 1. First insert all embedded seed notes
+        for (const note of fallback) {
+          map.set(note.id, note);
+        }
+        // 2. Then overlay with user's local notes or edits
+        for (const note of parsed) {
+          map.set(note.id, note);
+        }
+        return Array.from(map.values());
       }
     }
   } catch (err) {
@@ -84,11 +94,19 @@ export async function loadNotesFromAllSources(currentLocalNotes: FeedbackNote[])
     if (res.ok) {
       const serverNotes = await res.json();
       if (Array.isArray(serverNotes) && serverNotes.length > 0) {
-        // Cache to localStorage & IndexedDB
-        saveNotesLocally(serverNotes);
-        return serverNotes;
+        // Merge with current local notes to avoid losing any local note
+        const map = new Map<string, FeedbackNote>();
+        for (const note of currentLocalNotes) {
+          map.set(note.id, note);
+        }
+        for (const note of serverNotes) {
+          map.set(note.id, note);
+        }
+        const merged = Array.from(map.values());
+        saveNotesLocally(merged);
+        return merged;
       } else if (Array.isArray(serverNotes) && serverNotes.length === 0 && currentLocalNotes.length > 0) {
-        // Server has empty file but client has existing local notes -> upload to server!
+        // Server has empty file but client has existing notes -> sync to server!
         await syncNotesToServer(currentLocalNotes);
         return currentLocalNotes;
       }
@@ -100,19 +118,28 @@ export async function loadNotesFromAllSources(currentLocalNotes: FeedbackNote[])
   // 2. Check IndexedDB
   const idbNotes = await getFromIndexedDB();
   if (idbNotes && idbNotes.length > 0) {
-    saveNotesLocally(idbNotes);
-    // Try uploading to server
-    syncNotesToServer(idbNotes).catch(() => {});
-    return idbNotes;
+    const map = new Map<string, FeedbackNote>();
+    for (const note of currentLocalNotes) {
+      map.set(note.id, note);
+    }
+    for (const note of idbNotes) {
+      map.set(note.id, note);
+    }
+    const merged = Array.from(map.values());
+    saveNotesLocally(merged);
+    syncNotesToServer(merged).catch(() => {});
+    return merged;
   }
 
   // 3. Fallback to localStorage
-  const localNotes = getInitialNotesSync([]);
+  const localNotes = getInitialNotesSync(currentLocalNotes);
   if (localNotes.length > 0) {
+    saveNotesLocally(localNotes);
     syncNotesToServer(localNotes).catch(() => {});
     return localNotes;
   }
 
+  saveNotesLocally(currentLocalNotes);
   return currentLocalNotes;
 }
 
