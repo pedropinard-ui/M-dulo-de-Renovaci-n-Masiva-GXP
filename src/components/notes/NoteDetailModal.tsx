@@ -158,6 +158,19 @@ export const NoteDetailModal: React.FC<NoteDetailModalProps> = ({
             )}
           </div>
 
+          {/* Resolved Status Notification */}
+          {note.estado === 'Resuelta' && (
+            <div className="p-3 bg-emerald-50 border border-emerald-300 rounded-lg text-xs flex items-start gap-2.5 text-emerald-900 animate-in fade-in">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+              <div className="space-y-0.5">
+                <span className="font-bold block">Nota en Estado Resuelta</span>
+                <span className="text-[11px] text-emerald-800">
+                  Esta nota ya no se visualiza en la pantalla vinculada ({note.pantallaNombre}). Permanece registrada y auditable en el <strong>Centro de Notas & Feedback</strong>.
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* Resolution Card if exists */}
           {note.resolucion && (
             <div className="p-3 bg-emerald-50 border border-emerald-300 rounded-lg text-xs">

@@ -9,7 +9,14 @@ export type WorkflowTab =
   | 'especificacion'
   | 'notas';
 
-export type InsuranceStatus = 'Pendiente' | 'Validado' | 'Notificado' | 'Procesado' | 'Error';
+export type InsuranceStatus = 
+  | 'Pendiente' 
+  | 'Validado' 
+  | 'Renovado y Notificado' 
+  | 'Renovado' 
+  | 'Notificado' 
+  | 'Procesado' 
+  | 'Error';
 
 export interface Product {
   id: string;
@@ -53,6 +60,7 @@ export interface PolicyRenewal {
   correoCorredor?: string;
   supervisorNegocio?: string;
   correoSupervisor?: string;
+  tipoPoliza?: 'Básica' | 'Óptima' | 'Plan Dental' | string;
   cobertura: string;
   fechaRenovacion: string; // YYYY-MM-DD
   vigenciaDesde?: string;

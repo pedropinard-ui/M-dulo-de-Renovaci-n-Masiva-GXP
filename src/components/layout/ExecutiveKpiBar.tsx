@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, Layers, ArrowUpRight, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { TrendingUp, Layers, ArrowUpRight } from 'lucide-react';
 import { formatCurrency, formatPercent } from '../../utils/calculations';
 
 interface ExecutiveKpiBarProps {
@@ -92,32 +92,6 @@ export const ExecutiveKpiBar: React.FC<ExecutiveKpiBarProps> = ({ kpis }) => {
               <TrendingUp className="w-3 h-3 mr-1 inline" />
               {formatPercent(kpis.variacionPorcentualTotal)}
             </span>
-          </div>
-        </div>
-
-        {/* Metric 5: Status Pills */}
-        <div className="hidden md:flex items-center gap-2 pl-4 border-l border-slate-200 text-xs">
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-1.5">
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold text-[10px]">
-                <CheckCircle2 className="w-3 h-3" />
-                {kpis.totalValidadas} Válidas
-              </span>
-              {kpis.totalConError > 0 && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200 font-bold text-[10px]">
-                  <AlertTriangle className="w-3 h-3" />
-                  {kpis.totalConError} Obs.
-                </span>
-              )}
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 font-semibold text-[10px]">
-                {kpis.totalNotificadas} Notificadas
-              </span>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200 font-semibold text-[10px]">
-                {kpis.totalProcesadas} Procesadas
-              </span>
-            </div>
           </div>
         </div>
 

@@ -351,6 +351,7 @@ function generateInitialPolicies(): PolicyRenewal[] {
       correoCorredor: isMissingBrokerEmail ? '' : broker.email,
       supervisorNegocio: supervisor.name,
       correoSupervisor: isMissingSupervisorEmail ? '' : supervisor.email,
+      tipoPoliza: (['Básica', 'Óptima', 'Plan Dental'] as const)[i % 3],
       cobertura: coverageFullName,
       fechaRenovacion: renewalDate,
       vigenciaDesde,
@@ -415,7 +416,7 @@ function generateInitialPolicies(): PolicyRenewal[] {
     if (computedErrors.some(e => e.severidad === 'Bloqueante')) {
       tempPolicy.estado = 'Error';
     } else if (tempPolicy.comunicacion?.enviada) {
-      tempPolicy.estado = 'Notificado';
+      tempPolicy.estado = 'Renovado y Notificado';
     } else if (i % 6 === 0) {
       tempPolicy.estado = 'Validado';
     }

@@ -32,6 +32,7 @@ interface Screen4ComunicacionProps {
   onFinishWorkflow?: () => void;
   onGoToProcessing?: () => void;
   onGoBackToValidation?: () => void;
+  currentUser?: string;
 }
 
 export const Screen4Comunicacion: React.FC<Screen4ComunicacionProps> = ({
@@ -45,6 +46,7 @@ export const Screen4Comunicacion: React.FC<Screen4ComunicacionProps> = ({
   onFinishWorkflow,
   onGoToProcessing,
   onGoBackToValidation,
+  currentUser = 'Pedro Piña',
 }) => {
   const [selectedPreviewPolicyId, setSelectedPreviewPolicyId] = useState<string>(
     policies.find((p) => selectedPolicyIds.has(p.id))?.id || policies[0]?.id || ''
@@ -56,11 +58,11 @@ export const Screen4Comunicacion: React.FC<Screen4ComunicacionProps> = ({
 
   const handleBack = onGoBackToProcessing || onGoBackToValidation || (() => {});
 
-  // The communication dispatch is STRICTLY for policies that have been processed OK or renewed in Core ACSEL
+  // The communication dispatch applies to policies that are renewed in Core ACSEL
   const targetPolicies = policies.filter(
     (p) =>
       selectedPolicyIds.has(p.id) &&
-      (p.estado === 'Procesado' || p.estado === 'Notificado' || p.procesamiento?.procesado === true)
+      (p.estado === 'Renovado' || p.estado === 'Procesado' || p.estado === 'Renovado y Notificado' || p.estado === 'Notificado' || p.procesamiento?.procesado === true)
   );
   
   const allSelectedCount = policies.filter((p) => selectedPolicyIds.has(p.id)).length;
@@ -69,7 +71,7 @@ export const Screen4Comunicacion: React.FC<Screen4ComunicacionProps> = ({
   const activePreviewPolicy = policies.find((p) => p.id === selectedPreviewPolicyId) || targetPolicies[0] || policies[0];
 
   // Count communication delivery states
-  const totalSent = targetPolicies.filter((p) => p.comunicacion?.enviada).length;
+  const totalSent = targetPolicies.filter((p) => p.comunicacion?.enviada || p.estado === 'Renovado y Notificado').length;
   const missingClientEmailCount = targetPolicies.filter((p) => !p.correoCliente || p.correoCliente.trim() === '').length;
 
   const handleSaveTemplate = () => {
@@ -108,7 +110,7 @@ export const Screen4Comunicacion: React.FC<Screen4ComunicacionProps> = ({
               Emisión de Avisos & Comunicación de Renovación
             </h3>
             <span className="px-2 py-0.5 text-[10px] font-bold bg-white text-[#2b6cb0] border border-[#bcd2eb] rounded">
-              {totalSent} de {targetPolicies.length} Notificadas
+              {totalSent} de {targetPolicies.length} Renovadas y Notificadas
             </span>
           </div>
 
@@ -127,7 +129,7 @@ export const Screen4Comunicacion: React.FC<Screen4ComunicacionProps> = ({
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-[#2b6cb0] hover:bg-[#235891] text-white font-bold text-xs shadow-2xs cursor-pointer"
             >
               <Send className="w-3.5 h-3.5" />
-              <span>{isSendingMass ? 'Enviando Avisos...' : 'Enviar Avisos a Toda la Cartera'}</span>
+              <span>{isSendingMass ? 'Simulando Envío de Avisos...' : 'Enviar Avisos a Toda la Cartera (Simulación)'}</span>
             </button>
 
             <button
@@ -143,32 +145,42 @@ export const Screen4Comunicacion: React.FC<Screen4ComunicacionProps> = ({
         {/* Delivery Status Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2.5 pb-1 text-xs">
           <div className="bg-white p-2 rounded border border-[#b9d0ea] flex flex-col">
-            <span className="text-[10px] font-semibold text-slate-500">Pólizas Procesadas OK</span>
+            <span className="text-[10px] font-semibold text-slate-500">Pólizas Renovadas Core</span>
             <span className="text-sm font-bold text-slate-800 font-mono mt-0.5">{targetPolicies.length}</span>
           </div>
 
-          <div className="bg-emerald-50/70 p-2 rounded border border-emerald-200 flex flex-col">
-            <span className="text-[10px] font-bold text-emerald-800">Avisos Enviados</span>
-            <span className="text-sm font-bold text-emerald-700 font-mono mt-0.5">{totalSent}</span>
+          <div className="bg-blue-50/70 p-2 rounded border border-blue-200 flex flex-col">
+            <span className="text-[10px] font-bold text-blue-800">Renovadas y Notificadas</span>
+            <span className="text-sm font-bold text-[#2b6cb0] font-mono mt-0.5">{totalSent}</span>
           </div>
 
           <div className="bg-[#eaf2fb] p-2 rounded border border-[#bcd2eb] flex flex-col">
-            <span className="text-[10px] font-bold text-[#1e4e8c]">Pendientes de Despacho</span>
+            <span className="text-[10px] font-bold text-[#1e4e8c]">Pendientes Despacho</span>
             <span className="text-sm font-bold text-[#1e4e8c] font-mono mt-0.5">{targetPolicies.length - totalSent}</span>
           </div>
 
           <div className="bg-white p-2 rounded border border-[#b9d0ea] flex flex-col">
-            <span className="text-[10px] font-semibold text-slate-500">Correos con Observación</span>
+            <span className="text-[10px] font-semibold text-slate-500">Correos con Obs.</span>
             <span className="text-sm font-bold text-amber-700 font-mono mt-0.5">{missingClientEmailCount}</span>
           </div>
         </div>
 
+        {/* Informative note about fictitious emails and simulated dispatch */}
+        <div className="mt-2 pt-2 border-t border-[#d2e2f3] text-[11px] text-slate-600 flex items-center justify-between">
+          <div className="flex items-center gap-1.5 font-medium">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#2b6cb0]"></span>
+            <span>
+              Las cuentas de correos en la base de datos son ficticias con fines operativos; se simula el envío del correo y al emitir los avisos el estado pasa a <strong>Renovado y Notificado</strong>.
+            </span>
+          </div>
+        </div>
+
         {nonProcessedCount > 0 && (
-          <div className="mt-2.5 pt-2 border-t border-[#d2e2f3] text-[11px] text-[#1e4e8c] flex items-center justify-between">
+          <div className="mt-2 pt-2 border-t border-[#d2e2f3] text-[11px] text-[#1e4e8c] flex items-center justify-between">
             <div className="flex items-center gap-1.5 font-medium">
               <span className="w-1.5 h-1.5 rounded-full bg-[#2b6cb0]"></span>
               <span>
-                Filtro Mandatorio Activo: El envío de comunicación aplica <strong>únicamente a pólizas procesadas OK o renovadas</strong> en Core ACSEL ({targetPolicies.length} de {allSelectedCount} seleccionadas).
+                Filtro Mandatorio Activo: El envío de comunicación aplica <strong>únicamente a pólizas renovadas</strong> en Core ACSEL ({targetPolicies.length} de {allSelectedCount} seleccionadas).
               </span>
             </div>
             {targetPolicies.length === 0 && (
@@ -203,20 +215,21 @@ export const Screen4Comunicacion: React.FC<Screen4ComunicacionProps> = ({
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="bg-[#eef4fb] border-b border-[#c3d5ea] text-slate-700 font-bold text-[11px]">
-                  <th className="p-2 border-r border-[#c3d5ea] min-w-[100px]">No. Póliza</th>
-                  <th className="p-2 border-r border-[#c3d5ea] min-w-[150px]">Contratante</th>
-                  <th className="p-2 border-r border-[#c3d5ea] min-w-[150px]">Correo Cliente</th>
-                  <th className="p-2 text-center border-r border-[#c3d5ea] min-w-[90px]">Estado</th>
-                  <th className="p-2 text-center min-w-[60px]">Ver</th>
+                  <th className="p-2 border-r border-[#c3d5ea] min-w-[95px]">No. Póliza</th>
+                  <th className="p-2 border-r border-[#c3d5ea] min-w-[140px]">Contratante</th>
+                  <th className="p-2 text-right border-r border-[#c3d5ea] min-w-[90px]">Asegurados</th>
+                  <th className="p-2 border-r border-[#c3d5ea] min-w-[140px]">Correo Cliente</th>
+                  <th className="p-2 text-center border-r border-[#c3d5ea] min-w-[160px]">Estado & Envío</th>
+                  <th className="p-2 text-center min-w-[50px]">Ver</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 text-slate-700">
                 {targetPolicies.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="p-8 text-center text-slate-500 bg-slate-50/50">
+                    <td colSpan={6} className="p-8 text-center text-slate-500 bg-slate-50/50">
                       <div className="flex flex-col items-center justify-center gap-2">
                         <Mail className="w-8 h-8 text-slate-300" />
-                        <p className="font-semibold text-slate-700">No hay pólizas procesadas OK o renovadas disponibles para notificación.</p>
+                        <p className="font-semibold text-slate-700">No hay pólizas renovadas en Core ACSEL disponibles para notificación.</p>
                         <p className="text-[11px] text-slate-500 max-w-sm">
                           Complete primero el paso de <span className="font-semibold text-[#2b6cb0]">Procesamiento Core</span> para grabar las tarifas de las pólizas válidas antes de despachar las comunicaciones.
                         </p>
@@ -233,7 +246,7 @@ export const Screen4Comunicacion: React.FC<Screen4ComunicacionProps> = ({
                 ) : (
                   targetPolicies.map((policy) => {
                   const isSelected = activePreviewPolicy?.id === policy.id;
-                  const isSent = Boolean(policy.comunicacion?.enviada);
+                  const isSent = Boolean(policy.comunicacion?.enviada || policy.estado === 'Renovado y Notificado');
 
                   return (
                     <tr
@@ -248,17 +261,28 @@ export const Screen4Comunicacion: React.FC<Screen4ComunicacionProps> = ({
                       <td className="p-2 border-r border-slate-200 font-mono font-bold text-[#2b6cb0]">
                         {policy.numeroPoliza}
                       </td>
-                      <td className="p-2 border-r border-slate-200 truncate max-w-[150px]" title={policy.contratante}>
+                      <td className="p-2 border-r border-slate-200 truncate max-w-[140px]" title={policy.contratante}>
                         {policy.contratante}
                       </td>
-                      <td className="p-2 border-r border-slate-200 text-[11px] text-slate-600 truncate max-w-[150px]">
+                      <td className="p-2 text-right border-r border-slate-200 font-mono text-xs font-semibold text-slate-800">
+                        {policy.cantidadAsegurados !== undefined ? policy.cantidadAsegurados.toLocaleString('es-DO') : '-'}
+                      </td>
+                      <td className="p-2 border-r border-slate-200 text-[11px] text-slate-600 truncate max-w-[130px]">
                         {policy.correoCliente || <span className="text-amber-600 font-semibold">Sin correo</span>}
                       </td>
                       <td className="p-2 text-center border-r border-slate-200">
                         {isSent ? (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            Enviado
-                          </span>
+                          <div className="flex flex-col items-center gap-0.5">
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                              Renovado y Notificado
+                            </span>
+                            <span className="text-[10px] text-slate-600 font-mono">
+                              {policy.comunicacion?.fechaEnvio || new Date().toLocaleString('es-DO')}
+                            </span>
+                            <span className="text-[9.5px] text-slate-600 font-medium truncate max-w-[155px]" title={policy.comunicacion?.usuarioEnvio || currentUser}>
+                              Por: {policy.comunicacion?.usuarioEnvio || currentUser}
+                            </span>
+                          </div>
                         ) : (
                           <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
                             Pendiente
@@ -308,21 +332,46 @@ export const Screen4Comunicacion: React.FC<Screen4ComunicacionProps> = ({
           {activePreviewPolicy ? (
             <div className="flex-1 p-3 flex flex-col justify-between space-y-2.5 bg-[#fafcff]">
               
+              {/* Notification Dispatch Status Banner if Sent */}
+              {activePreviewPolicy.comunicacion?.enviada && (
+                <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded text-xs text-emerald-900 flex items-center justify-between flex-wrap gap-2">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <div>
+                      <span className="font-bold text-slate-800">Notificación Despachada Exitosamente</span>
+                      <div className="text-[11px] text-slate-600">
+                        <strong>Fecha y Hora:</strong> {activePreviewPolicy.comunicacion.fechaEnvio || new Date().toLocaleString('es-DO')} &bull; <strong>Enviado por:</strong> {activePreviewPolicy.comunicacion.usuarioEnvio || currentUser}
+                      </div>
+                    </div>
+                  </div>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                    Notificado
+                  </span>
+                </div>
+              )}
+
               {/* Header Box (From/To/Subject) & Official Letter Container */}
               <div className="bg-white border border-[#c3d5ea] rounded-md shadow-2xs flex flex-col overflow-hidden">
                 {/* Email Metadata */}
                 <div className="p-3 bg-white border-b border-[#e2ecf7] text-xs space-y-1.5">
                   <div className="flex items-center justify-between text-slate-500 text-[11px] pb-1 border-b border-slate-100">
                     <span className="font-semibold text-slate-700">Notificación Electrónica Oficial</span>
-                    <span><strong>Fecha Envío:</strong> {new Date().toLocaleDateString('es-DO')}</span>
+                    <span>
+                      <strong>Fecha y Hora de Envío:</strong> {activePreviewPolicy.comunicacion?.fechaEnvio || new Date().toLocaleString('es-DO')}
+                    </span>
                   </div>
-                  <div className="text-[11px] text-slate-700">
-                    <strong>Para:</strong> {activePreviewPolicy.correoCliente || 'contacto@empresa.com.do'}
-                    {activePreviewPolicy.correoCorredor && (
-                      <span className="text-slate-500 ml-2">| <strong>CC Corredor:</strong> {activePreviewPolicy.correoCorredor}</span>
-                    )}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between text-[11px] text-slate-700 gap-1">
+                    <div>
+                      <strong>Para:</strong> {activePreviewPolicy.correoCliente || 'contacto@empresa.com.do'}
+                      {activePreviewPolicy.correoCorredor && (
+                        <span className="text-slate-500 ml-2">| <strong>CC Corredor:</strong> {activePreviewPolicy.correoCorredor}</span>
+                      )}
+                    </div>
+                    <div className="text-slate-600 font-medium">
+                      <strong>Operador:</strong> {activePreviewPolicy.comunicacion?.usuarioEnvio || currentUser}
+                    </div>
                   </div>
-                  <div className="text-xs font-bold text-slate-800">
+                  <div className="text-xs font-bold text-slate-800 pt-0.5">
                     <strong>Asunto:</strong> {dynamicPreviewSubject}
                   </div>
                 </div>
@@ -346,26 +395,28 @@ export const Screen4Comunicacion: React.FC<Screen4ComunicacionProps> = ({
                 </div>
               </div>
 
-              {/* Action Strip for single email */}
-              <div className="flex items-center justify-between pt-0.5 text-xs">
+              {/* Action Strip for single email & test delivery */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-0.5 text-xs">
                 <div className="text-[11px] text-slate-500">
                   {activePreviewPolicy.comunicacion?.enviada ? (
                     <span className="text-emerald-700 font-semibold flex items-center gap-1">
                       <Check className="w-3.5 h-3.5" />
-                      Enviado el {activePreviewPolicy.comunicacion.fechaEnvio || 'hoy'}
+                      Enviado el {activePreviewPolicy.comunicacion.fechaEnvio || 'hoy'} por {activePreviewPolicy.comunicacion.usuarioEnvio || currentUser}
                     </span>
                   ) : (
                     <span>Estado: Listo para despacho</span>
                   )}
                 </div>
 
-                <button
-                  onClick={() => onSendIndividualEmail(activePreviewPolicy.id)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#2b6cb0] hover:bg-[#235891] text-white font-bold text-xs cursor-pointer shadow-2xs transition-colors"
-                >
-                  <Send className="w-3 h-3" />
-                  <span>Enviar a este Contratante</span>
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => onSendIndividualEmail(activePreviewPolicy.id)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#2b6cb0] hover:bg-[#235891] text-white font-bold text-xs cursor-pointer shadow-2xs transition-colors"
+                  >
+                    <Send className="w-3 h-3" />
+                    <span>Enviar a este Contratante (Simulación)</span>
+                  </button>
+                </div>
               </div>
 
             </div>

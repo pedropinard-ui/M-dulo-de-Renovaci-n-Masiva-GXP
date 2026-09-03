@@ -73,8 +73,8 @@ export function calculateExecutiveKPIs(policies: PolicyRenewal[], selectedIds: S
       variacionPorcentualTotal: 0,
       totalConError: policies.filter((p) => p.erroresValidacion?.length > 0 || p.estado === 'Error').length,
       totalValidadas: policies.filter((p) => p.estado === 'Validado').length,
-      totalNotificadas: policies.filter((p) => p.estado === 'Notificado').length,
-      totalProcesadas: policies.filter((p) => p.estado === 'Procesado').length,
+      totalNotificadas: policies.filter((p) => p.estado === 'Renovado y Notificado' || p.estado === 'Notificado').length,
+      totalProcesadas: policies.filter((p) => p.estado === 'Renovado' || p.estado === 'Procesado').length,
       totalExcepciones: policies.filter((p) => p.esExcepcionIndividual || p.esExcepcionManual).length,
     };
   }
@@ -102,8 +102,8 @@ export function calculateExecutiveKPIs(policies: PolicyRenewal[], selectedIds: S
     variacionPorcentualTotal,
     totalConError: policies.filter((p) => p.erroresValidacion?.length > 0 || p.estado === 'Error').length,
     totalValidadas: policies.filter((p) => p.estado === 'Validado').length,
-    totalNotificadas: policies.filter((p) => p.estado === 'Notificado').length,
-    totalProcesadas: policies.filter((p) => p.estado === 'Procesado').length,
+    totalNotificadas: policies.filter((p) => p.estado === 'Renovado y Notificado' || p.estado === 'Notificado').length,
+    totalProcesadas: policies.filter((p) => p.estado === 'Renovado' || p.estado === 'Procesado').length,
     totalExcepciones: policies.filter((p) => p.esExcepcionIndividual || p.esExcepcionManual).length,
   };
 }

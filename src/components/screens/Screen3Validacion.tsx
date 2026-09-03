@@ -240,14 +240,14 @@ export const Screen3Validacion: React.FC<Screen3ValidacionProps> = ({
                 <th className="p-2 border-r border-[#c3d5ea] min-w-[130px]">
                   Cobertura
                 </th>
+                <th className="p-2 text-right border-r border-[#c3d5ea] min-w-[95px]">
+                  Asegurados
+                </th>
                 <th className="p-2 text-center border-r border-[#c3d5ea] min-w-[100px]">
                   Severidad
                 </th>
-                <th className="p-2 border-r border-[#c3d5ea] min-w-[150px]">
+                <th className="p-2 min-w-[150px]">
                   Código Regla
-                </th>
-                <th className="p-2 min-w-[320px]">
-                  Descripción del Hallazgo / Mensaje
                 </th>
               </tr>
             </thead>
@@ -269,7 +269,6 @@ export const Screen3Validacion: React.FC<Screen3ValidacionProps> = ({
                   const isBlocking = item.error.severidad === 'Bloqueante';
                   const errorKey = item.error.codigo || item.error.campo || item.error.id || `err-${index}`;
                   const errorRegla = item.error.regla || item.error.campo || item.error.id;
-                  const errorDesc = item.error.mensaje || item.error.descripcion || 'Inconsistencia en los datos de la póliza';
 
                   return (
                     <tr
@@ -295,6 +294,11 @@ export const Screen3Validacion: React.FC<Screen3ValidacionProps> = ({
                         {item.policy.cobertura}
                       </td>
 
+                      {/* Asegurados */}
+                      <td className="p-2 text-right border-r border-slate-200 font-mono text-xs font-semibold text-slate-800">
+                        {item.policy.cantidadAsegurados !== undefined ? item.policy.cantidadAsegurados.toLocaleString('es-DO') : '-'}
+                      </td>
+
                       {/* Severidad */}
                       <td className="p-2 text-center border-r border-slate-200">
                         {isBlocking ? (
@@ -311,13 +315,8 @@ export const Screen3Validacion: React.FC<Screen3ValidacionProps> = ({
                       </td>
 
                       {/* Código Regla */}
-                      <td className="p-2 border-r border-slate-200 font-mono text-[11px] font-semibold text-slate-700">
+                      <td className="p-2 font-mono text-[11px] font-semibold text-slate-700">
                         {errorRegla}
-                      </td>
-
-                      {/* Descripción */}
-                      <td className="p-2 text-slate-800 text-xs">
-                        {errorDesc}
                       </td>
 
                     </tr>

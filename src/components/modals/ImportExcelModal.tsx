@@ -134,7 +134,7 @@ export const ImportExcelModal: React.FC<ImportExcelModalProps> = ({
         if (!hasPolicyCol || !hasContratanteCol) {
           setStructureValid(false);
           setStructureErrors([
-            'Estructura de columnas inválida: El archivo debe contener al menos las columnas de "Póliza" y "Contratante" según la sección de Identificación de la Póliza & Asegurado.',
+            'Estructura de columnas inválida: El archivo debe contener al menos las columnas de "Póliza" y "Contratante" según la sección de Identificación de la Póliza & Contratante.',
             'Columnas detectadas: ' + Object.keys(firstRow).join(', '),
           ]);
           setIsProcessing(false);
@@ -465,7 +465,7 @@ export const ImportExcelModal: React.FC<ImportExcelModalProps> = ({
                     Formato de Archivo de Importación
                   </p>
                   <p className="text-[11px] text-slate-600 leading-relaxed">
-                    El archivo debe incluir las columnas correspondientes a la sección de <strong>Identificación de la Póliza & Asegurado</strong>:
+                    El archivo debe incluir las columnas correspondientes a la sección de <strong>Identificación de la Póliza & Contratante</strong>:
                     Póliza, Contratante, Tipo Doc, Documento/RNC, Cobertura/Plan, Cantidad de Asegurados, Corredor, Supervisor, Fecha Renovación y Tarifa Actual.
                   </p>
                   <div className="pt-1 flex items-center gap-3">

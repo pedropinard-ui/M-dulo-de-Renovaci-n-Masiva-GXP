@@ -43,9 +43,11 @@ export const FloatingNotesDock: React.FC<FloatingNotesDockProps> = ({
 }) => {
   const [isQuickMenuOpen, setIsQuickMenuOpen] = useState(false);
 
-  // Notes on the current active screen
-  const screenNotes = notes.filter((n) => n.pantallaId === currentTab);
+  // Notes on the current active screen (resolved notes do not appear on the linked screen)
+  const screenNotes = notes.filter((n) => n.pantallaId === currentTab && n.estado !== 'Resuelta' && n.estado !== 'Descartada');
   const screenPinsCount = screenNotes.filter((n) => !!n.pinpoint).length;
+  const resolvedOnScreenCount = notes.filter((n) => n.pantallaId === currentTab && n.estado === 'Resuelta').length;
+  const totalActiveNotesCount = notes.filter((n) => n.estado !== 'Resuelta' && n.estado !== 'Descartada').length;
   const totalNotesCount = notes.length;
   const activeScreenName = (tabNames && tabNames[currentTab]) || currentTab;
 
@@ -121,11 +123,12 @@ export const FloatingNotesDock: React.FC<FloatingNotesDockProps> = ({
               id="dock-btn-notas-menu"
               onClick={() => setIsQuickMenuOpen(!isQuickMenuOpen)}
               className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800/90 hover:bg-slate-700 border border-slate-700 text-slate-200 text-[11px] font-medium transition-all"
+              title={`${totalActiveNotesCount} notas pendientes activas (${totalNotesCount} registradas)`}
             >
               <ListChecks className="w-3.5 h-3.5 text-emerald-400" />
               <span className="font-semibold">Notas</span>
               <span className="bg-amber-500/90 text-slate-950 font-bold px-1.5 py-0.2 rounded-full text-[10px] leading-tight">
-                {totalNotesCount}
+                {totalActiveNotesCount}
               </span>
               <ChevronDown className={`w-3 h-3 text-slate-400 transition-transform ${isQuickMenuOpen ? 'rotate-180' : ''}`} />
             </button>
@@ -144,6 +147,11 @@ export const FloatingNotesDock: React.FC<FloatingNotesDockProps> = ({
                     <span className="text-[10px] font-semibold bg-blue-900/60 text-blue-300 border border-blue-700/50 px-1.5 rounded">
                       {screenNotes.length}
                     </span>
+                    {resolvedOnScreenCount > 0 && (
+                      <span className="text-[10px] text-emerald-400 font-medium" title={`${resolvedOnScreenCount} resuelta(s) archivada(s) en Centro de Notas`}>
+                        ({resolvedOnScreenCount} resuelta{resolvedOnScreenCount > 1 ? 's' : ''})
+                      </span>
+                    )}
                   </div>
                   <button
                     onClick={() => {
@@ -152,7 +160,7 @@ export const FloatingNotesDock: React.FC<FloatingNotesDockProps> = ({
                     }}
                     className="text-[11px] text-blue-400 hover:text-blue-300 font-semibold underline decoration-blue-500/50"
                   >
-                    Ver Todo el Centro →
+                    Ver Centro de Notas →
                   </button>
                 </div>
 
@@ -161,16 +169,23 @@ export const FloatingNotesDock: React.FC<FloatingNotesDockProps> = ({
                   {screenNotes.length === 0 ? (
                     <div className="p-6 text-center text-slate-400 text-xs">
                       <MessageSquare className="w-6 h-6 mx-auto mb-1.5 text-slate-600" />
-                      <p>No hay notas registradas para esta pantalla.</p>
-                      <button
-                        onClick={() => {
-                          setIsQuickMenuOpen(false);
-                          onOpenCreateNote();
-                        }}
-                        className="mt-2 text-blue-400 hover:underline text-[11px] font-semibold"
-                      >
-                        + Crear la primera nota aquí
-                      </button>
+                      <p className="font-semibold text-slate-300">No hay notas pendientes en esta pantalla.</p>
+                      {resolvedOnScreenCount > 0 && (
+                        <p className="text-[11px] text-emerald-400 mt-1.5 bg-emerald-950/40 border border-emerald-800/60 rounded px-2.5 py-1 inline-block">
+                          ✓ {resolvedOnScreenCount} nota{resolvedOnScreenCount > 1 ? 's' : ''} resuelta{resolvedOnScreenCount > 1 ? 's' : ''} archivada{resolvedOnScreenCount > 1 ? 's' : ''} en el Centro de Notas
+                        </p>
+                      )}
+                      <div className="mt-3">
+                        <button
+                          onClick={() => {
+                            setIsQuickMenuOpen(false);
+                            onOpenCreateNote();
+                          }}
+                          className="text-blue-400 hover:underline text-[11px] font-semibold"
+                        >
+                          + Crear nueva nota aquí
+                        </button>
+                      </div>
                     </div>
                   ) : (
                     screenNotes.map((note) => (
@@ -224,7 +239,7 @@ export const FloatingNotesDock: React.FC<FloatingNotesDockProps> = ({
                 {/* Popover Footer */}
                 <div className="p-2.5 bg-[#131f2e] border-t border-slate-700 flex items-center justify-between gap-2">
                   <span className="text-[10px] text-slate-400">
-                    Total general: <strong className="text-white">{totalNotesCount} notas</strong> en el proyecto
+                    Pendientes: <strong className="text-white">{totalActiveNotesCount}</strong> (Total: {totalNotesCount})
                   </span>
                   <button
                     onClick={() => {

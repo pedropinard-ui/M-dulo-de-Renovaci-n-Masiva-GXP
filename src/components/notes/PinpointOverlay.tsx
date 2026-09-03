@@ -21,9 +21,9 @@ export const PinpointOverlay: React.FC<PinpointOverlayProps> = ({
   onCancelPinpointing,
   onSelectNote,
 }) => {
-  // Screen pins
+  // Screen pins - only show active/unresolved notes on the linked screen
   const screenNotesWithPins = notes.filter(
-    (n) => n.pantallaId === currentTab && !!n.pinpoint
+    (n) => n.pantallaId === currentTab && !!n.pinpoint && n.estado !== 'Resuelta' && n.estado !== 'Descartada'
   );
 
   const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {

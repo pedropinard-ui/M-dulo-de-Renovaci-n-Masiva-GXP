@@ -17,7 +17,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Database,
-  Info
+  Info,
+  Maximize2,
+  Minimize2
 } from 'lucide-react';
 import { PolicyRenewal, Product, InsuranceStatus } from '../../types';
 import { formatCurrency } from '../../utils/calculations';
@@ -77,9 +79,11 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
   const [vigenciaHasta, setVigenciaHasta] = useState<string>('');
   const [filtroPoliza, setFiltroPoliza] = useState<string>('');
   const [filtroContratante, setFiltroContratante] = useState<string>('');
+  const [filtroTipoPoliza, setFiltroTipoPoliza] = useState<string>('TODOS');
   const [filtroCobertura, setFiltroCobertura] = useState<string>('TODAS');
   const [filtroEstado, setFiltroEstado] = useState<string>('TODOS');
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
   // Sorting
   const [sortField, setSortField] = useState<keyof PolicyRenewal>('numeroPoliza');
@@ -105,11 +109,22 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
       // Contratante
       if (filtroContratante && !p.contratante.toLowerCase().includes(filtroContratante.toLowerCase())) return false;
 
+      // Tipo de Póliza (Básica, Óptima, Plan Dental)
+      if (filtroTipoPoliza !== 'TODOS' && p.tipoPoliza !== filtroTipoPoliza) return false;
+
       // Cobertura
       if (filtroCobertura !== 'TODAS' && p.cobertura !== filtroCobertura) return false;
 
       // Estado
-      if (filtroEstado !== 'TODOS' && p.estado !== filtroEstado) return false;
+      if (filtroEstado !== 'TODOS') {
+        if (filtroEstado === 'Renovado y Notificado' || filtroEstado === 'Notificado') {
+          if (p.estado !== 'Renovado y Notificado' && p.estado !== 'Notificado') return false;
+        } else if (filtroEstado === 'Renovado' || filtroEstado === 'Procesado') {
+          if (p.estado !== 'Renovado' && p.estado !== 'Procesado') return false;
+        } else if (p.estado !== filtroEstado) {
+          return false;
+        }
+      }
 
       // Fast global search
       if (searchTerm.trim()) {
@@ -132,6 +147,7 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
     vigenciaHasta,
     filtroPoliza,
     filtroContratante,
+    filtroTipoPoliza,
     filtroCobertura,
     filtroEstado,
     searchTerm,
@@ -182,6 +198,7 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
     setVigenciaHasta('');
     setFiltroPoliza('');
     setFiltroContratante('');
+    setFiltroTipoPoliza('TODOS');
     setFiltroCobertura('TODAS');
     setFiltroEstado('TODOS');
     setSearchTerm('');
@@ -216,16 +233,18 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
             Validado
           </span>
         );
+      case 'Renovado y Notificado':
       case 'Notificado':
         return (
           <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-            Notificado
+            Renovado y Notificado
           </span>
         );
+      case 'Renovado':
       case 'Procesado':
         return (
           <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-purple-50 text-purple-700 border border-purple-200">
-            Procesado
+            Renovado
           </span>
         );
       case 'Error':
@@ -245,7 +264,23 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
   };
 
   return (
-    <div className="space-y-3">
+    <div className={isExpanded ? "fixed inset-0 z-50 bg-[#f4f8fd] p-4 overflow-y-auto space-y-3 shadow-2xl" : "space-y-3"}>
+      {isExpanded && (
+        <div className="bg-[#1e3a8a] text-white px-3.5 py-2 rounded-md flex items-center justify-between text-xs shadow-md">
+          <div className="flex items-center gap-2.5">
+            <Maximize2 className="w-4 h-4 text-blue-200 shrink-0" />
+            <span className="font-bold">Vista Expandida Activada (Pantalla Completa)</span>
+            <span className="text-blue-200 text-[11px] hidden sm:inline">— Área de trabajo ampliada para análisis y selección de cartera</span>
+          </div>
+          <button
+            onClick={() => setIsExpanded(false)}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-white/20 hover:bg-white/30 text-white font-semibold text-xs cursor-pointer shadow-2xs transition-colors"
+          >
+            <Minimize2 className="w-3.5 h-3.5" />
+            <span>Achicar Ventana</span>
+          </button>
+        </div>
+      )}
       
       {/* 1. TOP SUB-HEADER / FILTER CRITERIA BOX (Matching Upper Card in Wireframe) */}
       <div className="bg-[#eef4fb] rounded-md border border-[#c3d5ea] p-3 shadow-2xs">
@@ -319,7 +354,7 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
         </div>
 
         {/* Filters Matrix Row */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 pt-2 text-xs">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2.5 pt-2 text-xs">
           
           {/* Producto */}
           <div>
@@ -374,6 +409,26 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
             />
           </div>
 
+          {/* Tipo de Póliza */}
+          <div>
+            <label className="block text-[11px] font-bold text-slate-700 mb-0.5">
+              Tipo de Póliza
+            </label>
+            <select
+              value={filtroTipoPoliza}
+              onChange={(e) => {
+                setFiltroTipoPoliza(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="w-full bg-white border border-[#b9d0ea] rounded px-2 py-1 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#2b6cb0]"
+            >
+              <option value="TODOS">Todos los Tipos</option>
+              <option value="Básica">Básica</option>
+              <option value="Óptima">Óptima</option>
+              <option value="Plan Dental">Plan Dental</option>
+            </select>
+          </div>
+
           {/* Cobertura */}
           <div>
             <label className="block text-[11px] font-bold text-slate-700 mb-0.5">
@@ -412,29 +467,47 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
               <option value="TODOS">Todos los Estados</option>
               <option value="Pendiente">Pendiente</option>
               <option value="Validado">Validado</option>
-              <option value="Notificado">Notificado</option>
-              <option value="Procesado">Procesado</option>
+              <option value="Renovado y Notificado">Renovado y Notificado</option>
+              <option value="Renovado">Renovado</option>
               <option value="Error">Con Errores</option>
             </select>
           </div>
 
-          {/* Búsqueda Rápida */}
+          {/* Búsqueda Rápida y Expandir / Achicar Ventana */}
           <div>
             <label className="block text-[11px] font-bold text-slate-700 mb-0.5">
               Buscar Póliza / Cliente
             </label>
-            <div className="relative">
-              <Search className="w-3.5 h-3.5 absolute left-2 top-2 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Póliza, RNC, nombre..."
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="w-full bg-white border border-[#b9d0ea] rounded pl-7 pr-2 py-1 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#2b6cb0]"
-              />
+            <div className="flex items-center gap-1.5">
+              <div className="relative flex-1">
+                <Search className="w-3.5 h-3.5 absolute left-2 top-2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Póliza, RNC, nombre..."
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="w-full bg-white border border-[#b9d0ea] rounded pl-7 pr-2 py-1 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#2b6cb0]"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsExpanded(!isExpanded)}
+                className={`p-1.5 rounded border text-xs cursor-pointer transition-colors shrink-0 flex items-center justify-center shadow-2xs ${
+                  isExpanded
+                    ? 'bg-[#2b6cb0] text-white border-[#235891] hover:bg-[#235891]'
+                    : 'bg-white text-slate-700 border-[#b9d0ea] hover:bg-slate-50'
+                }`}
+                title={isExpanded ? 'Achicar ventana (modo normal)' : 'Expandir ventana (pantalla completa)'}
+              >
+                {isExpanded ? (
+                  <Minimize2 className="w-3.5 h-3.5" />
+                ) : (
+                  <Maximize2 className="w-3.5 h-3.5" />
+                )}
+              </button>
             </div>
           </div>
 
@@ -479,11 +552,8 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
               <thead>
                 {/* Level 1: Super Header Categories */}
                 <tr className="bg-[#d9e6f5] border-b border-[#b7cde6] text-slate-700 text-[10px] font-bold uppercase tracking-wider">
-                  <th colSpan={4} className="py-1 px-3 border-r border-[#b7cde6]">
-                    Identificación de la Póliza & Asegurado
-                  </th>
-                  <th colSpan={3} className="py-1 px-3 border-r border-[#b7cde6]">
-                    Fechas & Vigencias
+                  <th colSpan={6} className="py-1 px-3 border-r border-[#b7cde6]">
+                    Identificación de la Póliza & Contratante
                   </th>
                   <th colSpan={4} className="py-1 px-3 bg-[#c9ddf2] text-[#1e4e8c] text-center">
                     Tarifas & Estado de Renovación
@@ -540,18 +610,23 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
                   </th>
 
                   {/* Cobertura */}
-                  <th className="p-2 border-r border-[#c3d5ea] min-w-[160px]">
+                  <th className="p-2 border-r border-[#c3d5ea] min-w-[150px]">
                     Cobertura / Plan
                   </th>
 
-                  {/* Vigencia Desde */}
-                  <th className="p-2 border-r border-[#c3d5ea] min-w-[100px]">
-                    Vig. Desde
-                  </th>
-
-                  {/* Vigencia Hasta */}
-                  <th className="p-2 border-r border-[#c3d5ea] min-w-[100px]">
-                    Vig. Hasta
+                  {/* Cantidad de Asegurados */}
+                  <th 
+                    onClick={() => handleSort('cantidadAsegurados')}
+                    className="p-2 text-right border-r border-[#c3d5ea] cursor-pointer hover:bg-[#e0ecf8] transition-colors min-w-[95px]"
+                  >
+                    <div className="flex items-center justify-end gap-1">
+                      <span>Asegurados</span>
+                      {sortField === 'cantidadAsegurados' ? (
+                        sortAsc ? <ArrowUp className="w-3 h-3 text-[#2b6cb0]" /> : <ArrowDown className="w-3 h-3 text-[#2b6cb0]" />
+                      ) : (
+                        <ArrowUpDown className="w-3 h-3 text-slate-400" />
+                      )}
+                    </div>
                   </th>
 
                   {/* Fecha Renovación */}
@@ -602,7 +677,7 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
               <tbody className="divide-y divide-slate-200 text-slate-700 font-normal">
                 {paginatedPolicies.length === 0 ? (
                   <tr>
-                    <td colSpan={11} className="p-8 text-center text-slate-500 bg-slate-50/50">
+                    <td colSpan={10} className="p-8 text-center text-slate-500 bg-slate-50/50">
                       No se encontraron pólizas con los criterios de búsqueda seleccionados.
                     </td>
                   </tr>
@@ -645,20 +720,20 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
                         </td>
 
                         {/* Cobertura */}
-                        <td className="p-2 border-r border-slate-200 truncate max-w-[160px]" title={policy.cobertura}>
-                          <span className="text-slate-700 text-xs">
+                        <td className="p-2 border-r border-slate-200 max-w-[150px]">
+                          <div className="text-slate-700 text-xs truncate" title={policy.cobertura}>
                             {policy.cobertura}
-                          </span>
+                          </div>
+                          {policy.tipoPoliza && (
+                            <span className="inline-block mt-0.5 px-1.5 py-0.2 rounded text-[10px] font-semibold bg-blue-50 text-[#1e4e8c] border border-blue-200">
+                              {policy.tipoPoliza}
+                            </span>
+                          )}
                         </td>
 
-                        {/* Vigencia Desde */}
-                        <td className="p-2 border-r border-slate-200 font-mono text-[11px] text-slate-600">
-                          {policy.vigenciaDesde}
-                        </td>
-
-                        {/* Vigencia Hasta */}
-                        <td className="p-2 border-r border-slate-200 font-mono text-[11px] text-slate-600">
-                          {policy.vigenciaHasta}
+                        {/* Cantidad de Asegurados */}
+                        <td className="p-2 text-right border-r border-slate-200 font-mono text-xs font-semibold text-slate-800">
+                          {policy.cantidadAsegurados !== undefined ? policy.cantidadAsegurados.toLocaleString('es-DO') : '-'}
                         </td>
 
                         {/* Fecha Renovación */}

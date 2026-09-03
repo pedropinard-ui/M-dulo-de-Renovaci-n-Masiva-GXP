@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   TopWorkflowBar 
 } from './components/layout/TopWorkflowBar';
@@ -32,6 +32,11 @@ import {
   initialComplianceRuns 
 } from './data/mockData';
 import { initialFeedbackNotes } from './data/mockNotes';
+import { 
+  getInitialNotesSync, 
+  loadNotesFromAllSources, 
+  persistNotes 
+} from './utils/notesStorage';
 import { 
   PolicyRenewal, 
   Product, 
@@ -76,8 +81,31 @@ export default function App() {
   // Processing Execution Summary
   const [lastExecutionSummary, setLastExecutionSummary] = useState<ProcessingExecutionSummary | null>(null);
 
-  // Feedback Notes & Pinpointing State
-  const [notes, setNotes] = useState<FeedbackNote[]>(initialFeedbackNotes);
+  // Feedback Notes & Pinpointing State (Multi-tier persistence across reloads, sessions, and URLs)
+  const [notes, setNotes] = useState<FeedbackNote[]>(() => {
+    return getInitialNotesSync(initialFeedbackNotes);
+  });
+
+  // Asynchronously synchronize notes from Server & IndexedDB on initial mount
+  useEffect(() => {
+    loadNotesFromAllSources(notes)
+      .then((loadedNotes) => {
+        if (loadedNotes && loadedNotes.length > 0) {
+          setNotes(loadedNotes);
+        }
+      })
+      .catch((err) => {
+        console.warn('Error synchronizing notes on startup:', err);
+      });
+  }, []);
+
+  // Automatically save notes to all tiers (Server /api/notes, IndexedDB, and localStorage)
+  useEffect(() => {
+    persistNotes(notes).catch((err) => {
+      console.warn('Error persisting notes:', err);
+    });
+  }, [notes]);
+
   const [isPinpointing, setIsPinpointing] = useState<boolean>(false);
   const [showPins, setShowPins] = useState<boolean>(true);
   const [isCreateNoteOpen, setIsCreateNoteOpen] = useState<boolean>(false);
@@ -394,10 +422,10 @@ export default function App() {
     const pol = policies.find((p) => p.id === policyId);
     if (!pol) return;
 
-    // Must be processed OK or renewed
-    const isProcessed = pol.estado === 'Procesado' || pol.estado === 'Notificado' || pol.procesamiento?.procesado === true;
-    if (!isProcessed) {
-      alert(`La póliza ${pol.numeroPoliza} no puede ser notificada porque aún no ha sido procesada exitosamente en Core ACSEL.`);
+    // Must be renewed in Core ACSEL
+    const isRenewed = pol.estado === 'Renovado' || pol.estado === 'Procesado' || pol.estado === 'Renovado y Notificado' || pol.estado === 'Notificado' || pol.procesamiento?.procesado === true;
+    if (!isRenewed) {
+      alert(`La póliza ${pol.numeroPoliza} no puede ser notificada porque aún no ha sido renovada en Core ACSEL.`);
       return;
     }
 
@@ -406,7 +434,7 @@ export default function App() {
       if (p.id === policyId) {
         return {
           ...p,
-          estado: 'Notificado' as const,
+          estado: 'Renovado y Notificado' as const,
           comunicacion: {
             enviada: true,
             fechaEnvio: now,
@@ -424,7 +452,7 @@ export default function App() {
     setPolicies(updated);
     addAuditLog(
       'ENVIO_INDIVIDUAL',
-      `Notificación individual enviada a ${pol?.contratante} (${pol?.correoCliente})`,
+      `Notificación de renovación enviada (simulada) a ${pol?.contratante} (${pol?.correoCliente})`,
       pol?.numeroPoliza
     );
   };
@@ -434,13 +462,13 @@ export default function App() {
     let sentCount = 0;
 
     const updated = policies.map((p) => {
-      // ONLY policies that are selected AND processed OK / renewed in Core ACSEL
-      const isProcessed = p.estado === 'Procesado' || p.estado === 'Notificado' || p.procesamiento?.procesado === true;
-      if (selectedPolicyIds.has(p.id) && isProcessed && p.correoCliente && p.correoCliente.trim() !== '') {
+      // ONLY policies that are selected AND renewed in Core ACSEL
+      const isRenewed = p.estado === 'Renovado' || p.estado === 'Procesado' || p.estado === 'Renovado y Notificado' || p.estado === 'Notificado' || p.procesamiento?.procesado === true;
+      if (selectedPolicyIds.has(p.id) && isRenewed && p.correoCliente && p.correoCliente.trim() !== '') {
         sentCount++;
         return {
           ...p,
-          estado: 'Notificado' as const,
+          estado: 'Renovado y Notificado' as const,
           comunicacion: {
             enviada: true,
             fechaEnvio: now,
@@ -456,7 +484,7 @@ export default function App() {
     });
 
     setPolicies(updated);
-    addAuditLog('ENVIO_MASIVO', `Despacho masivo de notificaciones completado para ${sentCount} pólizas procesadas OK`);
+    addAuditLog('ENVIO_MASIVO', `Despacho masivo de notificaciones simulado completado para ${sentCount} pólizas renovadas (Estado: Renovado y Notificado)`);
   };
 
   // HANDLERS FOR SCREEN 5 (PROCESAMIENTO)
@@ -506,7 +534,7 @@ export default function App() {
 
       return {
         ...p,
-        estado: 'Procesado' as const,
+        estado: 'Renovado' as const,
       };
     });
 
@@ -765,6 +793,7 @@ export default function App() {
               onGoBackToValidation={() => setCurrentTab('validacion')}
               onGoToCommunication={() => setCurrentTab('comunicacion')}
               onResetWorkflow={() => setCurrentTab('consulta')}
+              currentUser={currentUser}
             />
           )}
 
@@ -778,6 +807,7 @@ export default function App() {
               onSendMassEmails={handleSendMassEmails}
               onGoBackToProcessing={() => setCurrentTab('procesamiento')}
               onFinishWorkflow={() => setCurrentTab('consulta')}
+              currentUser={currentUser}
             />
           )}
 

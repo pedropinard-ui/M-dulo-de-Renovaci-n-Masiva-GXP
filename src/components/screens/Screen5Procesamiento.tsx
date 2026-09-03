@@ -28,6 +28,7 @@ interface Screen5ProcesamientoProps {
   onGoToCommunication: () => void;
   onGoBackToCommunication?: () => void;
   onResetWorkflow?: () => void;
+  currentUser?: string;
 }
 
 export const Screen5Procesamiento: React.FC<Screen5ProcesamientoProps> = ({
@@ -38,6 +39,7 @@ export const Screen5Procesamiento: React.FC<Screen5ProcesamientoProps> = ({
   onGoBackToValidation,
   onGoToCommunication,
   onGoBackToCommunication,
+  currentUser = 'Pedro Piña',
 }) => {
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [progressPercent, setProgressPercent] = useState<number>(0);
@@ -156,25 +158,37 @@ export const Screen5Procesamiento: React.FC<Screen5ProcesamientoProps> = ({
             {/* Botón Descargar Bitácora colocado al lado derecho del botón Bitácora Detallada */}
             <button
               onClick={() => {
+                const nowStr = new Date().toLocaleString('es-DO');
                 if (lastExecutionSummary) {
-                  exportProcessingBitacoraToExcel(lastExecutionSummary.detalles);
+                  exportProcessingBitacoraToExcel(lastExecutionSummary);
                 } else {
-                  exportProcessingBitacoraToExcel(
-                    targetPolicies.map((p) => ({
-                      idPoliza: p.id,
-                      numeroPoliza: p.numeroPoliza,
-                      contratante: p.contratante,
-                      tarifaAnterior: p.tarifaActual.tarifaAnual,
-                      tarifaNueva: p.tarifaRenovacion.tarifaAnual,
-                      resultado: p.erroresValidacion.some((e) => e.severidad === 'Bloqueante')
-                        ? 'Fallida'
-                        : isExecuted ? 'Exitosa' : 'Pendiente',
-                      mensaje: p.erroresValidacion.some((e) => e.severidad === 'Bloqueante')
-                        ? 'Bloqueada por inconsistencia técnica'
-                        : isExecuted ? 'Transacción confirmada en ACSEL' : 'Lista para procesar en Core',
-                      horaGrabacion: new Date().toLocaleTimeString(),
-                    }))
-                  );
+                  exportProcessingBitacoraToExcel({
+                    id: 'manual-export',
+                    numeroCorrida: `BATCH-${Date.now().toString().slice(-6)}`,
+                    fechaHoraInicio: nowStr,
+                    usuario: currentUser,
+                    totalSeleccionadas: targetPolicies.length,
+                    totalExitosas: isExecuted ? targetPolicies.filter(p => !p.erroresValidacion.some(e => e.severidad === 'Bloqueante')).length : 0,
+                    totalFallidas: 0,
+                    totalOmitidasErrores: targetPolicies.filter(p => p.erroresValidacion.some(e => e.severidad === 'Bloqueante')).length,
+                    tiempoEjecucionSegundos: 3.5,
+                    estado: isExecuted ? 'Completado' : 'En Proceso',
+                    bitacora: targetPolicies.map((p) => {
+                      const isBlocking = p.erroresValidacion.some(e => e.severidad === 'Bloqueante');
+                      const primaAct = p.tarifaActual?.tarifaAnual || 0;
+                      const primaRen = p.tarifaRenovacion?.tarifaAnual || (primaAct * 1.15);
+                      return {
+                        numeroPoliza: p.numeroPoliza,
+                        contratante: p.contratante,
+                        tarifaAnterior: primaAct,
+                        tarifaNueva: primaRen,
+                        incremento: primaAct > 0 ? ((primaRen - primaAct) / primaAct) * 100 : 0,
+                        estado: isBlocking ? 'Omitido' : isExecuted ? 'Exitoso' : 'Omitido',
+                        mensaje: isBlocking ? 'Inconsistencia técnica' : 'Renovación en Core ACSEL confirmada',
+                        timestamp: nowStr,
+                      };
+                    }),
+                  });
                 }
               }}
               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-white hover:bg-slate-50 border border-[#b9d0ea] text-slate-700 font-medium text-xs shadow-2xs cursor-pointer"
@@ -206,7 +220,7 @@ export const Screen5Procesamiento: React.FC<Screen5ProcesamientoProps> = ({
           <div className="bg-[#eaf2fb] p-2 rounded border border-[#bcd2eb] flex flex-col">
             <span className="text-[10px] font-bold text-[#1e4e8c]">Estado de Transacción</span>
             <span className="text-sm font-bold text-[#1e4e8c] font-mono mt-0.5">
-              {isProcessing ? 'En Proceso...' : isExecuted ? 'Completado Core' : 'Listo para Ejecutar'}
+              {isProcessing ? 'En Proceso...' : isExecuted ? 'Renovación Completada' : 'Listo para Ejecutar'}
             </span>
           </div>
         </div>
@@ -296,18 +310,21 @@ export const Screen5Procesamiento: React.FC<Screen5ProcesamientoProps> = ({
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
                   <tr className="bg-[#d9e6f5] border-b border-[#b7cde6] text-slate-700 text-[10px] font-bold uppercase tracking-wider">
-                    <th colSpan={3} className="py-1 px-3 border-r border-[#b7cde6]">Identificación de Póliza</th>
+                    <th colSpan={4} className="py-1 px-3 border-r border-[#b7cde6]">Identificación de Póliza</th>
                     <th colSpan={2} className="py-1 px-3 border-r border-[#b7cde6]">Tarifas Aplicadas</th>
-                    <th colSpan={2} className="py-1 px-3 text-center">Estado de Procesamiento Core</th>
+                    <th colSpan={4} className="py-1 px-3 text-center">Registro de Renovación Core ACSEL</th>
                   </tr>
                   <tr className="bg-[#eef4fb] border-b border-[#c3d5ea] text-slate-700 font-bold text-[11px]">
                     <th className="p-2 border-r border-[#c3d5ea] min-w-[120px]">No. Póliza</th>
                     <th className="p-2 border-r border-[#c3d5ea] min-w-[190px]">Contratante</th>
                     <th className="p-2 border-r border-[#c3d5ea] min-w-[130px]">Cobertura</th>
+                    <th className="p-2 text-right border-r border-[#c3d5ea] min-w-[95px]">Asegurados</th>
                     <th className="p-2 text-right border-r border-[#c3d5ea] min-w-[115px]">Tarifa Anterior</th>
                     <th className="p-2 text-right border-r border-[#c3d5ea] min-w-[115px] bg-[#eaf2fb] text-[#1e4e8c]">Tarifa Nueva Core</th>
                     <th className="p-2 text-center border-r border-[#c3d5ea] min-w-[110px]">Resultado</th>
-                    <th className="p-2 border-r border-[#c3d5ea] min-w-[160px]">Mensaje de Core</th>
+                    <th className="p-2 text-center border-r border-[#c3d5ea] min-w-[95px]">Fecha</th>
+                    <th className="p-2 text-center border-r border-[#c3d5ea] min-w-[85px]">Hora</th>
+                    <th className="p-2 min-w-[120px]">Usuario Renovación</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 text-slate-700">
@@ -316,24 +333,41 @@ export const Screen5Procesamiento: React.FC<Screen5ProcesamientoProps> = ({
                     const primaAct = policy.tarifaActual?.tarifaAnual ?? 0;
                     const primaRen = policy.tarifaRenovacion?.tarifaAnual ?? (primaAct * 1.15);
 
+                    const fechaEjec = isExecuted 
+                      ? (lastExecutionSummary?.fechaHoraInicio ? lastExecutionSummary.fechaHoraInicio.split(' ')[0] : new Date().toLocaleDateString('es-DO'))
+                      : '-';
+                    const horaEjec = isExecuted
+                      ? (lastExecutionSummary?.fechaHoraInicio && lastExecutionSummary.fechaHoraInicio.split(' ').length > 1 ? lastExecutionSummary.fechaHoraInicio.split(' ')[1] : new Date().toLocaleTimeString('es-DO'))
+                      : '-';
+                    const userEjec = isExecuted ? (lastExecutionSummary?.usuario || currentUser) : '-';
+
                     return (
                       <tr key={policy.id} className="hover:bg-[#eef5fc] transition-colors even:bg-[#fbfdff]">
                         <td className="p-2 border-r border-slate-200 font-mono font-bold text-[#2b6cb0]">{policy.numeroPoliza}</td>
                         <td className="p-2 border-r border-slate-200 font-semibold text-slate-800">{policy.contratante}</td>
                         <td className="p-2 border-r border-slate-200">{policy.cobertura}</td>
+                        <td className="p-2 text-right border-r border-slate-200 font-mono text-xs font-semibold text-slate-800">
+                          {policy.cantidadAsegurados !== undefined ? policy.cantidadAsegurados.toLocaleString('es-DO') : '-'}
+                        </td>
                         <td className="p-2 text-right border-r border-slate-200 font-mono text-slate-600">{formatCurrency(primaAct)}</td>
                         <td className="p-2 text-right border-r border-slate-200 font-mono font-bold text-[#1e4e8c] bg-[#f0f6fd]">{formatCurrency(primaRen)}</td>
                         <td className="p-2 text-center border-r border-slate-200">
                           {isInvalid ? (
                             <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">Omitida</span>
                           ) : isExecuted ? (
-                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Procesada OK</span>
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Renovado OK</span>
                           ) : (
                             <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200">Pendiente</span>
                           )}
                         </td>
-                        <td className="p-2 text-slate-600 text-[11px]">
-                          {isInvalid ? 'Bloqueada por inconsistencia técnica' : isExecuted ? 'Transacción confirmada en ACSEL' : 'En cola de ejecución'}
+                        <td className="p-2 text-center border-r border-slate-200 font-mono text-[11px] text-slate-600">
+                          {fechaEjec}
+                        </td>
+                        <td className="p-2 text-center border-r border-slate-200 font-mono text-[11px] text-slate-600">
+                          {horaEjec}
+                        </td>
+                        <td className="p-2 text-slate-700 font-semibold text-[11px] truncate max-w-[130px]" title={userEjec}>
+                          {userEjec}
                         </td>
                       </tr>
                     );

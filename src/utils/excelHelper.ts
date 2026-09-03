@@ -58,10 +58,17 @@ export function exportProcessingBitacoraToExcel(
   summary: ProcessingExecutionSummary,
   fileName = `Bitacora_Procesamiento_${summary.numeroCorrida}.xlsx`
 ) {
+  // Parse date and time from summary.fechaHoraInicio
+  const dateParts = summary.fechaHoraInicio.split(' ');
+  const fechaGeneral = dateParts[0] || new Date().toLocaleDateString('es-DO');
+  const horaGeneral = dateParts[1] || new Date().toLocaleTimeString('es-DO');
+  const usuarioRenovacion = summary.usuario || 'Pedro Piña';
+
   const metaData = [
     { Metrica: 'Número de Corrida', Valor: summary.numeroCorrida },
-    { Metrica: 'Fecha de Ejecución', Valor: summary.fechaHoraInicio },
-    { Metrica: 'Usuario Operador', Valor: summary.usuario },
+    { Metrica: 'Fecha de Renovación', Valor: fechaGeneral },
+    { Metrica: 'Hora de Renovación', Valor: horaGeneral },
+    { Metrica: 'Usuario que Realizó la Renovación', Valor: usuarioRenovacion },
     { Metrica: 'Total Seleccionadas', Valor: summary.totalSeleccionadas },
     { Metrica: 'Procesadas Exitosas', Valor: summary.totalExitosas },
     { Metrica: 'Fallidas', Valor: summary.totalFallidas },
@@ -70,17 +77,33 @@ export function exportProcessingBitacoraToExcel(
     { Metrica: 'Estado Final', Valor: summary.estado },
   ];
 
-  const detailData = summary.bitacora.map((b, idx) => ({
-    'Item': idx + 1,
-    'Póliza': b.numeroPoliza,
-    'Contratante': b.contratante,
-    'Tarifa Anterior (RD$)': b.tarifaAnterior,
-    'Tarifa Renovada (RD$)': b.tarifaNueva,
-    '% Incremento': b.incremento,
-    'Resultado': b.estado,
-    'Mensaje Core ACSEL': b.mensaje,
-    'Timestamp': b.timestamp,
-  }));
+  const detailData = summary.bitacora.map((b, idx) => {
+    // Extract date & time from item timestamp if available
+    let itemFecha = fechaGeneral;
+    let itemHora = horaGeneral;
+    if (b.timestamp) {
+      const parts = b.timestamp.split(' ');
+      if (parts.length >= 2) {
+        itemFecha = parts[0];
+        itemHora = parts[1];
+      } else {
+        itemHora = b.timestamp;
+      }
+    }
+
+    return {
+      'Item': idx + 1,
+      'Póliza': b.numeroPoliza,
+      'Contratante': b.contratante,
+      'Tarifa Anterior (RD$)': b.tarifaAnterior,
+      'Tarifa Renovada (RD$)': b.tarifaNueva,
+      '% Incremento': b.incremento,
+      'Resultado': b.estado,
+      'Fecha Renovación': itemFecha,
+      'Hora Renovación': itemHora,
+      'Usuario Renovación': usuarioRenovacion,
+    };
+  });
 
   const wsMeta = XLSX.utils.json_to_sheet(metaData);
   const wsDetail = XLSX.utils.json_to_sheet(detailData);
