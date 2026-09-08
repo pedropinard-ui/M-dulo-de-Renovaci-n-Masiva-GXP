@@ -101,9 +101,11 @@ export default function App() {
 
   // Automatically save notes to all tiers (Server /api/notes, IndexedDB, and localStorage)
   useEffect(() => {
-    persistNotes(notes).catch((err) => {
-      console.warn('Error persisting notes:', err);
-    });
+    if (notes && notes.length > 0) {
+      persistNotes(notes).catch((err) => {
+        console.warn('Error persisting notes:', err);
+      });
+    }
   }, [notes]);
 
   const [isPinpointing, setIsPinpointing] = useState<boolean>(false);
@@ -700,6 +702,31 @@ export default function App() {
     );
   };
 
+  const handleImportNotes = (importedNotes: FeedbackNote[]) => {
+    setNotes((prev) => {
+      const map = new Map<string, FeedbackNote>();
+      for (const n of initialFeedbackNotes) map.set(n.id, n);
+      for (const n of prev) map.set(n.id, n);
+      for (const n of importedNotes) map.set(n.id, n);
+      const combined = Array.from(map.values());
+      persistNotes(combined);
+      return combined;
+    });
+    addAuditLog(
+      'CONSULTA_POLIZAS',
+      `Se importaron ${importedNotes.length} notas al Centro de Notas`
+    );
+  };
+
+  const handleResetToSeedNotes = () => {
+    setNotes(initialFeedbackNotes);
+    persistNotes(initialFeedbackNotes);
+    addAuditLog(
+      'CONSULTA_POLIZAS',
+      `Se restablecieron las ${initialFeedbackNotes.length} notas maestras del proyecto`
+    );
+  };
+
   const handleStartPinpointing = () => {
     setIsPinpointing(true);
   };
@@ -840,6 +867,8 @@ export default function App() {
               onUpdateStatus={handleUpdateNoteStatus}
               onNavigateToScreen={(scr) => setCurrentTab(scr)}
               tabNames={tabNames}
+              onImportNotes={handleImportNotes}
+              onResetToSeedNotes={handleResetToSeedNotes}
             />
           )}
 

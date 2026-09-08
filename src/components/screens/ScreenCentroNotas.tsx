@@ -20,7 +20,8 @@ import {
   FileSpreadsheet,
   FileJson,
   Upload,
-  RotateCcw
+  RotateCcw,
+  Globe
 } from 'lucide-react';
 import { FeedbackNote, WorkflowTab, NotePriority, NoteStatus } from '../../types';
 import { exportNotesToExcel } from '../../utils/excelHelper';
@@ -147,9 +148,13 @@ export const ScreenCentroNotas: React.FC<ScreenCentroNotasProps> = ({
             <Sparkles className="w-5 h-5 text-amber-300" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-400 text-slate-950">
                 Revisión Funcional
+              </span>
+              <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 flex items-center gap-1">
+                <Globe className="w-3 h-3 text-emerald-300" />
+                Notas Públicas (Visibles para todos los usuarios)
               </span>
               <span className="text-xs text-blue-200">Área Técnica & Suscripción</span>
             </div>
@@ -157,7 +162,7 @@ export const ScreenCentroNotas: React.FC<ScreenCentroNotasProps> = ({
               Centro de Notas & Feedback
             </h1>
             <p className="text-xs text-blue-100 max-w-2xl">
-              Consolidación de observaciones, mejoras de usabilidad, reglas de negocio y puntos interactivos marcados en pantalla durante las revisiones de renovación colectiva.
+              Consolidación de observaciones, mejoras de usabilidad, reglas de negocio y puntos interactivos marcados en pantalla. Disponibles públicamente para cualquier persona que acceda al enlace del proyecto.
             </p>
           </div>
         </div>

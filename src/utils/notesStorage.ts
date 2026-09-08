@@ -91,7 +91,8 @@ export async function loadNotesFromAllSources(currentLocalNotes: FeedbackNote[])
   // 1. Try Server API first (cross-device, cross-tab, cross-hours persistent storage)
   try {
     const res = await fetch('/api/notes');
-    if (res.ok) {
+    const contentType = res.headers.get('content-type') || '';
+    if (res.ok && contentType.includes('application/json')) {
       const serverNotes = await res.json();
       if (Array.isArray(serverNotes) && serverNotes.length > 0) {
         // Merge with current local notes to avoid losing any local note
