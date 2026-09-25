@@ -46,13 +46,18 @@ import {
   ProcessingExecutionSummary, 
   WorkflowTab,
   FeedbackNote,
-  NoteStatus
+  NoteStatus,
+  PlanTransitionRule
 } from './types';
 import { 
   calculateExecutiveKPIs, 
   calculateSinglePolicyRate, 
   validateSinglePolicy 
 } from './utils/calculations';
+import {
+  DEFAULT_PLAN_TRANSITION_RULES,
+  applyPlanTransitionsToPolicies
+} from './utils/planTransitionHelper';
 
 export default function App() {
   // Current user in session
@@ -80,6 +85,21 @@ export default function App() {
 
   // Processing Execution Summary
   const [lastExecutionSummary, setLastExecutionSummary] = useState<ProcessingExecutionSummary | null>(null);
+
+  // Plan Transition Rules State (User configuration for product plans renewal behavior)
+  const [planTransitionRules, setPlanTransitionRules] = useState<PlanTransitionRule[]>(DEFAULT_PLAN_TRANSITION_RULES);
+
+  const handleSavePlanTransitionRules = (updatedRules: PlanTransitionRule[]) => {
+    setPlanTransitionRules(updatedRules);
+    const updatedPolicies = applyPlanTransitionsToPolicies(policies, updatedRules, 15);
+    setPolicies(updatedPolicies);
+
+    const rulesWithPlanChange = updatedRules.filter((r) => r.activo && r.accionRenovacion === 'CAMBIO_PLAN');
+    addAuditLog(
+      'CONFIGURACION_SISTEMA',
+      `Configuración de Transición de Planes actualizada: ${rulesWithPlanChange.length} planes migrarán automáticamente a nuevos planes. Los demás planes se renuevan con ajuste de tasa.`
+    );
+  };
 
   // Feedback Notes & Pinpointing State (Multi-tier persistence across reloads, sessions, and URLs)
   const [notes, setNotes] = useState<FeedbackNote[]>(() => {
@@ -212,41 +232,12 @@ export default function App() {
 
   // HANDLERS FOR SCREEN 2 (SIMULACION)
   const handleApplyGeneralPercentage = (percentage: number) => {
-    const updated = policies.map((policy) => {
-      if (selectedPolicyIds.has(policy.id)) {
-        const actualAnual = policy.tarifaActual?.tarifaAnual ?? policy.tarifaActualAnual ?? 0;
-        const actualMensual = policy.tarifaActual?.tarifaMensual ?? policy.tarifaActualMensual ?? (actualAnual / 12);
-        const { tarifaRenovacionAnual, tarifaRenovacionMensual } = calculateSinglePolicyRate(
-          actualAnual,
-          percentage
-        );
-        return {
-          ...policy,
-          tarifaActualAnual: actualAnual,
-          tarifaActualMensual: actualMensual,
-          tarifaActual: {
-            tarifaAnual: actualAnual,
-            tarifaMensual: actualMensual,
-          },
-          porcentajeIncremento: percentage,
-          tarifaRenovacionAnual,
-          tarifaRenovacionMensual,
-          tarifaRenovacion: {
-            tarifaAnual: tarifaRenovacionAnual,
-            tarifaMensual: tarifaRenovacionMensual,
-          },
-          esExcepcionManual: false,
-          esExcepcionIndividual: false,
-          motivoExcepcion: undefined,
-        };
-      }
-      return policy;
-    });
-
+    // Re-apply transitions respecting plan rules: policies with configured plan change migrate automatically, others renew with rate adjustment
+    const updated = applyPlanTransitionsToPolicies(policies, planTransitionRules, percentage);
     setPolicies(updated);
     addAuditLog(
       'SIMULACION_INCREMENTO',
-      `Aplicado incremento general de ${percentage}% sobre ${selectedPolicyIds.size} pólizas seleccionadas`,
+      `Aplicado ajuste de tasa de ${percentage}% a pólizas que renuevan con tasa. Pólizas con regla de cambio de plan mantienen transición automática.`,
       undefined,
       'Varias',
       `+${percentage}%`,
@@ -265,11 +256,21 @@ export default function App() {
 
     const actualAnual = targetPolicy.tarifaActual?.tarifaAnual ?? targetPolicy.tarifaActualAnual ?? 0;
     const actualMensual = targetPolicy.tarifaActual?.tarifaMensual ?? targetPolicy.tarifaActualMensual ?? (actualAnual / 12);
+    const isCambioPlan = targetPolicy.tipoRenovacion === 'CAMBIO_PLAN';
     let newAnnual = manualAnnualRate;
     let newMonthly = manualAnnualRate ? manualAnnualRate / 12 : undefined;
-    let newPercent = percentage;
+    let newPercent = isCambioPlan ? 0 : percentage;
 
-    if (manualAnnualRate !== undefined && actualAnual > 0) {
+    if (isCambioPlan) {
+      // Policies with CAMBIO_PLAN do not apply adjustment percentage
+      if (manualAnnualRate !== undefined) {
+        newAnnual = manualAnnualRate;
+        newMonthly = manualAnnualRate / 12;
+      } else {
+        newAnnual = targetPolicy.tarifaRenovacion?.tarifaAnual ?? targetPolicy.tarifaRenovacionAnual;
+        newMonthly = targetPolicy.tarifaRenovacion?.tarifaMensual ?? targetPolicy.tarifaRenovacionMensual;
+      }
+    } else if (manualAnnualRate !== undefined && actualAnual > 0) {
       newPercent = ((manualAnnualRate - actualAnual) / actualAnual) * 100;
       newMonthly = manualAnnualRate / 12;
     } else {
@@ -291,7 +292,8 @@ export default function App() {
             tarifaAnual: actualAnual,
             tarifaMensual: actualMensual,
           },
-          porcentajeIncremento: newPercent,
+          aplicaPorcentajeAjuste: !isCambioPlan,
+          porcentajeIncremento: isCambioPlan ? 0 : newPercent,
           tarifaRenovacionAnual: finalAnnual,
           tarifaRenovacionMensual: finalMonthly,
           tarifaRenovacion: {
@@ -300,7 +302,7 @@ export default function App() {
           },
           esExcepcionManual: true,
           esExcepcionIndividual: true,
-          motivoExcepcion: motivo || 'Excepción individual autorizada',
+          motivoExcepcion: motivo || (isCambioPlan ? 'Excepción sobre póliza con cambio de plan' : 'Excepción individual autorizada'),
         };
       }
       return p;
@@ -352,35 +354,9 @@ export default function App() {
   };
 
   const handleResetSimulation = () => {
-    const reset = policies.map((p) => {
-      const actualAnual = p.tarifaActual?.tarifaAnual ?? p.tarifaActualAnual ?? 0;
-      const actualMensual = p.tarifaActual?.tarifaMensual ?? p.tarifaActualMensual ?? (actualAnual / 12);
-      const { tarifaRenovacionAnual, tarifaRenovacionMensual } = calculateSinglePolicyRate(
-        actualAnual,
-        15
-      );
-      return {
-        ...p,
-        tarifaActualAnual: actualAnual,
-        tarifaActualMensual: actualMensual,
-        tarifaActual: {
-          tarifaAnual: actualAnual,
-          tarifaMensual: actualMensual,
-        },
-        porcentajeIncremento: 15,
-        tarifaRenovacionAnual,
-        tarifaRenovacionMensual,
-        tarifaRenovacion: {
-          tarifaAnual: tarifaRenovacionAnual,
-          tarifaMensual: tarifaRenovacionMensual,
-        },
-        esExcepcionManual: false,
-        esExcepcionIndividual: false,
-        motivoExcepcion: undefined,
-      };
-    });
+    const reset = applyPlanTransitionsToPolicies(policies, planTransitionRules, 15);
     setPolicies(reset);
-    addAuditLog('SIMULACION_INCREMENTO', 'Simulación restablecida a los valores estándar de tarifa (15% GXP)');
+    addAuditLog('SIMULACION_INCREMENTO', 'Simulación restablecida a los valores estándar de tarifa (15% GXP) y reglas de cambio de plan activas');
   };
 
   // HANDLERS FOR SCREEN 3 (VALIDACION)
@@ -788,6 +764,8 @@ export default function App() {
             <Screen2Simulacion
               policies={policies}
               selectedPolicyIds={selectedPolicyIds}
+              planTransitionRules={planTransitionRules}
+              onSavePlanRules={handleSavePlanTransitionRules}
               onApplyGeneralPercentage={handleApplyGeneralPercentage}
               onApplyGeneralIncrease={handleApplyGeneralPercentage}
               onUpdatePolicyException={handleUpdatePolicyException}

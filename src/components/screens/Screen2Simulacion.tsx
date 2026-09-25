@@ -14,16 +14,21 @@ import {
   Filter,
   CheckCircle2,
   X,
-  RefreshCw
+  RefreshCw,
+  Layers,
+  ArrowRightLeft
 } from 'lucide-react';
-import { PolicyRenewal } from '../../types';
+import { PolicyRenewal, PlanTransitionRule } from '../../types';
 import { formatCurrency, formatPercent, calculateSinglePolicyRate } from '../../utils/calculations';
 import { exportPoliciesToExcel } from '../../utils/excelHelper';
 import { exportSimulationReportPDF } from '../../utils/pdfHelper';
+import { DEFAULT_PLAN_TRANSITION_RULES } from '../../utils/planTransitionHelper';
 
 interface Screen2SimulacionProps {
   policies: PolicyRenewal[];
   selectedPolicyIds: Set<string>;
+  planTransitionRules?: PlanTransitionRule[];
+  onSavePlanRules?: (rules: PlanTransitionRule[]) => void;
   onApplyGeneralIncrease?: (percent: number) => void;
   onApplyGeneralPercentage?: (percent: number) => void;
   onUpdateIndividualPolicyRate?: (policyId: string, percent: number, manualAnnualRate?: number, reason?: string) => void;
@@ -38,6 +43,8 @@ interface Screen2SimulacionProps {
 export const Screen2Simulacion: React.FC<Screen2SimulacionProps> = ({
   policies,
   selectedPolicyIds,
+  planTransitionRules = DEFAULT_PLAN_TRANSITION_RULES,
+  onSavePlanRules,
   onApplyGeneralIncrease,
   onApplyGeneralPercentage,
   onUpdateIndividualPolicyRate,
@@ -57,7 +64,7 @@ export const Screen2Simulacion: React.FC<Screen2SimulacionProps> = ({
   // Feedback notification state
   const [recentlyUpdatedId, setRecentlyUpdatedId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [filterType, setFilterType] = useState<'TODAS' | 'EXCEPCIONES' | 'GENERALES'>('TODAS');
+  const [filterType, setFilterType] = useState<'TODAS' | 'EXCEPCIONES' | 'GENERALES' | 'CAMBIO_PLAN' | 'AJUSTE_TASA'>('TODAS');
 
   // Modal for advanced exception editing
   const [advancedModalPolicy, setAdvancedModalPolicy] = useState<PolicyRenewal | null>(null);
@@ -67,6 +74,10 @@ export const Screen2Simulacion: React.FC<Screen2SimulacionProps> = ({
 
   // Selected policies only
   const targetPolicies = policies.filter((p) => selectedPolicyIds.has(p.id));
+
+  // Plan Transition Breakdown
+  const cambioPlanPolicies = targetPolicies.filter((p) => p.tipoRenovacion === 'CAMBIO_PLAN');
+  const ajusteTasaPolicies = targetPolicies.filter((p) => p.tipoRenovacion !== 'CAMBIO_PLAN');
 
   // Executive Summary Calculations
   let totalPrimaActual = 0;
@@ -180,11 +191,15 @@ export const Screen2Simulacion: React.FC<Screen2SimulacionProps> = ({
   const filteredPolicies = targetPolicies.filter((p) => {
     if (filterType === 'EXCEPCIONES' && !p.esExcepcionIndividual && !p.esExcepcionManual) return false;
     if (filterType === 'GENERALES' && (p.esExcepcionIndividual || p.esExcepcionManual)) return false;
+    if (filterType === 'CAMBIO_PLAN' && p.tipoRenovacion !== 'CAMBIO_PLAN') return false;
+    if (filterType === 'AJUSTE_TASA' && p.tipoRenovacion === 'CAMBIO_PLAN') return false;
     if (searchTerm.trim()) {
       const q = searchTerm.toLowerCase();
       const match =
         p.numeroPoliza.toLowerCase().includes(q) ||
         p.contratante.toLowerCase().includes(q) ||
+        (p.descPlanProd && p.descPlanProd.toLowerCase().includes(q)) ||
+        (p.planRenovacion && p.planRenovacion.toLowerCase().includes(q)) ||
         (p.corredor && p.corredor.toLowerCase().includes(q)) ||
         (p.nombreCorredor && p.nombreCorredor.toLowerCase().includes(q));
       if (!match) return false;
@@ -244,7 +259,7 @@ export const Screen2Simulacion: React.FC<Screen2SimulacionProps> = ({
         </div>
 
         {/* Economic Summary Cards Bar */}
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 pt-2.5 pb-2 text-xs">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 pt-1 pb-2 text-xs">
           <div className="bg-white p-2 rounded border border-[#b9d0ea] flex flex-col">
             <span className="text-[10px] font-semibold text-slate-500">Pólizas Seleccionadas</span>
             <span className="text-sm font-bold text-slate-800 font-mono mt-0.5">{targetPolicies.length}</span>
@@ -271,7 +286,7 @@ export const Screen2Simulacion: React.FC<Screen2SimulacionProps> = ({
           
           {/* Left: Mass Percentage Input & Presets */}
           <div className="flex items-center flex-wrap gap-1.5">
-            <span className="text-[11px] font-bold text-slate-700">Ajuste Masivo:</span>
+            <span className="text-[11px] font-bold text-slate-700">Ajuste Masivo de Tasa:</span>
             <div className="flex items-center bg-white border border-[#b9d0ea] rounded px-2 py-0.5">
               <input
                 type="number"
@@ -290,8 +305,13 @@ export const Screen2Simulacion: React.FC<Screen2SimulacionProps> = ({
               className="px-2.5 py-1 rounded bg-[#2b6cb0] hover:bg-[#235891] text-white font-bold text-xs shadow-2xs flex items-center gap-1 cursor-pointer"
             >
               <Check className="w-3 h-3" />
-              <span>Aplicar a Todo el Lote</span>
+              <span>Aplicar Ajuste de Tasa ({ajusteTasaPolicies.length} pólizas)</span>
             </button>
+            {cambioPlanPolicies.length > 0 && (
+              <span className="text-[10px] text-purple-800 bg-purple-50 border border-purple-200 rounded px-2 py-0.5 font-medium">
+                * {cambioPlanPolicies.length} pólizas con cambio de plan no aplican % de ajuste
+              </span>
+            )}
           </div>
 
           {/* Right: Search & View Filter */}
@@ -310,11 +330,13 @@ export const Screen2Simulacion: React.FC<Screen2SimulacionProps> = ({
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value as any)}
-              className="bg-white border border-[#b9d0ea] rounded px-2 py-1 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#2b6cb0]"
+              className="bg-white border border-[#b9d0ea] rounded px-2 py-1 text-xs font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#2b6cb0]"
             >
-              <option value="TODAS">Todas las Pólizas</option>
-              <option value="EXCEPCIONES">Solo Excepciones</option>
-              <option value="GENERALES">Solo Ajuste General</option>
+              <option value="TODAS">Todas las Pólizas ({targetPolicies.length})</option>
+              <option value="CAMBIO_PLAN">🔄 Solo Cambio de Plan ({cambioPlanPolicies.length}) - Sin % ajuste</option>
+              <option value="AJUSTE_TASA">📈 Solo Ajuste de Tasa ({ajusteTasaPolicies.length}) - Con % ajuste</option>
+              <option value="EXCEPCIONES">⚠️ Solo Excepciones ({totalExcepciones})</option>
+              <option value="GENERALES">Ajuste General Estándar</option>
             </select>
           </div>
 
@@ -353,8 +375,8 @@ export const Screen2Simulacion: React.FC<Screen2SimulacionProps> = ({
                 <th className="p-2 border-r border-[#c3d5ea] min-w-[190px]">
                   Contratante
                 </th>
-                <th className="p-2 border-r border-[#c3d5ea] min-w-[130px]">
-                  Cobertura
+                <th className="p-2 border-r border-[#c3d5ea] min-w-[200px]">
+                  Plan Actual & Renovación
                 </th>
                 <th className="p-2 text-right border-r border-[#c3d5ea] min-w-[95px]">
                   Asegurados
@@ -366,7 +388,10 @@ export const Screen2Simulacion: React.FC<Screen2SimulacionProps> = ({
                   Mensual
                 </th>
                 <th className="p-2 text-center border-r border-[#c3d5ea] min-w-[140px] bg-[#eaf2fb] text-[#1e4e8c]">
-                  % Ajuste
+                  <div className="flex flex-col items-center justify-center">
+                    <span>% Ajuste</span>
+                    <span className="text-[9px] font-normal text-slate-500 lowercase">(no aplica a cambio de plan)</span>
+                  </div>
                 </th>
                 <th className="p-2 text-right border-r border-[#c3d5ea] min-w-[115px] bg-[#eaf2fb] text-[#1e4e8c]">
                   Renovada Anual
@@ -377,8 +402,8 @@ export const Screen2Simulacion: React.FC<Screen2SimulacionProps> = ({
                 <th className="p-2 text-right border-r border-[#c3d5ea] min-w-[95px] bg-[#f0fdf4] text-emerald-800">
                   Dif. ($)
                 </th>
-                <th className="p-2 text-center border-r border-[#c3d5ea] min-w-[110px]">
-                  Tipo de Tarifa
+                <th className="p-2 text-center border-r border-[#c3d5ea] min-w-[115px]">
+                  Tipo Renovación
                 </th>
                 <th className="p-2 text-center min-w-[100px]">
                   Acción
@@ -436,9 +461,34 @@ export const Screen2Simulacion: React.FC<Screen2SimulacionProps> = ({
                         </div>
                       </td>
 
-                      {/* Cobertura */}
-                      <td className="p-2 border-r border-slate-200 truncate max-w-[130px]" title={policy.cobertura}>
-                        <span className="text-slate-700">{policy.cobertura}</span>
+                      {/* Plan Actual & Renovación */}
+                      <td className="p-2 border-r border-slate-200 min-w-[200px] max-w-[250px]">
+                        {policy.tipoRenovacion === 'CAMBIO_PLAN' ? (
+                          <div className="flex flex-col gap-0.5">
+                            <div className="flex items-center gap-1">
+                              <span className="text-[10px] text-slate-400 line-through truncate max-w-[130px]" title={`Plan Actual: ${policy.descPlanProd || policy.cobertura}`}>
+                                {policy.descPlanProd || policy.cobertura}
+                              </span>
+                              <span className="text-[9px] font-extrabold px-1 rounded bg-purple-100 text-purple-800 border border-purple-200 shrink-0">
+                                Migra
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1 font-bold text-purple-950 text-xs" title={`Plan a Renovar: ${policy.planRenovacion}`}>
+                              <ArrowRight className="w-3 h-3 text-purple-600 shrink-0" />
+                              <span className="truncate">{policy.planRenovacion || policy.descPlanProd}</span>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col">
+                            <span className="font-semibold text-slate-800 text-[11px] truncate max-w-[190px]" title={policy.descPlanProd || policy.cobertura}>
+                              {policy.descPlanProd || policy.cobertura}
+                            </span>
+                            <span className="text-[10px] text-emerald-700 font-medium flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                              <span>Mantiene plan actual</span>
+                            </span>
+                          </div>
+                        )}
                       </td>
 
                       {/* Cantidad Asegurados */}
@@ -456,9 +506,22 @@ export const Screen2Simulacion: React.FC<Screen2SimulacionProps> = ({
                         {formatCurrency(actualMensual)}
                       </td>
 
-                      {/* % Ajuste Editable */}
+                      {/* % Ajuste */}
                       <td className="p-2 text-center border-r border-slate-200 bg-[#f0f6fd]">
-                        {isEditing ? (
+                        {policy.tipoRenovacion === 'CAMBIO_PLAN' ? (
+                          <div className="flex flex-col items-center justify-center gap-0.5">
+                            <span 
+                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-900 border border-purple-200 shadow-2xs"
+                              title="A esta póliza NO aplica el % de ajuste. Su tarifa está fijada automáticamente por el nuevo plan migrado."
+                            >
+                              <Layers className="w-2.5 h-2.5 text-purple-700" />
+                              <span>No aplica</span>
+                            </span>
+                            <span className="text-[9px] text-purple-700 font-medium">
+                              Tarifa nuevo plan
+                            </span>
+                          </div>
+                        ) : isEditing ? (
                           <div className="flex items-center justify-center gap-1">
                             <input
                               type="number"
@@ -514,17 +577,27 @@ export const Screen2Simulacion: React.FC<Screen2SimulacionProps> = ({
                         +{formatCurrency(diffAnnual)}
                       </td>
 
-                      {/* Tipo de Tarifa */}
+                      {/* Tipo de Renovación */}
                       <td className="p-2 text-center border-r border-slate-200">
-                        {isExcepcion ? (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                            Excepción
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
-                            General
-                          </span>
-                        )}
+                        <div className="flex flex-col items-center gap-0.5">
+                          {policy.tipoRenovacion === 'CAMBIO_PLAN' ? (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-900 border border-purple-200" title="Cambio automático al nuevo plan configurado">
+                              <Layers className="w-2.5 h-2.5 text-purple-700" />
+                              <span>Cambio Plan</span>
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200" title="Renovación con ajuste de tasa general">
+                              <TrendingUp className="w-2.5 h-2.5 text-emerald-600" />
+                              <span>Ajuste Tasa</span>
+                            </span>
+                          )}
+
+                          {isExcepcion && (
+                            <span className="inline-flex items-center px-1 py-0.2 rounded text-[9px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                              Excepción
+                            </span>
+                          )}
+                        </div>
                       </td>
 
                       {/* Acciones */}
@@ -624,22 +697,45 @@ export const Screen2Simulacion: React.FC<Screen2SimulacionProps> = ({
             </div>
 
             <div className="p-4 space-y-3">
+              {advancedModalPolicy.tipoRenovacion === 'CAMBIO_PLAN' && (
+                <div className="p-2.5 rounded bg-purple-50 border border-purple-200 text-purple-900 text-xs flex items-start gap-2">
+                  <Layers className="w-4 h-4 text-purple-700 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold">Póliza con Cambio Automático de Plan</span>
+                    <p className="text-[11px] text-purple-800 mt-0.5">
+                      Esta póliza migra automáticamente al plan <strong>{advancedModalPolicy.planRenovacion}</strong> y <strong>no aplica el % de ajuste tarifario</strong>. La prima de renovación se rige por la tarifa del nuevo plan.
+                    </p>
+                  </div>
+                </div>
+              )}
+
               <div>
                 <span className="text-[11px] text-slate-500 font-medium">Póliza & Contratante:</span>
                 <p className="font-bold text-slate-800 text-sm">{advancedModalPolicy.numeroPoliza} - {advancedModalPolicy.contratante}</p>
-                <p className="text-slate-500 text-[11px]">Tarifa actual vigente: <strong className="font-mono">{formatCurrency(advancedModalPolicy.tarifaActual?.tarifaAnual ?? advancedModalPolicy.tarifaActualAnual ?? 0)}</strong></p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-slate-500 text-[11px]">Tarifa actual vigente: <strong className="font-mono">{formatCurrency(advancedModalPolicy.tarifaActual?.tarifaAnual ?? advancedModalPolicy.tarifaActualAnual ?? 0)}</strong></span>
+                  <span className="text-slate-300">|</span>
+                  <span className="text-[#1e4e8c] text-[11px]">Tarifa renovación: <strong className="font-mono">{formatCurrency(advancedModalPolicy.tarifaRenovacion?.tarifaAnual ?? advancedModalPolicy.tarifaRenovacionAnual ?? 0)}</strong></span>
+                </div>
               </div>
 
-              <div>
-                <label className="block text-[11px] font-bold text-slate-700 mb-1">% Incremento para esta póliza:</label>
-                <input
-                  type="number"
-                  step="0.5"
-                  value={modalPercent}
-                  onChange={(e) => setModalPercent(parseFloat(e.target.value) || 0)}
-                  className="w-full bg-white border border-[#b9d0ea] rounded px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#2b6cb0]"
-                />
-              </div>
+              {advancedModalPolicy.tipoRenovacion !== 'CAMBIO_PLAN' ? (
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 mb-1">% Incremento para esta póliza:</label>
+                  <input
+                    type="number"
+                    step="0.5"
+                    value={modalPercent}
+                    onChange={(e) => setModalPercent(parseFloat(e.target.value) || 0)}
+                    className="w-full bg-white border border-[#b9d0ea] rounded px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#2b6cb0]"
+                  />
+                </div>
+              ) : (
+                <div className="bg-slate-50 p-2.5 rounded border border-slate-200">
+                  <label className="block text-[11px] font-bold text-slate-600 mb-0.5">% Ajuste de Tarifa:</label>
+                  <span className="text-xs font-bold text-purple-900 font-mono">No aplica (Excluida de % de ajuste por cambio de plan automático)</span>
+                </div>
+              )}
 
               <div>
                 <label className="block text-[11px] font-bold text-slate-700 mb-1">Motivo / Justificación Técnica:</label>

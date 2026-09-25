@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta charset="utf-8">
+<title>Manual de Usuario & Guía Operativa con Pantallas - Renovación Masiva GEXP</title>
+<!--[if gte mso 9]>
+<xml>
+<w:WordDocument>
+  <w:View>Print</w:View>
+  <w:Zoom>100</w:Zoom>
+  <w:DoNotOptimizeForBrowser/>
+</w:WordDocument>
+</xml>
+<![endif]-->
+<style>
+  @page {
+    size: letter portrait;
+    margin: 2.2cm 1.8cm 2.2cm 1.8cm;
+    mso-header-margin: 1.2cm;
+    mso-footer-margin: 1.2cm;
+  }
+  body {
+    font-family: 'Calibri', 'Segoe UI', Arial, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.4;
+    color: #1a202c;
+    background-color: #ffffff;
+  }
+  .page-break {
+    page-break-before: always;
+    mso-break-type: section-break;
+  }
+  h1 {
+    font-size: 17pt;
+    color: #0b3c70;
+    font-weight: bold;
+    border-bottom: 2pt solid #0b3c70;
+    padding-bottom: 4pt;
+    margin-top: 16pt;
+    margin-bottom: 8pt;
+    page-break-after: avoid;
+  }
+  h2 {
+    font-size: 13pt;
+    color: #1a4f8b;
+    font-weight: bold;
+    border-bottom: 1pt solid #cbd5e1;
+    padding-bottom: 3pt;
+    margin-top: 13pt;
+    margin-bottom: 6pt;
+    page-break-after: avoid;
+  }
+  h3 {
+    font-size: 11pt;
+    color: #2b6cb0;
+    font-weight: bold;
+    margin-top: 9pt;
+    margin-bottom: 4pt;
+    page-break-after: avoid;
+  }
+  p {
+    margin-top: 0;
+    margin-bottom: 5pt;
+    text-align: justify;
+  }
+  ul, ol {
+    margin-top: 2pt;
+    margin-bottom: 6pt;
+    padding-left: 20pt;
+  }
+  li {
+    margin-bottom: 2.5pt;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 6pt;
+    margin-bottom: 10pt;
+    font-size: 9pt;
+  }
+  th {
+    background-color: #0b3c70;
+    color: #ffffff;
+    font-weight: bold;
+    text-align: left;
+    padding: 5pt 7pt;
+    border: 1pt solid #0b3c70;
+  }
+  td {
+    padding: 4.5pt 7pt;
+    border: 1pt solid #cbd5e1;
+    vertical-align: top;
+  }
+  tr:nth-child(even) td {
+    background-color: #f8fafc;
+  }
+  
+  /* SCREEN MOCKUP STYLING (For Word Documents) */
+  .screen-frame {
+    border: 1.5pt solid #0b3c70;
+    background-color: #f8fafc;
+    border-radius: 4pt;
+    margin: 8pt 0 14pt 0;
+    padding: 0;
+  }
+  .screen-titlebar {
+    background-color: #0b3c70;
+    color: #ffffff;
+    padding: 5pt 10pt;
+    font-weight: bold;
+    font-size: 9.5pt;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1pt solid #08294d;
+  }
+  .screen-nav-tabs {
+    background-color: #1e3a8a;
+    color: #dbeafe;
+    padding: 4pt 8pt;
+    font-size: 8.5pt;
+    border-bottom: 1pt solid #3b82f6;
+  }
+  .screen-nav-tab {
+    display: inline-block;
+    padding: 2pt 8pt;
+    margin-right: 4pt;
+    border-radius: 3pt;
+  }
+  .screen-nav-tab-active {
+    background-color: #ffffff;
+    color: #0b3c70;
+    font-weight: bold;
+  }
+  .screen-content {
+    padding: 8pt 10pt;
+  }
+  .screen-kpi-row {
+    margin-bottom: 6pt;
+  }
+  .screen-kpi-cell {
+    background-color: #ffffff;
+    border: 1pt solid #b9d0ea;
+    padding: 4pt 8pt;
+    border-radius: 3pt;
+    text-align: center;
+  }
+  .screen-filter-box {
+    background-color: #f1f5f9;
+    border: 1pt solid #cbd5e1;
+    padding: 6pt 8pt;
+    margin-bottom: 6pt;
+    font-size: 8.5pt;
+    border-radius: 3pt;
+  }
+  .screen-table {
+    width: 100%;
+    font-size: 8pt;
+    border-collapse: collapse;
+    margin-top: 4pt;
+    background-color: #ffffff;
+  }
+  .screen-table th {
+    background-color: #0b3c70;
+    color: #ffffff;
+    padding: 3pt 5pt;
+    font-size: 7.5pt;
+  }
+  .screen-table td {
+    padding: 3pt 5pt;
+    border: 0.5pt solid #cbd5e1;
+    font-size: 7.5pt;
+  }
+  .btn-mock {
+    display: inline-block;
+    padding: 2.5pt 6pt;
+    font-size: 8pt;
+    font-weight: bold;
+    border-radius: 2pt;
+    text-align: center;
+  }
+  .btn-mock-blue { background-color: #0b3c70; color: #ffffff; }
+  .btn-mock-green { background-color: #16a34a; color: #ffffff; }
+  .btn-mock-purple { background-color: #7e22ce; color: #ffffff; }
+  .btn-mock-amber { background-color: #d97706; color: #ffffff; }
+
+  .badge {
+    display: inline-block;
+    padding: 1.5pt 4pt;
+    font-size: 7.5pt;
+    font-weight: bold;
+    border-radius: 2pt;
+  }
+  .badge-blue { background-color: #ebf8ff; color: #2b6cb0; border: 0.5pt solid #bee3f8; }
+  .badge-green { background-color: #f0fff4; color: #276749; border: 0.5pt solid #c6f6d5; }
+  .badge-purple { background-color: #faf5ff; color: #6b46c1; border: 0.5pt solid #e9d8fd; }
+  .badge-red { background-color: #fff5f5; color: #9b2c2c; border: 0.5pt solid #fed7d7; }
+  .badge-amber { background-color: #fffaf0; color: #9c4221; border: 0.5pt solid #feebc8; }
+  
+  .step-box {
+    background-color: #f0f7ff;
+    border: 1pt solid #b9d0ea;
+    border-left: 4pt solid #0b3c70;
+    padding: 8pt 12pt;
+    margin: 6pt 0 10pt 0;
+    border-radius: 3pt;
+  }
+  .step-title {
+    font-size: 11pt;
+    font-weight: bold;
+    color: #0b3c70;
+    margin-bottom: 3pt;
+  }
+  .tip-box {
+    background-color: #f0fff4;
+    border: 1pt solid #bbf7d0;
+    border-left: 3.5pt solid #16a34a;
+    padding: 6pt 10pt;
+    margin: 6pt 0;
+    font-size: 9.5pt;
+    border-radius: 3pt;
+  }
+  .warning-box {
+    background-color: #fffaf0;
+    border: 1pt solid #fed7aa;
+    border-left: 3.5pt solid #ea580c;
+    padding: 6pt 10pt;
+    margin: 6pt 0;
+    font-size: 9.5pt;
+    border-radius: 3pt;
+  }
+  .cover-title {
+    text-align: center;
+    margin-top: 45pt;
+    margin-bottom: 15pt;
+  }
+  .cover-company {
+    font-size: 18pt;
+    color: #0b3c70;
+    font-weight: bold;
+    letter-spacing: 1.5pt;
+    text-transform: uppercase;
+  }
+  .cover-project {
+    font-size: 22pt;
+    color: #1a202c;
+    font-weight: bold;
+    margin-top: 14pt;
+    margin-bottom: 8pt;
+    line-height: 1.2;
+  }
+  .cover-subtitle {
+    font-size: 12.5pt;
+    color: #4a5568;
+    margin-bottom: 25pt;
+  }
+  .code-text {
+    font-family: 'Consolas', monospace;
+    font-size: 8.5pt;
+    background-color: #e2e8f0;
+    padding: 1pt 3pt;
+    border-radius: 2pt;
+    color: #0f172a;
+  }
+</style>
+</head>
+<body>
+
+<!-- ========================================== -->
+<!-- PORTADA DEL MANUAL                         -->
+<!-- ========================================== -->
+<div class="cover-title">
+  <div class="cover-company">SEGUROS UNIVERSAL, S.A.</div>
+  <div style="font-size: 10.5pt; color: #718096; margin-top: 4pt;">Dirección de Suscripción Técnica & Operaciones Colectivas</div>
+  
+  <div class="cover-project">MANUAL DE USUARIO CON PANTALLAS & GUÍA OPERATIVA</div>
+  <div class="cover-subtitle">Manual Paso a Paso con Maquetas Visuales de Todas las Pantallas y Funcionalidades<br><strong>Plataforma de Renovación Masiva & Tarifación - Producto: Últimos Gastos Plus (GEXP)</strong></div>
+  
+  <div style="width: 120pt; height: 3pt; background-color: #0b3c70; margin: 18pt auto;"></div>
+
+  <table style="width: 85%; margin: 25pt auto 0 auto; border: 1pt solid #cbd5e1; font-size: 9.5pt;">
+    <tr>
+      <td style="width: 35%; background-color: #f1f5f9; font-weight: bold; color: #1e293b;">Código de Documento:</td>
+      <td style="font-family: monospace; font-weight: bold; color: #0b3c70;">MAN-UNIV-GEXP-2026-V2.0</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f1f5f9; font-weight: bold; color: #1e293b;">Versión:</td>
+      <td><strong>Versión 2.0 (Edición Completa con Pantallas Ilustradas)</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f1f5f9; font-weight: bold; color: #1e293b;">Audiencia Destino:</td>
+      <td>Suscriptores Técnicos, Analistas de Emisión, Ejecutivos Comerciales, Soporte TI y Auditoría</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f1f5f9; font-weight: bold; color: #1e293b;">Fecha de Publicación:</td>
+      <td>25 de Septiembre de 2026</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f1f5f9; font-weight: bold; color: #1e293b;">Sistemas Integrados:</td>
+      <td>Core Asegurador ACSEL, Módulo AML / OFAC, Motor de Notificaciones SMTP</td>
+    </tr>
+  </table>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ========================================== -->
+<!-- ÍNDICE DE CONTENIDOS                       -->
+<!-- ========================================== -->
+<h1>Índice de Contenido</h1>
+<ol>
+  <li><strong>Introducción & Elementos Globales de la Interfaz</strong>
+    <ul>
+      <li>1.1 Propósito y Alcance del Manual</li>
+      <li>1.2 Perfiles de Usuario y Permisos</li>
+      <li>1.3 Barra Superior Fija (Header) y Flujo de Pestañas</li>
+    </ul>
+  </li>
+  <li><strong>Paso 1: Pantalla de Bandeja de Renovación (Consulta & Selección)</strong>
+    <ul>
+      <li>2.1 Maqueta Visual y Distribución de la Pantalla 1</li>
+      <li>2.2 Filtros de Búsqueda (Renovación Desde/Hasta, Tipo Plan, Cobertura)</li>
+      <li>2.3 Selección de Pólizas, Carga Masiva Excel y Exportación</li>
+    </ul>
+  </li>
+  <li><strong>Paso 2: Pantalla de Simulación de Tarifas (Cálculo Financiero)</strong>
+    <ul>
+      <li>3.1 Maqueta Visual y Distribución de la Pantalla 2</li>
+      <li>3.2 Regla Clave: Pólizas con Cambio de Plan Automático (Sin % de Ajuste)</li>
+      <li>3.3 Pólizas con Ajuste de Tasa Estándar y Ajuste Masivo</li>
+      <li>3.4 Gestión de Excepciones Individuales y Tarifas Manuales</li>
+    </ul>
+  </li>
+  <li><strong>Paso 3: Pantalla de Validación Técnica (Auditoría de 6 Controles)</strong>
+    <ul>
+      <li>4.1 Maqueta Visual y Distribución de la Pantalla 3</li>
+      <li>4.2 Las 6 Reglas Mandatorias de Suscripción (REG-01 a REG-06)</li>
+      <li>4.3 Subsanación Rápida Inline de Inconsistencias</li>
+    </ul>
+  </li>
+  <li><strong>Paso 4: Pantalla de Procesamiento en Core ACSEL (Emisión Transaccional)</strong>
+    <ul>
+      <li>5.1 Maqueta Visual y Distribución de la Pantalla 4</li>
+      <li>5.2 Ejecución Transaccional del Lote y Código de Corrida</li>
+      <li>5.3 Descarga de Bitácora Oficial en Excel (Fecha, Hora y Usuario)</li>
+    </ul>
+  </li>
+  <li><strong>Paso 5: Pantalla de Comunicación & Notificaciones Masivas</strong>
+    <ul>
+      <li>6.1 Maqueta Visual y Distribución de la Pantalla 5</li>
+      <li>6.2 Plantilla Dinámica y Vista Previa de la Carta</li>
+      <li>6.3 Despacho Masivo y Reglas de Copias (CC a Corredor y Supervisor)</li>
+    </ul>
+  </li>
+  <li><strong>Pantallas de Módulos Complementarios</strong>
+    <ul>
+      <li>7.1 Pantalla de Debida Diligencia & AML (Listas Restrictivas)</li>
+      <li>7.2 Pantalla de Auditoría & Trazabilidad de Logs</li>
+      <li>7.3 Pantalla de Centro de Notas & Feedback con Pinpoints</li>
+    </ul>
+  </li>
+  <li><strong>Preguntas Frecuentes (FAQ) & Soporte Técnico</strong></li>
+</ol>
+
+<div class="page-break"></div>
+
+<!-- ========================================== -->
+<!-- 1. INTRODUCCIÓN Y ELEMENTOS COMUNES        -->
+<!-- ========================================== -->
+<h1>1. Introducción & Elementos Globales de la Interfaz</h1>
+
+<h2>1.1 Propósito del Manual</h2>
+<p>Este manual describe detalladamente, pantalla por pantalla, el funcionamiento de la <strong>Plataforma de Renovación Masiva de Cartera y Tarifación</strong> de Seguros Universal para el producto <strong>Últimos Gastos Plus (GEXP)</strong>. Se han incorporado representaciones visuales fieles de cada pantalla para facilitar el aprendizaje intuitivo del usuario de negocio.</p>
+
+<h2>1.2 Barra Superior Fija (Header)</h2>
+<p>La barra superior acompaña al usuario en todas las pantallas y contiene los controles globales:</p>
+
+<div class="screen-frame">
+  <div class="screen-titlebar">
+    <div>SEGUROS UNIVERSAL | Plataforma de Renovación Masiva GEXP</div>
+    <div style="font-size: 8pt;">Usuario: demo.suscripcion@universal-demo.com.do</div>
+  </div>
+  <div style="background-color: #1a4f8b; padding: 4pt 8pt; color: #ffffff; font-size: 8.5pt;">
+    <span style="font-weight: bold; margin-right: 15pt;">Producto Activo: GEXP - ULTIMOS GASTOS PLUS</span>
+    <span class="btn-mock btn-mock-amber" style="margin-right: 4pt;">Doc Funcional (.doc)</span>
+    <span class="btn-mock btn-mock-green" style="margin-right: 4pt;">Manual Usuario (.doc)</span>
+    <span class="btn-mock btn-mock-blue">Exportar Cartera</span>
+  </div>
+</div>
+
+<h2>1.3 Flujo Secuencial de Trabajo (Top Workflow Bar)</h2>
+<div class="screen-nav-tabs">
+  <span class="screen-nav-tab screen-nav-tab-active">1. Bandeja de Renovación</span>
+  <span class="screen-nav-tab">2. Simulación de Tarifas</span>
+  <span class="screen-nav-tab">3. Validación Técnica</span>
+  <span class="screen-nav-tab">4. Procesamiento Core</span>
+  <span class="screen-nav-tab">5. Comunicación & Avisos</span>
+  <span style="color: #93c5fd; margin-left: 10pt;">| Herramientas: Debida Diligencia | Auditoría | Notas</span>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ========================================== -->
+<!-- 2. PASO 1 - BANDEJA DE RENOVACIÓN          -->
+<!-- ========================================== -->
+<h1>2. Paso 1: Pantalla de Bandeja de Renovación (Consulta & Selección)</h1>
+
+<div class="step-box">
+  <div class="step-title">Objetivo Operativo</div>
+  Localizar la cartera de pólizas que vencerán en un período determinado, filtrar por criterios técnicos y comerciales, y conformar el lote a renovar.
+</div>
+
+<h2>2.1 Maqueta Visual de la Pantalla 1</h2>
+
+<div class="screen-frame">
+  <div class="screen-titlebar">
+    <span>PANTALLA 1: BANDEJA DE RENOVACIÓN</span>
+    <span>Estado: Consulta & Selección</span>
+  </div>
+  
+  <div class="screen-content">
+    <!-- BARRA DE FILTROS -->
+    <div class="screen-filter-box">
+      <strong>FILTROS DE BÚSQUEDA Y SEGMENTACIÓN:</strong><br>
+      <table style="width: 100%; font-size: 8pt; margin: 3pt 0;">
+        <tr>
+          <td><strong>Producto:</strong><br>[ GEXP - ULTIMOS GASTOS PLUS ▼ ]</td>
+          <td><strong>Renovación Desde:</strong><br>[ 2026-09-01 📅 ]</td>
+          <td><strong>Renovación Hasta:</strong><br>[ 2026-10-31 📅 ]</td>
+          <td><strong>Tipo Plan:</strong><br>[ Todos ▼ ]</td>
+        </tr>
+        <tr>
+          <td><strong>Cobertura:</strong><br>[ Todas ▼ ]</td>
+          <td><strong>Estado:</strong><br>[ Todos ▼ ]</td>
+          <td colspan="2"><strong>Buscador Rápido:</strong><br>[ 🔍 Buscar por Póliza, Contratante, Cédula/RNC, Corredor... ]</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- TARJETAS DE KPIS -->
+    <table style="width: 100%; margin-bottom: 6pt; text-align: center;">
+      <tr>
+        <td class="screen-kpi-cell">
+          <span style="font-size: 7.5pt; color: #64748b;">Pólizas Seleccionadas</span><br>
+          <strong style="font-size: 11pt; color: #0b3c70;">46 / 50</strong>
+        </td>
+        <td class="screen-kpi-cell">
+          <span style="font-size: 7.5pt; color: #64748b;">Prima Actual Total</span><br>
+          <strong style="font-size: 11pt; color: #0f172a;">RD$ 1,842,500.00</strong>
+        </td>
+        <td class="screen-kpi-cell">
+          <span style="font-size: 7.5pt; color: #64748b;">Prima Renovada Proyectada</span><br>
+          <strong style="font-size: 11pt; color: #16a34a;">RD$ 2,098,400.00</strong>
+        </td>
+        <td class="screen-kpi-cell">
+          <span style="font-size: 7.5pt; color: #64748b;">Variación Financiera</span><br>
+          <strong style="font-size: 11pt; color: #2563eb;">+RD$ 255,900.00 (+13.9%)</strong>
+        </td>
+      </tr>
+    </table>
+
+    <!-- GRILLA DE PÓLIZAS -->
+    <table class="screen-table">
+      <thead>
+        <tr>
+          <th style="width: 4%;">[✓]</th>
+          <th>No. Póliza</th>
+          <th>Contratante</th>
+          <th>Plan Actual</th>
+          <th>Aseg.</th>
+          <th>Tarifa Actual</th>
+          <th>Vence</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>[✓]</td>
+          <td><strong>GEXP-2026-00101</strong></td>
+          <td>INDUSTRIAS TEXTILES DEL CARIBE</td>
+          <td>GASTOS EXEQUIALES PLUS 80K</td>
+          <td>15</td>
+          <td>RD$ 21,600.00</td>
+          <td>01/10/2026</td>
+          <td><span class="badge badge-blue">Pendiente</span></td>
+        </tr>
+        <tr>
+          <td>[✓]</td>
+          <td><strong>GEXP-2026-00102</strong></td>
+          <td>ASOCIACION DE GANADEROS CENTRAL</td>
+          <td>ULTIMOS GASTOS FAMILIAR</td>
+          <td>8</td>
+          <td>RD$ 16,000.00</td>
+          <td>15/10/2026</td>
+          <td><span class="badge badge-blue">Pendiente</span></td>
+        </tr>
+        <tr>
+          <td>[✓]</td>
+          <td><strong>GEXP-2026-00103</strong></td>
+          <td>COLEGIO MEDICO DOMINICANO</td>
+          <td>ULTIMOS GASTOS MASIVO 80K</td>
+          <td>20</td>
+          <td>RD$ 28,800.00</td>
+          <td>20/10/2026</td>
+          <td><span class="badge badge-blue">Pendiente</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- BARRA DE ACCIÓN INFERIOR -->
+    <div style="margin-top: 6pt; text-align: right;">
+      <span style="font-size: 8pt; margin-right: 10pt; color: #475569;">46 pólizas seleccionadas</span>
+      <span class="btn-mock btn-mock-blue">Continuar a Simulación de Tarifas (Paso 2) ▶</span>
+    </div>
+  </div>
+</div>
+
+<h2>2.2 Procedimiento de Operación en el Paso 1</h2>
+<ol>
+  <li><strong>Definir Rango de Fechas:</strong> Ingrese las fechas en <em>Renovación Desde</em> y <em>Renovación Hasta</em>.</li>
+  <li><strong>Aplicar Filtros Opcionales:</strong> Filtre por <em>Tipo Plan</em> o <em>Cobertura</em> si desea atender un segmento específico.</li>
+  <li><strong>Seleccionar Pólizas:</strong> Marque la casilla de verificación maestra superior para incluir todas las pólizas, o marque filas puntuales.</li>
+  <li><strong>Continuar:</strong> Al tener al menos una póliza marcada, haga clic en el botón azul <strong>"Continuar a Simulación de Tarifas"</strong>.</li>
+</ol>
+
+<div class="page-break"></div>
+
+<!-- ========================================== -->
+<!-- 3. PASO 2 - SIMULACIÓN DE TARIFAS          -->
+<!-- ========================================== -->
+<h1>3. Paso 2: Pantalla de Simulación de Tarifas (Cálculo Financiero)</h1>
+
+<div class="step-box">
+  <div class="step-title">Objetivo Operativo</div>
+  Proyectar las nuevas primas del lote, aplicar el ajuste masivo de tasa únicamente a las pólizas estándar y comprobar que las pólizas con cambio de plan migren con la tarifa del nuevo plan sin aplicar porcentaje de ajuste.
+</div>
+
+<h2>3.1 Maqueta Visual de la Pantalla 2</h2>
+
+<div class="screen-frame">
+  <div class="screen-titlebar">
+    <span>PANTALLA 2: SIMULACIÓN DE TARIFAS</span>
+    <span>Regla de Negocio: Cambio de Plan vs Ajuste de Tasa</span>
+  </div>
+
+  <div class="screen-content">
+    <!-- BARRA DE AJUSTE MASIVO -->
+    <div style="background-color: #f1f5f9; border: 1pt solid #cbd5e1; padding: 6pt 10pt; margin-bottom: 6pt; display: flex; align-items: center; justify-content: space-between; border-radius: 3pt;">
+      <div>
+        <strong>Ajuste Masivo de Tasa:</strong>
+        <span style="background-color: #ffffff; border: 1pt solid #94a3b8; padding: 2pt 6pt; font-weight: bold; margin: 0 4pt;">15.0 %</span>
+        <span class="btn-mock btn-mock-blue">Aplicar Ajuste de Tasa a Cartera</span>
+      </div>
+      <div style="font-size: 7.5pt; color: #64748b;">
+        * Nota: Las pólizas con cambio automático de plan quedan exentas de este incremento.
+      </div>
+    </div>
+
+    <!-- TARJETAS DE RESUMEN ECONÓMICO -->
+    <table style="width: 100%; margin-bottom: 6pt; text-align: center;">
+      <tr>
+        <td class="screen-kpi-cell">
+          <span style="font-size: 7.5pt; color: #64748b;">Pólizas a Renovar</span><br>
+          <strong style="font-size: 11pt; color: #0b3c70;">46 Pólizas</strong>
+        </td>
+        <td class="screen-kpi-cell">
+          <span style="font-size: 7.5pt; color: #64748b;">Prima Actual Total</span><br>
+          <strong style="font-size: 11pt; color: #0f172a;">RD$ 1,842,500.00</strong>
+        </td>
+        <td class="screen-kpi-cell">
+          <span style="font-size: 7.5pt; color: #64748b;">Prima Renovada Proyectada</span><br>
+          <strong style="font-size: 11pt; color: #16a34a;">RD$ 2,098,400.00</strong>
+        </td>
+        <td class="screen-kpi-cell">
+          <span style="font-size: 7.5pt; color: #64748b;">Incremento Neto</span><br>
+          <strong style="font-size: 11pt; color: #2563eb;">+RD$ 255,900.00 (+13.9%)</strong>
+        </td>
+      </tr>
+    </table>
+
+    <!-- GRILLA DE SIMULACIÓN -->
+    <table class="screen-table">
+      <thead>
+        <tr>
+          <th>No. Póliza</th>
+          <th>Contratante</th>
+          <th>Plan Actual ➔ Plan Renovado</th>
+          <th style="background-color: #1e3a8a;">% Ajuste</th>
+          <th>Prima Actual</th>
+          <th>Prima Renovada</th>
+          <th>Diferencia</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background-color: #faf5ff;">
+          <td><strong>GEXP-2026-00101</strong></td>
+          <td>INDUSTRIAS TEXTILES DEL CARIBE</td>
+          <td>80K ➔ <strong>GASTOS EXEQUIALES 100K</strong></td>
+          <td><span class="badge badge-purple">No aplica (Tarifa nuevo plan)</span></td>
+          <td>RD$ 21,600.00</td>
+          <td><strong>RD$ 26,100.00</strong></td>
+          <td>+RD$ 4,500.00</td>
+          <td><span class="btn-mock btn-mock-purple">Excepción</span></td>
+        </tr>
+        <tr>
+          <td><strong>GEXP-2026-00102</strong></td>
+          <td>ASOCIACION DE GANADEROS CENTRAL</td>
+          <td>ULTIMOS GASTOS FAMILIAR (Conserva)</td>
+          <td><strong style="color: #16a34a;">+15.0%</strong> [✏️]</td>
+          <td>RD$ 16,000.00</td>
+          <td><strong>RD$ 18,400.00</strong></td>
+          <td>+RD$ 2,400.00</td>
+          <td><span class="btn-mock btn-mock-blue">Excepción</span></td>
+        </tr>
+        <tr style="background-color: #faf5ff;">
+          <td><strong>GEXP-2026-00103</strong></td>
+          <td>COLEGIO MEDICO DOMINICANO</td>
+          <td>MASIVO 80K ➔ <strong>MASIVO 100K</strong></td>
+          <td><span class="badge badge-purple">No aplica (Tarifa nuevo plan)</span></td>
+          <td>RD$ 28,800.00</td>
+          <td><strong>RD$ 34,800.00</strong></td>
+          <td>+RD$ 6,000.00</td>
+          <td><span class="btn-mock btn-mock-purple">Excepción</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- BARRA DE ACCIÓN INFERIOR -->
+    <div style="margin-top: 6pt; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <span class="btn-mock btn-mock-green" style="margin-right: 4pt;">Exportar Excel</span>
+        <span class="btn-mock btn-mock-amber">Reporte PDF</span>
+      </div>
+      <div>
+        <span class="btn-mock btn-mock-blue">Continuar a Validación Técnica (Paso 3) ▶</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2>3.2 Explicación de la Regla de Negocio en la Pantalla 2</h2>
+<div class="warning-box">
+  <strong>Comportamiento de la Columna "% Ajuste":</strong>
+  <ul>
+    <li><strong>Filas Moradas (Cambio de Plan):</strong> Como la póliza migra hacia una nueva cobertura homologada, su tarifa se fija automáticamente en base al nuevo plan (RD$ 145.00 o RD$ 175.00 mensual por asegurado). <strong>NO se le aplica el porcentaje de ajuste</strong>, se muestra el badge <em>"No aplica"</em> y no tiene icono de lápiz para proteger el cálculo.</li>
+    <li><strong>Filas Estándar (Ajuste de Tasa):</strong> Muestran el porcentaje aplicado (ej. <code>+15.0%</code>) y un icono de lápiz <code>[✏️]</code> para modificarlo individualmente si hubo acuerdo comercial.</li>
+  </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ========================================== -->
+<!-- 4. PASO 3 - VALIDACIÓN TÉCNICA             -->
+<!-- ========================================== -->
+<h1>4. Paso 3: Pantalla de Validación Técnica (Auditoría de 6 Controles)</h1>
+
+<div class="step-box">
+  <div class="step-title">Objetivo Operativo</div>
+  Verificar que las pólizas cumplan con los 6 controles técnicos y normativos antes de impactar el Core ACSEL. Las pólizas con errores bloqueantes quedan retenidas.
+</div>
+
+<h2>4.1 Maqueta Visual de la Pantalla 3</h2>
+
+<div class="screen-frame">
+  <div class="screen-titlebar">
+    <span>PANTALLA 3: VALIDACIÓN TÉCNICA</span>
+    <span>Auditoría de 6 Controles de Suscripción</span>
+  </div>
+
+  <div class="screen-content">
+    <!-- TARJETAS DE RESULTADOS DE AUDITORÍA -->
+    <table style="width: 100%; margin-bottom: 6pt; text-align: center;">
+      <tr>
+        <td class="screen-kpi-cell">
+          <span style="font-size: 7.5pt; color: #64748b;">Pólizas Auditadas</span><br>
+          <strong style="font-size: 11pt; color: #0b3c70;">46</strong>
+        </td>
+        <td class="screen-kpi-cell" style="border-top: 3pt solid #16a34a;">
+          <span style="font-size: 7.5pt; color: #16a34a;">100% Válidas (Listas)</span><br>
+          <strong style="font-size: 11pt; color: #16a34a;">44</strong>
+        </td>
+        <td class="screen-kpi-cell" style="border-top: 3pt solid #d97706;">
+          <span style="font-size: 7.5pt; color: #d97706;">Con Advertencias</span><br>
+          <strong style="font-size: 11pt; color: #d97706;">1</strong>
+        </td>
+        <td class="screen-kpi-cell" style="border-top: 3pt solid #dc2626;">
+          <span style="font-size: 7.5pt; color: #dc2626;">Errores Bloqueantes</span><br>
+          <strong style="font-size: 11pt; color: #dc2626;">1</strong>
+        </td>
+      </tr>
+    </table>
+
+    <!-- GRILLA DE REGLAS DE VALIDACIÓN -->
+    <table class="screen-table">
+      <thead>
+        <tr>
+          <th>No. Póliza</th>
+          <th>Contratante</th>
+          <th>REG-01 Correo Cliente</th>
+          <th>REG-02 Correo Interm.</th>
+          <th>REG-04 Listas OFAC</th>
+          <th>REG-05 Saldo ACSEL</th>
+          <th>Estado</th>
+          <th>Acción Rápida</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>GEXP-2026-00101</strong></td>
+          <td>INDUSTRIAS TEXTILES DEL CARIBE</td>
+          <td><span class="badge badge-green">✓ Válido</span></td>
+          <td><span class="badge badge-green">✓ Válido</span></td>
+          <td><span class="badge badge-green">✓ Limpio</span></td>
+          <td><span class="badge badge-green">✓ Al Día</span></td>
+          <td><span class="badge badge-green">Validado</span></td>
+          <td><span style="color: #64748b; font-size: 7pt;">Sin acción</span></td>
+        </tr>
+        <tr style="background-color: #fff5f5;">
+          <td><strong>GEXP-2026-00104</strong></td>
+          <td>IMPORTADORA DEL VALLE, S.R.L.</td>
+          <td><span class="badge badge-red">✗ Correo Vacío</span></td>
+          <td><span class="badge badge-green">✓ Válido</span></td>
+          <td><span class="badge badge-green">✓ Limpio</span></td>
+          <td><span class="badge badge-green">✓ Al Día</span></td>
+          <td><span class="badge badge-red">Bloqueado</span></td>
+          <td><span class="btn-mock btn-mock-green">Editar Correo [✏️]</span></td>
+        </tr>
+        <tr>
+          <td><strong>GEXP-2026-00102</strong></td>
+          <td>ASOCIACION DE GANADEROS CENTRAL</td>
+          <td><span class="badge badge-green">✓ Válido</span></td>
+          <td><span class="badge badge-amber">⚠ Falta Email</span></td>
+          <td><span class="badge badge-green">✓ Limpio</span></td>
+          <td><span class="badge badge-green">✓ Al Día</span></td>
+          <td><span class="badge badge-amber">Advertencia</span></td>
+          <td><span class="btn-mock btn-mock-blue">Asignar Master</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- BARRA INFERIOR -->
+    <div style="margin-top: 6pt; text-align: right;">
+      <span class="btn-mock btn-mock-blue">Continuar a Procesamiento Core (Paso 4) ▶</span>
+    </div>
+  </div>
+</div>
+
+<h2>4.2 Subsanación Rápida Inline</h2>
+<p>Si una póliza presenta error en <strong>REG-01 (Correo Cliente)</strong>, haga clic en el botón <strong>"Editar Correo"</strong> en la misma grilla, digite el email del cliente y presione Guardar. El sistema reevaluará de inmediato la regla y cambiará el estado a <em>Validado</em> sin tener que salir de la pantalla.</p>
+
+<div class="page-break"></div>
+
+<!-- ========================================== -->
+<!-- 5. PASO 4 - PROCESAMIENTO EN CORE ACSEL    -->
+<!-- ========================================== -->
+<h1>5. Paso 4: Pantalla de Procesamiento en Core ACSEL (Emisión Transaccional)</h1>
+
+<div class="step-box">
+  <div class="step-title">Objetivo Operativo</div>
+  Ejecutar el impacto masivo en producción en la base de datos de Core ACSEL, generar la bitácora legal obligatoria con fecha, hora y usuario, y descargar la planilla oficial en Excel.
+</div>
+
+<h2>5.1 Maqueta Visual de la Pantalla 4</h2>
+
+<div class="screen-frame">
+  <div class="screen-titlebar">
+    <span>PANTALLA 4: PROCESAMIENTO CORE ACSEL</span>
+    <span>Emisión Transaccional Batch</span>
+  </div>
+
+  <div class="screen-content">
+    <!-- PANEL DE EJECUCIÓN -->
+    <div style="background-color: #f8fafc; border: 1.5pt dashed #0b3c70; padding: 10pt; text-align: center; margin-bottom: 8pt; border-radius: 4pt;">
+      <div style="font-size: 12pt; font-weight: bold; color: #0b3c70; margin-bottom: 4pt;">
+        Lote Listo para Emisión en Core ACSEL: 45 Pólizas Válidas
+      </div>
+      <div style="font-size: 9pt; color: #64748b; margin-bottom: 8pt;">
+        Total Prima Anual a Renovar: <strong>RD$ 2,074,800.00</strong> | Errores Bloqueantes: <strong>0</strong>
+      </div>
+      <span class="btn-mock btn-mock-blue" style="font-size: 10pt; padding: 5pt 14pt;">
+        ⚡ Procesar Lote en Core ACSEL
+      </span>
+    </div>
+
+    <!-- BANNER DE RESULTADO DE CORRIDA -->
+    <div style="background-color: #f0fff4; border: 1pt solid #bbf7d0; padding: 8pt 10pt; margin-bottom: 8pt; border-radius: 4pt;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <strong style="color: #16a34a; font-size: 10pt;">✓ Lote Procesado Exitosamente en Core ACSEL</strong><br>
+          <span style="font-size: 8pt; color: #166534;">
+            Corrida Transaccional: <strong>BATCH-ACSEL-20260925-8841</strong> |
+            Fecha y Hora: <strong>25/09/2026 14:30:15</strong> |
+            Usuario: <strong>demo.suscripcion@universal-demo.com.do</strong>
+          </span>
+        </div>
+        <div>
+          <span class="btn-mock btn-mock-green">📥 Descargar Bitácora Excel</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DETALLE DE LA BITÁCORA -->
+    <table class="screen-table">
+      <thead>
+        <tr>
+          <th>No. Póliza</th>
+          <th>Contratante</th>
+          <th>Plan Renovado</th>
+          <th>Nueva Tarifa Anual</th>
+          <th>Fecha y Hora</th>
+          <th>Usuario Operador</th>
+          <th>Estado Core</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>GEXP-2026-00101</td>
+          <td>INDUSTRIAS TEXTILES DEL CARIBE</td>
+          <td>GASTOS EXEQUIALES PLUS 100K</td>
+          <td>RD$ 26,100.00</td>
+          <td>25/09/2026 14:30:15</td>
+          <td>demo.suscripcion@universal...</td>
+          <td><span class="badge badge-green">RENOVADA</span></td>
+        </tr>
+        <tr>
+          <td>GEXP-2026-00102</td>
+          <td>ASOCIACION DE GANADEROS CENTRAL</td>
+          <td>ULTIMOS GASTOS FAMILIAR</td>
+          <td>RD$ 18,400.00</td>
+          <td>25/09/2026 14:30:15</td>
+          <td>demo.suscripcion@universal...</td>
+          <td><span class="badge badge-green">RENOVADA</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- BOTÓN CONTINUAR -->
+    <div style="margin-top: 6pt; text-align: right;">
+      <span class="btn-mock btn-mock-blue">Continuar a Comunicación & Avisos (Paso 5) ▶</span>
+    </div>
+  </div>
+</div>
+
+<h2>5.2 Descarga Obligatoria de la Bitácora de Auditoría</h2>
+<p>Haga clic en el botón verde <strong>"Descargar Bitácora Excel"</strong>. Este archivo contiene la constancia formal de quién realizó la renovación, en qué segundo exacto y los importes actualizados, requerida por la Superintendencia de Seguros.</p>
+
+<div class="page-break"></div>
+
+<!-- ========================================== -->
+<!-- 6. PASO 5 - COMUNICACIÓN & NOTIFICACIONES  -->
+<!-- ========================================== -->
+<h1>6. Paso 5: Pantalla de Comunicación & Notificaciones Masivas</h1>
+
+<div class="step-box">
+  <div class="step-title">Objetivo Operativo</div>
+  Generar y despachar las comunicaciones oficiales a los contratantes, garantizando el envío de copia con conocimiento (CC) al intermediario y supervisor corporativo.
+</div>
+
+<h2>6.1 Maqueta Visual de la Pantalla 5</h2>
+
+<div class="screen-frame">
+  <div class="screen-titlebar">
+    <span>PANTALLA 5: COMUNICACIÓN & AVISOS MASIVOS</span>
+    <span>Plantilla de Carta Oficial & Envío Multicanal</span>
+  </div>
+
+  <div class="screen-content">
+    <table style="width: 100%; border: none; margin: 0;">
+      <tr>
+        <!-- PANEL IZQUIERDO: PLANTILLA -->
+        <td style="width: 45%; border: 1pt solid #cbd5e1; background-color: #f8fafc; padding: 6pt;">
+          <strong style="color: #0b3c70; font-size: 8.5pt;">EDITOR DE PLANTILLA:</strong>
+          <div style="font-size: 7.5pt; color: #64748b; margin: 2pt 0;">Variables Disponibles:</div>
+          <div style="font-size: 7pt; margin-bottom: 4pt;">
+            <code class="code-text">{NUM_POLIZA}</code> <code class="code-text">{CONTRATANTE}</code> <code class="code-text">{TARIFA_RENOV_MENSUAL}</code>
+          </div>
+          <div style="border: 1pt solid #94a3b8; background-color: #ffffff; padding: 4pt; font-size: 7.5pt; height: 110pt;">
+            Estimado(a) <strong>{CONTRATANTE}</strong>:<br><br>
+            Nos complace notificarle la renovación de su póliza <strong>{NUM_POLIZA}</strong> correspondiente al plan <strong>{PLAN_NOMBRE}</strong>.<br><br>
+            Su nueva tarifa a partir del <strong>{FECHA_RENOVACION}</strong> será de <strong>{TARIFA_RENOV_MENSUAL}</strong> mensuales.
+          </div>
+        </td>
+
+        <!-- PANEL DERECHO: VISTA PREVIA CARTA -->
+        <td style="width: 55%; border: 1pt solid #cbd5e1; background-color: #ffffff; padding: 6pt;">
+          <div style="text-align: center; border-bottom: 1pt solid #cbd5e1; padding-bottom: 3pt; margin-bottom: 4pt;">
+            <strong style="color: #0b3c70; font-size: 9pt;">SEGUROS UNIVERSAL</strong><br>
+            <span style="font-size: 7.5pt; color: #64748b;">Aviso Oficial de Renovación de Póliza</span>
+          </div>
+          <div style="font-size: 7.5pt; line-height: 1.3;">
+            Santo Domingo, D.N. | 25 de Septiembre de 2026<br><br>
+            Estimado(a) <strong>INDUSTRIAS TEXTILES DEL CARIBE</strong>:<br>
+            Póliza No.: <strong>GEXP-2026-00101</strong> | Plan: <strong>GASTOS EXEQUIALES PLUS 100K</strong><br><br>
+            Le informamos que su póliza ha sido renovada satisfactoriamente con vigencia desde el <strong>01/10/2026</strong>. Su prima mensual renovada es de <strong>RD$ 2,175.00</strong>.
+          </div>
+          <div style="margin-top: 6pt; font-size: 7pt; background-color: #f1f5f9; padding: 3pt; border-radius: 2pt;">
+            <strong>Copias Automáticas (CC):</strong> franco_acra@tecnoseguros.com.do, mvaldez@universal.com.do
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <!-- BOTONES DE DESPACHO -->
+    <div style="margin-top: 8pt; display: flex; justify-content: space-between; align-items: center;">
+      <span style="font-size: 8pt; color: #475569;">45 destinatarios listos para notificación</span>
+      <span class="btn-mock btn-mock-blue" style="padding: 4pt 12pt; font-size: 9pt;">
+        ✉️ Enviar Notificaciones a Todo el Lote (45 Pólizas)
+      </span>
+    </div>
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ========================================== -->
+<!-- 7. PANTALLAS DE SOPORTE                    -->
+<!-- ========================================== -->
+<h1>7. Pantallas de Módulos Complementarios</h1>
+
+<h2>7.1 Pantalla de Debida Diligencia & AML (Listas Restrictivas)</h2>
+<div class="screen-frame">
+  <div class="screen-titlebar">
+    <span>MÓDULO: DEBIDA DILIGENCIA & AML (PREVENCIÓN DE LAVADO DE ACTIVOS)</span>
+    <span>Cotejo contra Listas ONU / OFAC / PEP</span>
+  </div>
+  <div class="screen-content">
+    <p style="font-size: 8.5pt;">Permite ejecutar corridas masivas de cumplimiento sobre la cartera de contratantes y asegurados, clasificar pólizas en <em>Debida Diligencia Simplificada</em> o <em>Ampliada</em>, y descargar certificados legales firmados por el Oficial de Cumplimiento.</p>
+    <div style="text-align: right;">
+      <span class="btn-mock btn-mock-green">Nueva Corrida AML</span>
+      <span class="btn-mock btn-mock-blue">Descargar Acta de Cumplimiento</span>
+    </div>
+  </div>
+</div>
+
+<h2>7.2 Pantalla de Auditoría & Trazabilidad de Logs</h2>
+<div class="screen-frame">
+  <div class="screen-titlebar">
+    <span>MÓDULO: AUDITORÍA & LOGS INMUTABLES</span>
+    <span>Registro Detallado de Eventos</span>
+  </div>
+  <div class="screen-content">
+    <table class="screen-table">
+      <thead>
+        <tr>
+          <th>Fecha y Hora</th>
+          <th>Usuario</th>
+          <th>Acción</th>
+          <th>No. Póliza</th>
+          <th>Valor Anterior</th>
+          <th>Valor Nuevo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>25/09/2026 14:30:15</td>
+          <td>demo.suscripcion@universal...</td>
+          <td>RENOVACION_BATCH</td>
+          <td>GEXP-2026-00101</td>
+          <td>RD$ 21,600.00</td>
+          <td>RD$ 26,100.00</td>
+        </tr>
+        <tr>
+          <td>25/09/2026 14:15:20</td>
+          <td>mvaldez@universal...</td>
+          <td>AJUSTE_MASIVO</td>
+          <td>Cartera GEXP</td>
+          <td>Tasa 0%</td>
+          <td>Tasa +15.0%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h2>7.3 Pantalla de Centro de Notas & Feedback con Pinpoints</h2>
+<div class="screen-frame">
+  <div class="screen-titlebar">
+    <span>MÓDULO: CENTRO DE NOTAS & FEEDBACK OPERATIVO</span>
+    <span>Marcadores Visuales (Pinpoints)</span>
+  </div>
+  <div class="screen-content">
+    <p style="font-size: 8.5pt;">Permite a los usuarios colocar pines visuales sobre cualquier elemento de la interfaz para reportar observaciones o solicitar aclaraciones al equipo de soporte o desarrollo TI.</p>
+    <span class="btn-mock btn-mock-purple">📍 Crear Nota con Marcador Visual</span>
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ========================================== -->
+<!-- 8. PREGUNTAS FRECUENTES Y SOPORTE          -->
+<!-- ========================================== -->
+<h1>8. Preguntas Frecuentes (FAQ) & Soporte Operativo</h1>
+
+<h3>1. ¿Por qué una póliza con cambio de plan no me permite modificar el porcentaje de aumento?</h3>
+<p>Porque dicha póliza pertenece a un plan que está migrando a una nueva versión homologada (ej. de 80K a 100K). Por directriz actuarial de Seguros Universal, estas pólizas asumen la tarifa base del nuevo plan y <strong>no aplican porcentaje de ajuste tarifario</strong>.</p>
+
+<h3>2. ¿Cómo soluciono una póliza bloqueada por correo electrónico?</h3>
+<p>En el Paso 3 (Validación Técnica), haga doble clic en el campo de correo de la póliza observada, digite el email verificado y guarde. El sistema la marcará verde de inmediato.</p>
+
+<h3>3. ¿Dónde obtengo el archivo de bitácora que me solicita el departamento de Auditoría?</h3>
+<p>En el Paso 4 (Procesamiento Core), tras procesar el lote, haga clic en el botón <strong>"Descargar Bitácora Excel"</strong>. Este archivo contiene la fecha, hora exacta y usuario que ejecutó la operación.</p>
+
+<div class="step-box">
+  <div class="step-title">Mesa de Ayuda & Soporte Técnico</div>
+  <strong>Seguros Universal, S.A.</strong> | Dirección de Tecnología de la Información<br>
+  Extensiones Telefónicas: 7111 / 7112 | Correo: <span class="code-text">soporte.suscripcion@universal.com.do</span><br>
+  Horario de Atención: Lunes a Viernes de 8:00 a.m. a 6:00 p.m.
+</div>
+
+<p style="text-align: center; color: #718096; font-size: 9pt; margin-top: 25pt;">
+  — FIN DEL MANUAL DE USUARIO ILUSTRADO CON PANTALLAS (MAN-UNIV-GEXP-2026-V2.0) —<br>
+  Seguros Universal, S.A. | Torre Universal, Santo Domingo, D.N.
+</p>
+
+</body>
+</html>

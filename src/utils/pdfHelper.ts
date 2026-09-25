@@ -241,7 +241,7 @@ export function exportSimulationReportPDF(
     doc.text(formatCurrency(p.tarifaActual.tarifaAnual), 360, y + 10);
     doc.text(formatCurrency(p.tarifaRenovacion.tarifaAnual), 470, y + 10);
     doc.text(formatCurrency(diff), 590, y + 10);
-    doc.text(formatPercent(p.porcentajeIncremento), 690, y + 10);
+    doc.text(p.tipoRenovacion === 'CAMBIO_PLAN' ? 'No aplica' : formatPercent(p.porcentajeIncremento), 690, y + 10);
     doc.text(p.estado, 745, y + 10);
 
     y += 18;

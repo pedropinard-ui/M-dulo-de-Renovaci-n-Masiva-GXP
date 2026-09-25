@@ -2,6 +2,36 @@ import { FeedbackNote } from '../types';
 
 export const initialFeedbackNotes: FeedbackNote[] = [
   {
+    id: 'NOTA-2026-010',
+    pantallaId: 'simulacion',
+    pantallaNombre: '2. Simulación de Tarifas',
+    asunto: 'Pólizas con cambio de plan automático no aplican % de ajuste',
+    descripcion: 'Las pólizas cuyo plan tenga configurado cambio de plan automático a la renovación no deben aplicar el % de ajuste tarifario.',
+    autor: 'Lic. Mariana Valdez',
+    prioridad: 'Alta',
+    estado: 'Resuelta',
+    fechaCreacion: '25/09/2026 07:54 a. m.',
+    fechaActualizacion: '25/09/2026 07:58 a. m.',
+    pinpoint: {
+      x: 62,
+      y: 44,
+      targetLabel: 'Columna % Ajuste - Simulación de Tarifas',
+    },
+    respuestas: [
+      {
+        id: 'RESP-010-1',
+        autor: 'Equipo Técnico',
+        fecha: '25/09/2026 07:58 a. m.',
+        comentario: 'Implementado: En la pestaña de Simulación de Tarifas, las pólizas con cambio automático de plan muestran "No aplica" en la columna % Ajuste, se excluyen de la edición individual de porcentaje y quedan exentas del ajuste masivo de tasa.',
+      }
+    ],
+    resolucion: {
+      fecha: '25/09/2026 07:58 a. m.',
+      usuario: 'Equipo Técnico',
+      detalle: 'Configurado para que las pólizas con cambio de plan automático no apliquen el % de ajuste. Su tarifa queda determinada por el nuevo plan.',
+    },
+  },
+  {
     id: 'NOTA-2026-009',
     pantallaId: 'comunicacion',
     pantallaNombre: '5. Comunicación & Avisos',
@@ -124,14 +154,26 @@ export const initialFeedbackNotes: FeedbackNote[] = [
     descripcion: 'Renombrar Vigencia Desde y Vigencia Hasta por Renovación Desde y Renovación Hasta',
     autor: 'Lic. Mariana Valdez',
     prioridad: 'Baja',
-    estado: 'Pendiente',
+    estado: 'Resuelta',
     fechaCreacion: '03/09/2026 05:36 p. m.',
     pinpoint: {
       x: 24,
       y: 38,
       targetLabel: 'Posición relativa (24%, 38%)',
     },
-    respuestas: [],
+    resolucion: {
+      fecha: '25/09/2026 07:16 a. m.',
+      usuario: 'Equipo Técnico',
+      detalle: 'Etiquetas renombradas a "Renovación Desde" y "Renovación Hasta" en la Bandeja de Renovación.',
+    },
+    respuestas: [
+      {
+        id: 'RESP-004-1',
+        autor: 'Equipo Técnico',
+        fecha: '25/09/2026 07:16 a. m.',
+        comentario: 'Etiquetas actualizadas a "Renovación Desde" y "Renovación Hasta" en los filtros de la Bandeja de Renovación.',
+      },
+    ],
   },
   {
     id: 'NOTA-2026-003',

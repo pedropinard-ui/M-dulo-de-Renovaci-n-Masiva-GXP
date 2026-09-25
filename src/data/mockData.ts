@@ -1,5 +1,6 @@
 import { Product, PolicyRenewal, AuditLogEntry, EmailTemplate, ComplianceMassRun } from '../types';
 import { validateSinglePolicy } from '../utils/calculations';
+import { DEFAULT_PLAN_TRANSITION_RULES, applyPlanTransitionsToPolicies } from '../utils/planTransitionHelper';
 
 export const INITIAL_PRODUCTS: Product[] = [
   {
@@ -427,7 +428,12 @@ function generateInitialPolicies(): PolicyRenewal[] {
   return policiesList;
 }
 
-export const INITIAL_POLICIES: PolicyRenewal[] = generateInitialPolicies();
+const rawInitialPolicies = generateInitialPolicies();
+export const INITIAL_POLICIES: PolicyRenewal[] = applyPlanTransitionsToPolicies(
+  rawInitialPolicies,
+  DEFAULT_PLAN_TRANSITION_RULES,
+  15
+);
 
 export const INITIAL_EMAIL_TEMPLATE: EmailTemplate = {
   id: 'tpl-renovacion-gxp-std',

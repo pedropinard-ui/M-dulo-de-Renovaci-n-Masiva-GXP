@@ -377,10 +377,10 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
             </select>
           </div>
 
-          {/* Vigencia Desde */}
+          {/* Renovación Desde */}
           <div>
             <label className="block text-[11px] font-bold text-slate-700 mb-0.5">
-              Vigencia Desde
+              Renovación Desde
             </label>
             <input
               type="date"
@@ -393,10 +393,10 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
             />
           </div>
 
-          {/* Vigencia Hasta */}
+          {/* Renovación Hasta */}
           <div>
             <label className="block text-[11px] font-bold text-slate-700 mb-0.5">
-              Vigencia Hasta
+              Renovación Hasta
             </label>
             <input
               type="date"
@@ -409,10 +409,10 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
             />
           </div>
 
-          {/* Tipo de Póliza */}
+          {/* Tipo Plan */}
           <div>
             <label className="block text-[11px] font-bold text-slate-700 mb-0.5">
-              Tipo de Póliza
+              Tipo Plan
             </label>
             <select
               value={filtroTipoPoliza}
@@ -432,7 +432,7 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
           {/* Cobertura */}
           <div>
             <label className="block text-[11px] font-bold text-slate-700 mb-0.5">
-              Plan / Cobertura
+              Cobertura
             </label>
             <select
               value={filtroCobertura}
@@ -719,16 +719,23 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
                           </div>
                         </td>
 
-                        {/* Cobertura */}
-                        <td className="p-2 border-r border-slate-200 max-w-[150px]">
-                          <div className="text-slate-700 text-xs truncate" title={policy.cobertura}>
-                            {policy.cobertura}
+                        {/* Cobertura / Plan */}
+                        <td className="p-2 border-r border-slate-200 max-w-[170px]">
+                          <div className="font-semibold text-slate-800 text-xs truncate" title={policy.descPlanProd || policy.cobertura}>
+                            {policy.descPlanProd || policy.cobertura}
                           </div>
-                          {policy.tipoPoliza && (
-                            <span className="inline-block mt-0.5 px-1.5 py-0.2 rounded text-[10px] font-semibold bg-blue-50 text-[#1e4e8c] border border-blue-200">
-                              {policy.tipoPoliza}
-                            </span>
-                          )}
+                          <div className="flex items-center flex-wrap gap-1 mt-0.5">
+                            {policy.tipoPoliza && (
+                              <span className="inline-block px-1.5 py-0.2 rounded text-[10px] font-semibold bg-blue-50 text-[#1e4e8c] border border-blue-200">
+                                {policy.tipoPoliza}
+                              </span>
+                            )}
+                            {policy.tipoRenovacion === 'CAMBIO_PLAN' && (
+                              <span className="inline-block px-1 py-0.2 rounded text-[9.5px] font-bold bg-purple-100 text-purple-800 border border-purple-200" title={`Migra automáticamente a ${policy.planRenovacion}`}>
+                                🔄 Migra Plan
+                              </span>
+                            )}
+                          </div>
                         </td>
 
                         {/* Cantidad de Asegurados */}
@@ -748,7 +755,16 @@ export const Screen1Consulta: React.FC<Screen1ConsultaProps> = ({
 
                         {/* % Incremento */}
                         <td className="p-2 text-right border-r border-slate-200 font-mono font-semibold text-slate-800 bg-[#f9fcff]">
-                          {policy.porcentajeIncremento !== undefined ? `+${policy.porcentajeIncremento}%` : '+15%'}
+                          {policy.tipoRenovacion === 'CAMBIO_PLAN' ? (
+                            <span 
+                              className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-purple-50 text-purple-800 border border-purple-200" 
+                              title="No aplica % de ajuste. Tarifa fijada por nuevo plan migrado."
+                            >
+                              No aplica
+                            </span>
+                          ) : (
+                            policy.porcentajeIncremento !== undefined ? `+${policy.porcentajeIncremento}%` : '+15%'
+                          )}
                         </td>
 
                         {/* Tarifa Renovada */}

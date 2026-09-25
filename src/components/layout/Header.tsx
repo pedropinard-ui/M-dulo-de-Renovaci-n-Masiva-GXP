@@ -6,10 +6,14 @@ import {
   RefreshCw, 
   FileSpreadsheet, 
   Download, 
-  Layers
+  Layers,
+  FileText,
+  BookOpen
 } from 'lucide-react';
 import { Product } from '../../types';
 import { formatCurrency, formatPercent } from '../../utils/calculations';
+import { downloadFunctionalDoc } from '../../utils/functionalDocWordGenerator';
+import { downloadUserManualDoc } from '../../utils/userManualWordGenerator';
 
 interface HeaderProps {
   products: Product[];
@@ -156,6 +160,24 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="hidden xl:inline">Exportar</span>
           </button>
         )}
+
+        <button
+          onClick={() => downloadFunctionalDoc()}
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold text-xs shadow-2xs transition-colors cursor-pointer"
+          title="Descargar Documento Funcional (.doc) para Aprobación de Negocio y Entrega a Desarrollo TI"
+        >
+          <FileText className="w-3.5 h-3.5 text-slate-900" />
+          <span className="hidden sm:inline">Doc Funcional (.doc)</span>
+        </button>
+
+        <button
+          onClick={() => downloadUserManualDoc()}
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-2xs transition-colors cursor-pointer"
+          title="Descargar Manual de Usuario & Guía Operativa Paso a Paso (.doc)"
+        >
+          <BookOpen className="w-3.5 h-3.5 text-white" />
+          <span className="hidden sm:inline">Manual Usuario (.doc)</span>
+        </button>
 
         {onOpenDocModal && (
           <button

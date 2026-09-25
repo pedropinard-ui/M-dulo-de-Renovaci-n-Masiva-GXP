@@ -13,12 +13,19 @@ import {
   ArrowRight,
   ExternalLink,
   Table,
-  Workflow
+  Workflow,
+  Download,
+  HelpCircle,
+  AlertTriangle,
+  Send,
+  UserCheck
 } from 'lucide-react';
+import { downloadFunctionalDoc } from '../../utils/functionalDocWordGenerator';
+import { downloadUserManualDoc } from '../../utils/userManualWordGenerator';
 
 export const ScreenEspecificacionFuncional: React.FC = () => {
   const [activeDocSection, setActiveDocSection] = useState<
-    'arquitectura' | 'casos_uso' | 'historias' | 'reglas_negocio' | 'modelo_datos' | 'flujo_bpmn' | 'apis'
+    'arquitectura' | 'casos_uso' | 'historias' | 'reglas_negocio' | 'modelo_datos' | 'flujo_bpmn' | 'apis' | 'manual_usuario'
   >('arquitectura');
 
   const sections = [
@@ -29,6 +36,7 @@ export const ScreenEspecificacionFuncional: React.FC = () => {
     { id: 'modelo_datos', label: '5. Modelo de Datos & ERD', icon: Database },
     { id: 'flujo_bpmn', label: '6. Flujo Funcional BPMN E2E', icon: Workflow },
     { id: 'apis', label: '7. Especificación de APIs REST', icon: Code },
+    { id: 'manual_usuario', label: '8. Manual de Usuario (Paso a Paso)', icon: BookOpen },
   ];
 
   return (
@@ -42,12 +50,34 @@ export const ScreenEspecificacionFuncional: React.FC = () => {
               Entregables del Arquitecto de Soluciones & Product Owner
             </h2>
             <span className="px-2.5 py-0.5 text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded-full">
-              Documento Técnico / BA Senior
+              Documentación & Guías Operativas
             </span>
           </div>
           <p className="text-sm text-slate-400 mt-1">
-            Especificación funcional integral, arquitectura empresarial de seguros, casos de uso, historias de usuario, modelo de datos y reglas de negocio listas para desarrollo.
+            Especificación funcional integral, manual de usuario paso a paso, arquitectura de seguros, reglas de negocio y modelo de datos para desarrollo TI.
           </p>
+        </div>
+
+        <div className="flex items-center flex-wrap gap-2 shrink-0">
+          <button
+            onClick={() => downloadFunctionalDoc()}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-md transition-colors cursor-pointer"
+            title="Descargar Documento de Especificación Funcional en formato Microsoft Word (.doc)"
+          >
+            <FileText className="w-3.5 h-3.5 text-slate-950" />
+            <span>Doc Funcional (.doc)</span>
+            <Download className="w-3 h-3 text-slate-950" />
+          </button>
+
+          <button
+            onClick={() => downloadUserManualDoc()}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-colors cursor-pointer"
+            title="Descargar Manual de Usuario & Guía Operativa Paso a Paso en formato Microsoft Word (.doc)"
+          >
+            <BookOpen className="w-3.5 h-3.5 text-white" />
+            <span>Manual Usuario (.doc)</span>
+            <Download className="w-3 h-3 text-white" />
+          </button>
         </div>
       </div>
 
@@ -769,6 +799,533 @@ export const ScreenEspecificacionFuncional: React.FC = () => {
             ))}
           </div>
 
+        </div>
+      )}
+
+      {/* SECTION 8: MANUAL DE USUARIO PASO A PASO */}
+      {activeDocSection === 'manual_usuario' && (
+        <div className="space-y-6">
+          <div className="bg-slate-900 rounded-2xl border border-slate-800 p-6 shadow-xl space-y-6">
+            
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+              <div>
+                <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                  <BookOpen className="w-5 h-5 text-emerald-400" />
+                  <span>8. Manual de Usuario & Guía Operativa Paso a Paso</span>
+                </h3>
+                <p className="text-xs text-slate-400 mt-1">
+                  Guía completa de operación para suscriptores, analistas y operadores de Seguros Universal (Ramo Últimos Gastos Plus - GEXP).
+                </p>
+              </div>
+
+              <button
+                onClick={() => downloadUserManualDoc()}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-sm transition-colors cursor-pointer shrink-0"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Descargar Manual Completo (.doc)</span>
+              </button>
+            </div>
+
+            {/* Step 1 Guide */}
+            <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sky-400 font-bold text-sm">
+                  <span className="w-6 h-6 rounded-full bg-sky-500/20 text-sky-300 flex items-center justify-center text-xs border border-sky-500/30">1</span>
+                  <span>Paso 1: Bandeja de Renovación (Consulta, Filtros & Selección)</span>
+                </div>
+                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-800">
+                  Pantalla 1 / 5
+                </span>
+              </div>
+
+              {/* VISUAL SCREEN MOCKUP 1 */}
+              <div className="rounded-lg border border-slate-700 bg-slate-900 overflow-hidden shadow-2xl text-[11px]">
+                <div className="bg-slate-800/90 px-3 py-1.5 border-b border-slate-700 flex items-center justify-between text-slate-300">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
+                    <span className="font-mono text-[10px] text-slate-400 ml-2">Pantalla 1: Bandeja de Renovación — Seguros Universal</span>
+                  </div>
+                  <span className="text-[10px] text-slate-400">Producto: GEXP</span>
+                </div>
+
+                <div className="p-3 space-y-2.5 bg-slate-900/60">
+                  {/* Mock Filters */}
+                  <div className="bg-slate-950/80 p-2.5 rounded border border-slate-800 grid grid-cols-2 md:grid-cols-4 gap-2 text-[10px]">
+                    <div>
+                      <span className="text-slate-400 block text-[9px]">Producto</span>
+                      <div className="bg-slate-900 text-sky-300 px-2 py-1 rounded border border-slate-700 font-mono">GEXP - ULTIMOS GASTOS PLUS ▼</div>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block text-[9px]">Renovación Desde</span>
+                      <div className="bg-slate-900 text-slate-200 px-2 py-1 rounded border border-slate-700 font-mono">2026-09-01 📅</div>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block text-[9px]">Renovación Hasta</span>
+                      <div className="bg-slate-900 text-slate-200 px-2 py-1 rounded border border-slate-700 font-mono">2026-10-31 📅</div>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 block text-[9px]">Tipo Plan / Cobertura</span>
+                      <div className="bg-slate-900 text-slate-200 px-2 py-1 rounded border border-slate-700 font-mono">Todos ▼ | Todas ▼</div>
+                    </div>
+                  </div>
+
+                  {/* Mock KPIs */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-[10px]">
+                    <div className="bg-slate-950 p-1.5 rounded border border-slate-800">
+                      <div className="text-slate-400 text-[9px]">Pólizas Seleccionadas</div>
+                      <div className="text-sky-400 font-bold text-xs">46 / 50</div>
+                    </div>
+                    <div className="bg-slate-950 p-1.5 rounded border border-slate-800">
+                      <div className="text-slate-400 text-[9px]">Prima Actual Total</div>
+                      <div className="text-slate-200 font-bold text-xs">RD$ 1,842,500.00</div>
+                    </div>
+                    <div className="bg-slate-950 p-1.5 rounded border border-slate-800">
+                      <div className="text-slate-400 text-[9px]">Prima Proyectada</div>
+                      <div className="text-emerald-400 font-bold text-xs">RD$ 2,098,400.00</div>
+                    </div>
+                    <div className="bg-slate-950 p-1.5 rounded border border-slate-800">
+                      <div className="text-slate-400 text-[9px]">Variación Neta</div>
+                      <div className="text-blue-400 font-bold text-xs">+RD$ 255,900 (+13.9%)</div>
+                    </div>
+                  </div>
+
+                  {/* Mock Table */}
+                  <div className="border border-slate-800 rounded overflow-hidden">
+                    <table className="w-full text-left text-[10px]">
+                      <thead className="bg-slate-800/80 text-slate-300 text-[9px]">
+                        <tr>
+                          <th className="p-1.5 w-6">[✓]</th>
+                          <th className="p-1.5">No. Póliza</th>
+                          <th className="p-1.5">Contratante</th>
+                          <th className="p-1.5">Plan Actual</th>
+                          <th className="p-1.5">Asegurados</th>
+                          <th className="p-1.5">Tarifa Actual</th>
+                          <th className="p-1.5">Estado</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800 text-slate-300">
+                        <tr className="bg-slate-950/40">
+                          <td className="p-1.5 text-sky-400">[✓]</td>
+                          <td className="p-1.5 font-mono text-sky-300 font-bold">GEXP-2026-00101</td>
+                          <td className="p-1.5">INDUSTRIAS TEXTILES DEL CARIBE</td>
+                          <td className="p-1.5">GASTOS EXEQUIALES 80K</td>
+                          <td className="p-1.5">15 vidas</td>
+                          <td className="p-1.5 font-mono">RD$ 21,600.00</td>
+                          <td className="p-1.5"><span className="px-1.5 py-0.5 rounded bg-blue-900/60 text-blue-300 text-[9px]">Pendiente</span></td>
+                        </tr>
+                        <tr className="bg-slate-950/60">
+                          <td className="p-1.5 text-sky-400">[✓]</td>
+                          <td className="p-1.5 font-mono text-sky-300 font-bold">GEXP-2026-00102</td>
+                          <td className="p-1.5">ASOCIACION DE GANADEROS CENTRAL</td>
+                          <td className="p-1.5">ULTIMOS GASTOS FAMILIAR</td>
+                          <td className="p-1.5">8 vidas</td>
+                          <td className="p-1.5 font-mono">RD$ 16,000.00</td>
+                          <td className="p-1.5"><span className="px-1.5 py-0.5 rounded bg-blue-900/60 text-blue-300 text-[9px]">Pendiente</span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Mock Action */}
+                  <div className="flex justify-between items-center pt-1 text-[10px]">
+                    <span className="text-slate-400">Mostrando 46 pólizas para renovación</span>
+                    <div className="bg-blue-600 text-white font-bold px-3 py-1 rounded shadow text-[10px]">
+                      Continuar a Simulación de Tarifas (Paso 2) ▶
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs pt-1">
+                <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 space-y-1.5">
+                  <span className="font-bold text-slate-200">Filtros Renombrados Disponibles:</span>
+                  <ul className="text-slate-400 space-y-1 list-disc pl-4 text-[11px]">
+                    <li><strong>Producto:</strong> GEXP - ULTIMOS GASTOS PLUS (por defecto).</li>
+                    <li><strong>Renovación Desde / Hasta:</strong> Rango de fechas de vencimiento de las pólizas.</li>
+                    <li><strong>Tipo Plan:</strong> Filtra por Básica, Óptima, Plan Dental.</li>
+                    <li><strong>Cobertura:</strong> Filtra por REPATRIACION (RP) o GASTOS EXEQUIAS (GE).</li>
+                    <li><strong>Estado:</strong> Pendiente, Validado, Con Error, Renovado y Notificado.</li>
+                  </ul>
+                </div>
+                <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 space-y-1.5">
+                  <span className="font-bold text-slate-200">Acciones de Selección & Carga:</span>
+                  <ul className="text-slate-400 space-y-1 list-disc pl-4 text-[11px]">
+                    <li><strong>Selección en Lote:</strong> Checkbox maestro para seleccionar todas las pólizas filtradas.</li>
+                    <li><strong>Importar Excel:</strong> Carga de archivos externos (.xlsx/.csv) con validación automática.</li>
+                    <li><strong>Exportar Excel:</strong> Descarga inmediata de la cartera filtrada a hoja de cálculo.</li>
+                    <li><strong>Continuar:</strong> Botón azul hacia el Paso 2 cuando hay al menos 1 póliza marcada.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 2 Guide */}
+            <div className="p-5 rounded-xl bg-slate-950 border border-purple-900/40 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-purple-400 font-bold text-sm">
+                  <span className="w-6 h-6 rounded-full bg-purple-500/20 text-purple-300 flex items-center justify-center text-xs border border-purple-500/30">2</span>
+                  <span>Paso 2: Simulación de Tarifas (Regla Clave: Cambio de Plan vs Ajuste de Tasa)</span>
+                </div>
+                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-800">
+                  Pantalla 2 / 5
+                </span>
+              </div>
+
+              {/* VISUAL SCREEN MOCKUP 2 */}
+              <div className="rounded-lg border border-purple-900/60 bg-slate-900 overflow-hidden shadow-2xl text-[11px]">
+                <div className="bg-purple-950/80 px-3 py-1.5 border-b border-purple-800 flex items-center justify-between text-purple-200">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-purple-400 inline-block"></span>
+                    <span className="font-mono text-[10px] text-purple-200">Pantalla 2: Simulación de Tarifas — Motor Actuarial</span>
+                  </div>
+                  <span className="text-[10px] bg-purple-800/60 px-2 py-0.5 rounded text-purple-200">Exclusión Automática de % Ajuste</span>
+                </div>
+
+                <div className="p-3 space-y-2.5 bg-slate-900/60">
+                  {/* Mock Rate Bar */}
+                  <div className="bg-slate-950 p-2.5 rounded border border-purple-800/40 flex flex-wrap items-center justify-between gap-2 text-[10px]">
+                    <div className="flex items-center gap-2">
+                      <span className="text-purple-300 font-bold">Ajuste Masivo de Tasa:</span>
+                      <span className="bg-slate-900 text-purple-200 font-mono font-bold px-2 py-0.5 rounded border border-purple-700">+15.0 %</span>
+                      <span className="bg-purple-700 text-white font-bold px-2.5 py-0.5 rounded text-[10px]">Aplicar Ajuste de Tasa</span>
+                    </div>
+                    <span className="text-[9.5px] text-slate-400 italic">
+                      * Pólizas con cambio de plan mantienen la tarifa fijada del nuevo plan.
+                    </span>
+                  </div>
+
+                  {/* Mock Table showing % Ajuste */}
+                  <div className="border border-slate-800 rounded overflow-hidden">
+                    <table className="w-full text-left text-[10px]">
+                      <thead className="bg-slate-800/90 text-slate-300 text-[9px]">
+                        <tr>
+                          <th className="p-1.5">No. Póliza</th>
+                          <th className="p-1.5">Plan Actual ➔ Plan Renovado</th>
+                          <th className="p-1.5 bg-purple-950/80 text-purple-300">% Ajuste (Regla)</th>
+                          <th className="p-1.5">Prima Actual</th>
+                          <th className="p-1.5">Prima Renovada</th>
+                          <th className="p-1.5">Acción</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800 text-slate-300">
+                        <tr className="bg-purple-950/20">
+                          <td className="p-1.5 font-mono text-purple-300 font-bold">GEXP-2026-00101</td>
+                          <td className="p-1.5">80K ➔ <strong className="text-purple-300">EXEQUIALES 100K</strong></td>
+                          <td className="p-1.5"><span className="px-2 py-0.5 rounded-full bg-purple-900/60 text-purple-200 font-bold text-[9px] border border-purple-700">No aplica (Nuevo plan)</span></td>
+                          <td className="p-1.5 font-mono">RD$ 21,600.00</td>
+                          <td className="p-1.5 font-mono font-bold text-emerald-400">RD$ 26,100.00</td>
+                          <td className="p-1.5"><span className="bg-purple-800 text-white px-2 py-0.5 rounded text-[9px]">Excepción</span></td>
+                        </tr>
+                        <tr className="bg-slate-950/40">
+                          <td className="p-1.5 font-mono text-sky-300 font-bold">GEXP-2026-00102</td>
+                          <td className="p-1.5">ULTIMOS GASTOS FAMILIAR (Conserva)</td>
+                          <td className="p-1.5"><span className="text-emerald-400 font-bold font-mono">+15.0%</span> <span className="text-slate-400 text-[9px]">[✏️ Editar]</span></td>
+                          <td className="p-1.5 font-mono">RD$ 16,000.00</td>
+                          <td className="p-1.5 font-mono font-bold text-emerald-400">RD$ 18,400.00</td>
+                          <td className="p-1.5"><span className="bg-blue-800 text-white px-2 py-0.5 rounded text-[9px]">Excepción</span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="flex justify-between items-center pt-1 text-[10px]">
+                    <div className="flex gap-2">
+                      <span className="bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">Excel Proyección</span>
+                      <span className="bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">Reporte PDF</span>
+                    </div>
+                    <div className="bg-blue-600 text-white font-bold px-3 py-1 rounded shadow text-[10px]">
+                      Continuar a Validación Técnica (Paso 3) ▶
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-lg bg-purple-950/40 border border-purple-700/50 text-xs text-purple-200 space-y-1">
+                <div className="font-bold text-purple-300 flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-purple-400" />
+                  <span>REGLA OBLIGATORIA DE NEGOCIO EN SIMULACIÓN:</span>
+                </div>
+                <p className="text-[11.5px] text-purple-100 leading-relaxed">
+                  • <strong>Pólizas con Cambio Automático de Plan (CAMBIO_PLAN):</strong> Aquellas cuyo plan de origen tiene configurada una transición a un nuevo plan (ej. homologación de RD$80,000 a RD$100,000) migran con la tarifa fijada del nuevo plan y <strong>NO APLICAN % DE AJUSTE</strong>. En la grilla muestran <em>"No aplica"</em> y no tienen lápiz de edición de porcentaje.<br />
+                  • <strong>Pólizas con Ajuste de Tasa Estándar (AJUSTE_TASA):</strong> Aquellas que renuevan en su mismo plan aplican el incremento porcentual masivo (ej. +15.0%) o excepciones individuales.
+                </p>
+              </div>
+            </div>
+
+            {/* Step 3 Guide */}
+            <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+                  <span className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-xs border border-emerald-500/30">3</span>
+                  <span>Paso 3: Validación Técnica (Auditoría previa y 6 Controles Obligatorios)</span>
+                </div>
+                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">
+                  Pantalla 3 / 5
+                </span>
+              </div>
+
+              {/* VISUAL SCREEN MOCKUP 3 */}
+              <div className="rounded-lg border border-slate-700 bg-slate-900 overflow-hidden shadow-2xl text-[11px]">
+                <div className="bg-slate-800/90 px-3 py-1.5 border-b border-slate-700 flex items-center justify-between text-slate-300">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[10px] text-emerald-300 font-bold">Pantalla 3: Motor de Reglas & Auditoría Previa</span>
+                  </div>
+                  <span className="text-[10px] text-emerald-400">44 Válidas | 1 Bloqueante | 1 Advertencia</span>
+                </div>
+
+                <div className="p-3 space-y-2.5 bg-slate-900/60">
+                  {/* Mock Validation Status Cards */}
+                  <div className="grid grid-cols-4 gap-2 text-center text-[10px]">
+                    <div className="bg-slate-950 p-1.5 rounded border border-slate-800">
+                      <div className="text-slate-400 text-[9px]">Auditadas</div>
+                      <div className="text-slate-200 font-bold text-xs">46</div>
+                    </div>
+                    <div className="bg-emerald-950/40 p-1.5 rounded border border-emerald-700/60">
+                      <div className="text-emerald-400 text-[9px]">100% Válidas</div>
+                      <div className="text-emerald-300 font-bold text-xs">44</div>
+                    </div>
+                    <div className="bg-amber-950/40 p-1.5 rounded border border-amber-700/60">
+                      <div className="text-amber-400 text-[9px]">Con Advertencias</div>
+                      <div className="text-amber-300 font-bold text-xs">1</div>
+                    </div>
+                    <div className="bg-rose-950/40 p-1.5 rounded border border-rose-700/60">
+                      <div className="text-rose-400 text-[9px]">Bloqueantes</div>
+                      <div className="text-rose-300 font-bold text-xs">1</div>
+                    </div>
+                  </div>
+
+                  {/* Mock Table showing Rules */}
+                  <div className="border border-slate-800 rounded overflow-hidden">
+                    <table className="w-full text-left text-[10px]">
+                      <thead className="bg-slate-800 text-slate-300 text-[9px]">
+                        <tr>
+                          <th className="p-1.5">No. Póliza</th>
+                          <th className="p-1.5">REG-01 Correo Cliente</th>
+                          <th className="p-1.5">REG-04 Listas OFAC</th>
+                          <th className="p-1.5">REG-05 Saldo ACSEL</th>
+                          <th className="p-1.5">Estado</th>
+                          <th className="p-1.5">Acción Inline</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800 text-slate-300">
+                        <tr>
+                          <td className="p-1.5 font-mono text-sky-300">GEXP-2026-00101</td>
+                          <td className="p-1.5 text-emerald-400">✓ contacto@textiles.com.do</td>
+                          <td className="p-1.5 text-emerald-400">✓ Limpio</td>
+                          <td className="p-1.5 text-emerald-400">✓ Al Día (RD$ 0)</td>
+                          <td className="p-1.5"><span className="px-1.5 py-0.5 rounded bg-emerald-900/60 text-emerald-300 text-[9px]">Validado</span></td>
+                          <td className="p-1.5 text-slate-400 text-[9px]">OK</td>
+                        </tr>
+                        <tr className="bg-rose-950/20">
+                          <td className="p-1.5 font-mono text-rose-300 font-bold">GEXP-2026-00104</td>
+                          <td className="p-1.5 text-rose-400 font-bold">✗ Sin correo electrónico</td>
+                          <td className="p-1.5 text-emerald-400">✓ Limpio</td>
+                          <td className="p-1.5 text-emerald-400">✓ Al Día</td>
+                          <td className="p-1.5"><span className="px-1.5 py-0.5 rounded bg-rose-900/60 text-rose-300 text-[9px]">Bloqueado</span></td>
+                          <td className="p-1.5"><span className="bg-emerald-700 text-white px-2 py-0.5 rounded text-[9px] cursor-pointer">Editar Correo [✏️]</span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="flex justify-end items-center pt-1 text-[10px]">
+                    <div className="bg-blue-600 text-white font-bold px-3 py-1 rounded shadow text-[10px]">
+                      Continuar a Procesamiento Core (Paso 4) ▶
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-[11px]">
+                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                  <div className="font-bold text-rose-400">1. Correo Cliente (Bloqueante)</div>
+                  <div className="text-slate-400 mt-0.5">Exige correo válido con @ y dominio. Se puede subsanar inline en la tabla.</div>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                  <div className="font-bold text-amber-400">2. Correo Intermediario</div>
+                  <div className="text-slate-400 mt-0.5">Valida email del corredor de seguros para envío de copia CC de la notificación.</div>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                  <div className="font-bold text-amber-400">3. Correo Supervisor</div>
+                  <div className="text-slate-400 mt-0.5">Valida email del supervisor corporativo de Seguros Universal para control.</div>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                  <div className="font-bold text-rose-400">4. Listas Restrictivas / OFAC (Bloqueante)</div>
+                  <div className="text-slate-400 mt-0.5">Cotejo contra listas ONU/OFAC. Si coincide, bloquea hasta visto bueno de AML.</div>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                  <div className="font-bold text-rose-400">5. Saldo Pendiente ACSEL (Bloqueante)</div>
+                  <div className="text-slate-400 mt-0.5">Exige saldo deudor cero en Core ACSEL antes de autorizar la renovación.</div>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                  <div className="font-bold text-amber-400">6. Prima Nueva &lt; Anterior</div>
+                  <div className="text-slate-400 mt-0.5">Alerta reducciones de tarifa no autorizadas para evitar fugas de prima.</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 4 Guide */}
+            <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-cyan-400 font-bold text-sm">
+                  <span className="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-300 flex items-center justify-center text-xs border border-cyan-500/30">4</span>
+                  <span>Paso 4: Procesamiento Core ACSEL (Emisión Transaccional & Bitácora Oficial)</span>
+                </div>
+                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800">
+                  Pantalla 4 / 5
+                </span>
+              </div>
+
+              {/* VISUAL SCREEN MOCKUP 4 */}
+              <div className="rounded-lg border border-cyan-900/60 bg-slate-900 overflow-hidden shadow-2xl text-[11px]">
+                <div className="bg-slate-800/90 px-3 py-1.5 border-b border-slate-700 flex items-center justify-between text-slate-300">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[10px] text-cyan-300 font-bold">Pantalla 4: Procesamiento Transaccional Core ACSEL</span>
+                  </div>
+                  <span className="text-[10px] text-cyan-400">Conexión Segura ACSEL Gateway</span>
+                </div>
+
+                <div className="p-3 space-y-2.5 bg-slate-900/60">
+                  {/* Action Banner */}
+                  <div className="bg-slate-950 p-3 rounded border border-cyan-800/40 text-center space-y-2">
+                    <div className="text-slate-300 font-bold text-xs">
+                      Lote Listo para Emisión en Core ACSEL: 45 Pólizas Válidas
+                    </div>
+                    <div className="text-slate-400 text-[10px]">
+                      Total Prima Anual: RD$ 2,074,800.00 | Bloqueos Activos: 0
+                    </div>
+                    <div className="inline-block bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold px-4 py-1.5 rounded shadow text-xs cursor-pointer">
+                      ⚡ Procesar Lote en Core ACSEL
+                    </div>
+                  </div>
+
+                  {/* Mock Success Result */}
+                  <div className="bg-emerald-950/40 border border-emerald-700/60 p-2.5 rounded text-[10px] flex items-center justify-between">
+                    <div>
+                      <div className="text-emerald-300 font-bold flex items-center gap-1.5">
+                        <span>✓ Lote Procesado Exitosamente en Core ACSEL</span>
+                      </div>
+                      <div className="text-slate-400 text-[9px] mt-0.5 font-mono">
+                        Corrida: BATCH-ACSEL-20260925-8841 | Fecha: 25/09/2026 14:30:15 | Usuario: demo.suscripcion@universal-demo.com.do
+                      </div>
+                    </div>
+                    <div className="bg-emerald-700 text-white font-bold px-2.5 py-1 rounded text-[9.5px] cursor-pointer">
+                      📥 Descargar Bitácora Excel
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end items-center pt-1 text-[10px]">
+                    <div className="bg-blue-600 text-white font-bold px-3 py-1 rounded shadow text-[10px]">
+                      Continuar a Comunicación & Avisos (Paso 5) ▶
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 space-y-2 text-xs">
+                <div className="font-bold text-slate-200">Requerimiento Mandatorio de Auditoría Interna:</div>
+                <p className="text-slate-400 text-[11px]">
+                  Cada ejecución genera un identificador de corrida (ej. <code className="text-cyan-300 font-mono">BATCH-ACSEL-20260925-8841</code>) y registra obligatoriamente en la bitácora: <strong>Fecha y Hora exacta al segundo</strong>, y el <strong>Usuario responsable</strong> que realizó el proceso.
+                </p>
+                <div className="flex items-center gap-2 pt-1 text-[11px] text-emerald-400 font-semibold">
+                  <CheckSquare className="w-4 h-4 text-emerald-400" />
+                  <span>Botón "Descargar Bitácora Excel": Genera la evidencia formal para cumplimiento y contabilidad técnica.</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 5 Guide */}
+            <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-indigo-400 font-bold text-sm">
+                  <span className="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-xs border border-indigo-500/30">5</span>
+                  <span>Paso 5: Comunicación & Avisos Masivos (Plantillas y Despacho)</span>
+                </div>
+                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800">
+                  Pantalla 5 / 5
+                </span>
+              </div>
+
+              {/* VISUAL SCREEN MOCKUP 5 */}
+              <div className="rounded-lg border border-indigo-900/60 bg-slate-900 overflow-hidden shadow-2xl text-[11px]">
+                <div className="bg-slate-800/90 px-3 py-1.5 border-b border-slate-700 flex items-center justify-between text-slate-300">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[10px] text-indigo-300 font-bold">Pantalla 5: Plantillero & Despacho Multicanal</span>
+                  </div>
+                  <span className="text-[10px] text-indigo-400">45 Cartas Listas para Envío</span>
+                </div>
+
+                <div className="p-3 space-y-2.5 bg-slate-900/60">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[10px]">
+                    {/* Mock Template */}
+                    <div className="bg-slate-950 p-2 rounded border border-slate-800 space-y-1">
+                      <div className="text-slate-300 font-bold text-[9px]">Editor de Plantilla Dinámica:</div>
+                      <div className="text-indigo-400 text-[8.5px] font-mono">&#123;NUM_POLIZA&#125; &#123;CONTRATANTE&#125; &#123;TARIFA_RENOV_MENSUAL&#125;</div>
+                      <div className="bg-slate-900 text-slate-300 p-2 rounded border border-slate-800 text-[9px] font-mono">
+                        Estimado(a) &#123;CONTRATANTE&#125;:<br />
+                        Le notificamos la renovación de su póliza &#123;NUM_POLIZA&#125; con tarifa mensual de &#123;TARIFA_RENOV_MENSUAL&#125;...
+                      </div>
+                    </div>
+
+                    {/* Mock Preview Letter */}
+                    <div className="bg-white text-slate-900 p-2 rounded border border-slate-300 shadow text-[9px] space-y-1">
+                      <div className="text-center border-b border-slate-200 pb-1">
+                        <strong className="text-blue-900">SEGUROS UNIVERSAL</strong><br />
+                        <span className="text-[8px] text-slate-500">Aviso Oficial de Renovación de Póliza GEXP</span>
+                      </div>
+                      <div className="text-[8.5px] text-slate-700 pt-0.5">
+                        Estimado(a) <strong>INDUSTRIAS TEXTILES DEL CARIBE</strong>:<br />
+                        Póliza: <strong>GEXP-2026-00101</strong> | Nueva Tarifa: <strong>RD$ 2,175.00/mes</strong>
+                      </div>
+                      <div className="bg-slate-100 p-1 rounded text-[7.5px] text-slate-600 mt-1">
+                        CC Corredor: franco_acra@tecnoseguros.com.do | CC Supervisor: mvaldez@universal.com.do
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-center pt-1 text-[10px]">
+                    <span className="text-slate-400">45 destinatarios listos</span>
+                    <div className="bg-indigo-600 text-white font-bold px-3 py-1 rounded shadow text-[10px]">
+                      ✉️ Enviar Notificaciones a Todo el Lote
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 space-y-1.5 text-[11px] text-slate-300">
+                  <span className="font-bold text-slate-200 text-xs block mb-1">Fusión de Variables Dinámicas:</span>
+                  El texto de la carta reemplaza en tiempo real: <code className="text-indigo-300">&#123;NUM_POLIZA&#125;</code>, <code className="text-indigo-300">&#123;CONTRATANTE&#125;</code>, <code className="text-indigo-300">&#123;FECHA_RENOVACION&#125;</code>, <code className="text-indigo-300">&#123;TARIFA_RENOV_MENSUAL&#125;</code>, <code className="text-indigo-300">&#123;PLAN_NOMBRE&#125;</code> y <code className="text-indigo-300">&#123;CORREDOR_NOMBRE&#125;</code>.
+                </div>
+                <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 space-y-1.5 text-[11px] text-slate-300">
+                  <span className="font-bold text-slate-200 text-xs block mb-1">Reglas de Envío y Copias:</span>
+                  El destinatario principal (Para) es el asegurado titular. El sistema coloca automáticamente en copia (CC) al correo del corredor de seguros y al correo del supervisor corporativo, registrando la bitácora de envío.
+                </div>
+              </div>
+            </div>
+
+            {/* FAQ Summary */}
+            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-xs">
+              <span className="font-bold text-amber-300 text-sm flex items-center gap-1.5">
+                <HelpCircle className="w-4 h-4 text-amber-400" />
+                <span>Preguntas Frecuentes Operativas</span>
+              </span>
+              <div className="space-y-2 text-slate-300 text-[11px] pt-1">
+                <div>
+                  <strong className="text-slate-100">¿Por qué una póliza con cambio de plan no permite editar el % de incremento?</strong>
+                  <p className="text-slate-400">Porque su renovación se calcula a partir de la tarifa estipulada para el nuevo plan migrado (RD$ 145/cabeza o RD$ 175/cabeza) y por política de suscripción no aplica ajuste tarifario por inflación.</p>
+                </div>
+                <div>
+                  <strong className="text-slate-100">¿Cómo corregir una póliza que tiene correo inválido?</strong>
+                  <p className="text-slate-400">En la grilla del Paso 3 (Validación Técnica), haga clic directamente sobre el campo de correo, escriba el email válido y confirme. El sistema la marcará verde de inmediato.</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
       )}
 

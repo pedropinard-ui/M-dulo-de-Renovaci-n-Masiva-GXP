@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta charset="utf-8">
+<title>Documento de Especificación Funcional - Sistema de Renovación Masiva y Tarifación GEXP</title>
+<!--[if gte mso 9]>
+<xml>
+<w:WordDocument>
+  <w:View>Print</w:View>
+  <w:Zoom>100</w:Zoom>
+  <w:DoNotOptimizeForBrowser/>
+</w:WordDocument>
+</xml>
+<![endif]-->
+<style>
+  @page {
+    size: letter portrait;
+    margin: 2.5cm 2.0cm 2.5cm 2.0cm;
+    mso-header-margin: 1.25cm;
+    mso-footer-margin: 1.25cm;
+    mso-paper-source: 0;
+  }
+  body {
+    font-family: 'Calibri', 'Segoe UI', Arial, sans-serif;
+    font-size: 11pt;
+    line-height: 1.45;
+    color: #1a202c;
+    background-color: #ffffff;
+  }
+  .page-break {
+    page-break-before: always;
+    mso-break-type: section-break;
+  }
+  h1 {
+    font-size: 20pt;
+    color: #0b3c70;
+    font-weight: bold;
+    border-bottom: 2pt solid #0b3c70;
+    padding-bottom: 4pt;
+    margin-top: 18pt;
+    margin-bottom: 10pt;
+    page-break-after: avoid;
+  }
+  h2 {
+    font-size: 14pt;
+    color: #1a4f8b;
+    font-weight: bold;
+    border-bottom: 1pt solid #cbd5e1;
+    padding-bottom: 3pt;
+    margin-top: 14pt;
+    margin-bottom: 6pt;
+    page-break-after: avoid;
+  }
+  h3 {
+    font-size: 12pt;
+    color: #2b6cb0;
+    font-weight: bold;
+    margin-top: 10pt;
+    margin-bottom: 4pt;
+    page-break-after: avoid;
+  }
+  h4 {
+    font-size: 11pt;
+    color: #2d3748;
+    font-weight: bold;
+    margin-top: 8pt;
+    margin-bottom: 3pt;
+  }
+  p {
+    margin-top: 0;
+    margin-bottom: 6pt;
+    text-align: justify;
+  }
+  ul, ol {
+    margin-top: 2pt;
+    margin-bottom: 8pt;
+    padding-left: 22pt;
+  }
+  li {
+    margin-bottom: 3pt;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8pt;
+    margin-bottom: 12pt;
+    font-size: 9.5pt;
+  }
+  th {
+    background-color: #0b3c70;
+    color: #ffffff;
+    font-weight: bold;
+    text-align: left;
+    padding: 6pt 8pt;
+    border: 1pt solid #0b3c70;
+  }
+  td {
+    padding: 5pt 8pt;
+    border: 1pt solid #cbd5e1;
+    vertical-align: top;
+  }
+  tr:nth-child(even) td {
+    background-color: #f8fafc;
+  }
+  .badge {
+    display: inline-block;
+    padding: 2pt 5pt;
+    font-size: 8pt;
+    font-weight: bold;
+    border-radius: 3pt;
+  }
+  .badge-blue { background-color: #ebf8ff; color: #2b6cb0; border: 1pt solid #bee3f8; }
+  .badge-green { background-color: #f0fff4; color: #276749; border: 1pt solid #c6f6d5; }
+  .badge-purple { background-color: #faf5ff; color: #6b46c1; border: 1pt solid #e9d8fd; }
+  .badge-red { background-color: #fff5f5; color: #9b2c2c; border: 1pt solid #fed7d7; }
+  .badge-amber { background-color: #fffaf0; color: #9c4221; border: 1pt solid #feebc8; }
+  
+  .callout {
+    background-color: #f0f7ff;
+    border-left: 4pt solid #2b6cb0;
+    padding: 8pt 12pt;
+    margin-top: 6pt;
+    margin-bottom: 10pt;
+    font-size: 10pt;
+  }
+  .callout-warning {
+    background-color: #fffaf0;
+    border-left: 4pt solid #dd6b20;
+    padding: 8pt 12pt;
+    margin-top: 6pt;
+    margin-bottom: 10pt;
+    font-size: 10pt;
+  }
+  .callout-success {
+    background-color: #f0fff4;
+    border-left: 4pt solid #38a169;
+    padding: 8pt 12pt;
+    margin-top: 6pt;
+    margin-bottom: 10pt;
+    font-size: 10pt;
+  }
+  .cover-title {
+    text-align: center;
+    margin-top: 60pt;
+    margin-bottom: 20pt;
+  }
+  .cover-company {
+    font-size: 18pt;
+    color: #0b3c70;
+    font-weight: bold;
+    letter-spacing: 1.5pt;
+    text-transform: uppercase;
+  }
+  .cover-project {
+    font-size: 24pt;
+    color: #1a202c;
+    font-weight: bold;
+    margin-top: 15pt;
+    margin-bottom: 10pt;
+    line-height: 1.2;
+  }
+  .cover-subtitle {
+    font-size: 13pt;
+    color: #4a5568;
+    margin-bottom: 30pt;
+  }
+  .sign-table td {
+    padding: 16pt 8pt 8pt 8pt;
+    height: 55pt;
+  }
+  .code-box {
+    background-color: #f1f5f9;
+    border: 1pt solid #cbd5e1;
+    padding: 8pt 10pt;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 8.5pt;
+    color: #0f172a;
+    border-radius: 4pt;
+    margin: 6pt 0 10pt 0;
+  }
+</style>
+</head>
+<body>
+
+<!-- ========================================== -->
+<!-- PORTADA DEL DOCUMENTO                      -->
+<!-- ========================================== -->
+<div class="cover-title">
+  <div class="cover-company">SEGUROS UNIVERSAL, S.A.</div>
+  <div style="font-size: 11pt; color: #718096; margin-top: 4pt;">Dirección de Tecnología de la Información & Vicepresidencia de Suscripción Técnica</div>
+  
+  <div class="cover-project">DOCUMENTO DE ESPECIFICACIÓN FUNCIONAL (DEF)</div>
+  <div class="cover-subtitle">Plataforma de Renovación Masiva de Cartera & Motor de Tarifación<br><strong>Producto: Últimos Gastos Plus (GEXP)</strong></div>
+  
+  <div style="width: 120pt; height: 3pt; background-color: #0b3c70; margin: 20pt auto;"></div>
+
+  <table style="width: 85%; margin: 35pt auto 0 auto; border: 1pt solid #cbd5e1; font-size: 10pt;">
+    <tr>
+      <td style="width: 35%; background-color: #f1f5f9; font-weight: bold; color: #1e293b;">Código de Documento:</td>
+      <td style="font-family: monospace; font-weight: bold; color: #0b3c70;">DEF-UNIV-GEXP-2026-V2.1</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f1f5f9; font-weight: bold; color: #1e293b;">Versión del Documento:</td>
+      <td><strong>Versión 2.1 (Aprobada para Entrega a Desarrollo TI)</strong></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f1f5f9; font-weight: bold; color: #1e293b;">Estado / Fase:</td>
+      <td><span class="badge badge-green">Listo para Aprobación del Usuario & Traspaso Técnico a TI</span></td>
+    </tr>
+    <tr>
+      <td style="background-color: #f1f5f9; font-weight: bold; color: #1e293b;">Fecha de Publicación:</td>
+      <td>25 de Septiembre de 2026</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f1f5f9; font-weight: bold; color: #1e293b;">Líder Funcional / Negocio:</td>
+      <td>Lic. Mariana Valdez / Gerencia de Suscripción Técnica de Ramos Colectivos</td>
+    </tr>
+    <tr>
+      <td style="background-color: #f1f5f9; font-weight: bold; color: #1e293b;">Líder Técnico / Arquitectura TI:</td>
+      <td>Ing. Pedro Pinard / Arquitectura de Soluciones & Integración Core ACSEL</td>
+    </tr>
+  </table>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ========================================== -->
+<!-- 1. CONTROL DE VERSIONES Y FIRMAS           -->
+<!-- ========================================== -->
+<h1>1. Control de Versiones & Firmas de Aprobación</h1>
+
+<h2>1.1 Registro de Cambios del Documento</h2>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 10%;">Versión</th>
+      <th style="width: 15%;">Fecha</th>
+      <th style="width: 25%;">Autor / Rol</th>
+      <th style="width: 50%;">Descripción de Modificaciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>1.0</strong></td>
+      <td>03/09/2026</td>
+      <td>Suscripción Técnica</td>
+      <td>Levantamiento inicial de requerimientos de renovación masiva y comunicación para GEXP.</td>
+    </tr>
+    <tr>
+      <td><strong>1.5</strong></td>
+      <td>12/09/2026</td>
+      <td>Equipo Funcional / TI</td>
+      <td>Definición formal de los 6 controles técnicos obligatorios de validación y bitácora ACSEL.</td>
+    </tr>
+    <tr>
+      <td><strong>2.0</strong></td>
+      <td>25/09/2026</td>
+      <td>Arquitectura de Software</td>
+      <td>Actualización de filtros de bandeja (Renovación Desde/Hasta, Tipo Plan, Cobertura). Reglas de cambio de plan.</td>
+    </tr>
+    <tr>
+      <td><strong>2.1</strong></td>
+      <td>25/09/2026</td>
+      <td>Product Owner & TI</td>
+      <td><strong>Regla clave de negocio aprobada:</strong> Las pólizas que cuenten con cambio automático de plan migran con la tarifa fijada del nuevo plan y <strong>NO aplican porcentaje de ajuste tarifario</strong>. Retiro de componentes superfluos de configuración en pantalla de simulación.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>1.2 Aprobación Formal de Entrega (Sign-Off)</h2>
+<p>El presente documento constituye la especificación funcional completa, exhaustiva y vinculante aprobada por las partes interesadas. Los firmantes autorizan el inicio formal del desarrollo por parte del equipo de Tecnología de la Información (TI).</p>
+
+<table class="sign-table">
+  <thead>
+    <tr>
+      <th colspan="2" style="background-color: #0b3c70; text-align: center;">APROBACIÓN DE NEGOCIO / USUARIOS CLAVE</th>
+      <th colspan="2" style="background-color: #1a4f8b; text-align: center;">APROBACIÓN DE TECNOLOGÍA DE LA INFORMACIÓN (TI)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="width: 25%;">
+        <strong>Nombre:</strong> Lic. Mariana Valdez<br>
+        <strong>Cargo:</strong> Gerente de Suscripción Técnica<br>
+        <strong>Fecha:</strong> ____ / ____ / 2026<br><br>
+        <strong>Firma:</strong> ___________________________
+      </td>
+      <td style="width: 25%;">
+        <strong>Nombre:</strong> Lic. Roberto Morales<br>
+        <strong>Cargo:</strong> Vicepresidente de Ramos Colectivos<br>
+        <strong>Fecha:</strong> ____ / ____ / 2026<br><br>
+        <strong>Firma:</strong> ___________________________
+      </td>
+      <td style="width: 25%;">
+        <strong>Nombre:</strong> Ing. Pedro Pinard<br>
+        <strong>Cargo:</strong> Líder Técnico de Desarrollo TI<br>
+        <strong>Fecha:</strong> ____ / ____ / 2026<br><br>
+        <strong>Firma:</strong> ___________________________
+      </td>
+      <td style="width: 25%;">
+        <strong>Nombre:</strong> Ing. Carlos Hernández<br>
+        <strong>Cargo:</strong> Gerente de Calidad & Arquitectura TI<br>
+        <strong>Fecha:</strong> ____ / ____ / 2026<br><br>
+        <strong>Firma:</strong> ___________________________
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<!-- ========================================== -->
+<!-- 2. RESUMEN EJECUTIVO Y OBJETIVOS           -->
+<!-- ========================================== -->
+<h1>2. Resumen Ejecutivo & Objetivos del Proyecto</h1>
+
+<h2>2.1 Antecedentes y Justificación</h2>
+<p>Seguros Universal administra una cartera de más de 45,000 pólizas activas en el ramo de Últimos Gastos Plus (<strong>GEXP</strong>), abarcando coberturas de Gastos Exequiales y Repatriación en modalidades individuales, colectivas corporativas y planes masivos bancarios. El proceso de renovación anual requería optimización para mitigar riesgos de errores operativos en cálculos de primas, agilizar la comunicación hacia los intermediarios y clientes, y garantizar el registro trazable en el Core Asegurador ACSEL.</p>
+
+<h2>2.2 Objetivos del Sistema</h2>
+<ul>
+  <li><strong>Gobierno Tarifario Centralizado:</strong> Automatizar la proyección de primas para carteras colectivas y masivas, aplicando aumentos generales de tasa o tarifas sustitutivas de nuevos planes según las directrices actuariales.</li>
+  <li><strong>Cumplimiento de la Regla de Migración Automática de Planes:</strong> Garantizar que cuando un plan del producto deba migrar automáticamente hacia otro plan (por descontinuación, homologación o mejora de cobertura), la póliza tome de manera obligatoria la tarifa del nuevo plan y <strong>se le excluya terminantemente de la aplicación de porcentajes de ajuste tarifario</strong>.</li>
+  <li><strong>Control de Riesgo de Suscripción (6 Controles Técnicos):</strong> Imposibilitar la renovación en Core ACSEL de cualquier póliza que carezca de correos válidos, se encuentre listada en listas negras/OFAC/PEP, posea saldo pendiente de pago o sufra disminuciones injustificadas de prima.</li>
+  <li><strong>Auditoría y Trazabilidad Absoluta:</strong> Dejar evidencia inmutable de la fecha, hora y usuario que autorizó excepciones, procesó la renovación en Core ACSEL y ejecutó el envío de comunicaciones.</li>
+</ul>
+
+<h2>2.3 Alcance Funcional</h2>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 50%;">Incluido en el Alcance (In-Scope)</th>
+      <th style="width: 50%;">Excluido del Alcance (Out-of-Scope)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        • Pólizas del ramo Últimos Gastos Plus (código GEXP) en todas sus coberturas (GE, RP, GF).<br>
+        • Bandeja de consulta con filtros renombrados: Producto, Renovación Desde, Renovación Hasta, Tipo Plan, Cobertura, Estado y Buscador global.<br>
+        • Grilla de datos con congelamiento de columnas clave y selección múltiple.<br>
+        • Simulación de tarifas con cálculo segregado entre pólizas con cambio automático de plan vs pólizas con ajuste de tasa.<br>
+        • Exclusión estricta de % de ajuste para pólizas con cambio de plan.<br>
+        • Motor de auditoría previa con 6 reglas técnicas mandatorias.<br>
+        • Procesamiento por lotes en Core ACSEL con emisión de bitácora detallada descargable en Excel.<br>
+        • Despacho de correos de notificación con plantillas personalizadas y copia a intermediarios y supervisores.
+      </td>
+      <td>
+        • Emisión de pólizas de nuevos negocios (no renovaciones).<br>
+        • Pasarelas de cobro directo o débito a tarjetas de crédito (módulo existente en la plataforma de cobranzas de Seguros Universal).<br>
+        • Gestión y liquidación de reclamaciones o pagos a funerarias.<br>
+        • Ramos no colectivos como vehículos individuales o incendios.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<!-- ========================================== -->
+<!-- 3. ESPECIFICACIÓN DETALLADA DE LAS 5 ETAPAS-->
+<!-- ========================================== -->
+<h1>3. Especificación Detallada del Flujo Operativo (5 Pantallas)</h1>
+
+<p>El flujo de trabajo se compone de cinco (5) etapas secuenciales controladas:</p>
+
+<h2>3.1 Pantalla 1: Bandeja de Renovación (Consulta & Selección)</h2>
+<p>Espacio inicial donde el analista de suscripción consulta la cartera de pólizas próximas a vencer y conforma el lote para la renovación.</p>
+
+<h3>3.1.1 Filtros de Consulta y Selección</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Nombre de Filtro</th>
+      <th>Tipo de Control</th>
+      <th>Valores y Reglas Funcionales</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Producto</strong></td>
+      <td>Select</td>
+      <td>Predeterminado en <code>GEXP - ULTIMOS GASTOS PLUS</code>. Permite filtrar carteras de otros ramos colectivos.</td>
+    </tr>
+    <tr>
+      <td><strong>Renovación Desde</strong></td>
+      <td>Input Date</td>
+      <td>Fecha inicial del rango de renovación de pólizas (anteriormente denominado 'Vigencia Desde').</td>
+    </tr>
+    <tr>
+      <td><strong>Renovación Hasta</strong></td>
+      <td>Input Date</td>
+      <td>Fecha final del rango de renovación de pólizas (anteriormente denominado 'Vigencia Hasta').</td>
+    </tr>
+    <tr>
+      <td><strong>Tipo Plan</strong></td>
+      <td>Select</td>
+      <td>Todos, Básica, Óptima, Plan Dental (anteriormente denominado 'Tipo de Póliza').</td>
+    </tr>
+    <tr>
+      <td><strong>Cobertura</strong></td>
+      <td>Select</td>
+      <td>Todas, REPATRIACION (RP), GASTOS EXEQUIAS Y FUNERARIOS (GE) (anteriormente 'Plan / Cobertura').</td>
+    </tr>
+    <tr>
+      <td><strong>Estado</strong></td>
+      <td>Select</td>
+      <td>Todos, Pendiente, Validado, Con Error, Renovado y Notificado.</td>
+    </tr>
+    <tr>
+      <td><strong>Buscador Global</strong></td>
+      <td>Input Texto</td>
+      <td>Búsqueda reactiva por No. Póliza, Contratante, Cédula/RNC, Intermediario o Supervisor.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>3.1.2 Funcionalidades Clave de la Pantalla 1</h3>
+<ul>
+  <li><strong>Selección Masiva en Lote:</strong> Checkbox maestro en el encabezado para seleccionar todas las pólizas filtradas, o selección individual.</li>
+  <li><strong>Tarjetas de KPIs Superiores:</strong> Pólizas a Renovar, Prima Vigente Total (RD$), Prima Proyectada y Variación Financiera Neta en tiempo real.</li>
+  <li><strong>Importación Masiva desde Archivo Excel:</strong> Carga de archivos externos con validación de estructura de columnas y mapeo automático.</li>
+  <li><strong>Exportación a Excel:</strong> Descarga inmediata de la cartera actual filtrada con todas sus columnas técnicas.</li>
+  <li><strong>Transición de Flujo:</strong> Botón <em>"Continuar a Simulación de Tarifas (Paso 2)"</em>, habilitado solo al existir al menos 1 póliza seleccionada.</li>
+</ul>
+
+<div class="page-break"></div>
+
+<h2>3.2 Pantalla 2: Simulación de Tarifas & Reglas de Planes</h2>
+<p>Permite al suscriptor proyectar el resultado económico de la renovación, definir el porcentaje de ajuste general o individual y verificar las migraciones de planes.</p>
+
+<div class="callout-success">
+  <strong>REGLA MANDATORIA DE SUSCRIPCIÓN - CAMBIO DE PLAN VS AJUSTE DE TASA:</strong>
+  <p>El sistema segrega automáticamente las pólizas en dos categorías exclusivas:</p>
+  <ul>
+    <li><strong>Grupo 1: Pólizas con Cambio Automático de Plan (<code>CAMBIO_PLAN</code>):</strong>
+      Aquellas cuyo plan de origen tiene configurada una transición a un nuevo plan (ej. pólizas de RD$80,000 que migran a RD$100,000). Su prima renovada se fija estrictamente con base en la tarifa del nuevo plan por cantidad de asegurados. <strong>A ESTAS PÓLIZAS NO SE LES APLICA EL % DE AJUSTE.</strong> En la columna <em>"% Ajuste"</em> muestran <strong>"No aplica"</strong> (Tarifa nuevo plan) y <strong>no tienen botón de edición de porcentaje</strong>.
+    </li>
+    <li><strong>Grupo 2: Pólizas con Ajuste de Tasa Estándar (<code>AJUSTE_TASA</code>):</strong>
+      Aquellas que renuevan en el mismo plan. Aplican el incremento general de tasa (+15.0% por defecto) o un porcentaje de excepción individual manual mediante el botón de edición.
+    </li>
+  </ul>
+</div>
+
+<h3>3.2.1 Comportamiento de Componentes en Simulación</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Componente</th>
+      <th>Comportamiento Funcional</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Resumen Económico</strong></td>
+      <td>Muestra Pólizas Seleccionadas, Prima Actual Total, Prima Renovada Proyectada e Incremento Neto en RD$.</td>
+    </tr>
+    <tr>
+      <td><strong>Ajuste Masivo de Tasa</strong></td>
+      <td>
+        Input de porcentaje (ej. 15.0%) y botón <em>"Aplicar Ajuste de Tasa (X pólizas)"</em>. Se indica explícitamente que las pólizas con cambio de plan están excluidas de este cálculo.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Filtro de Segmentación</strong></td>
+      <td>
+        Permite aislar rápidamente: <em>Todas</em>, <em>🔄 Solo Cambio de Plan (Sin % ajuste)</em>, <em>📈 Solo Ajuste de Tasa (Con % ajuste)</em> y <em>⚠️ Solo Excepciones</em>.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Columna "% Ajuste" en Grilla</strong></td>
+      <td>
+        • Si es <code>CAMBIO_PLAN</code>: Muestra etiqueta <code>No aplica</code> (Tarifa nuevo plan).<br>
+        • Si es <code>AJUSTE_TASA</code>: Muestra el porcentaje (ej. +15.0%) y el icono de lápiz para edición inline.
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Modal de Excepción Individual</strong></td>
+      <td>
+        Si la póliza tiene cambio de plan, el modal notifica que no aplica % de ajuste y permite ingresar una tarifa fija anual manual en RD$ con su correspondiente justificación técnica.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<h2>3.3 Pantalla 3: Validación Técnica (6 Controles Mandatorios)</h2>
+<p>Antes de impactar la base de datos de producción de Seguros Universal, cada póliza seleccionada es sometida a una auditoría automatizada basada en 6 reglas de suscripción:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Código</th>
+      <th>Nombre de Regla</th>
+      <th>Severidad</th>
+      <th>Criterio Técnico de Validación</th>
+      <th>Acción del Sistema</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>REG-01</strong></td>
+      <td>Correo del Cliente</td>
+      <td><span class="badge badge-red">Bloqueante</span></td>
+      <td>Campo <code>correoCliente</code> no vacío y con sintaxis RFC 5322 válida (@ y dominio).</td>
+      <td>Bloquea avance a Paso 4 hasta subsanación inline o manual.</td>
+    </tr>
+    <tr>
+      <td><strong>REG-02</strong></td>
+      <td>Correo del Intermediario</td>
+      <td><span class="badge badge-amber">Advertencia</span></td>
+      <td>Existencia de correo electrónico para el corredor de seguros asignado.</td>
+      <td>Permite avanzar previa notificación o asignación de buzón máster.</td>
+    </tr>
+    <tr>
+      <td><strong>REG-03</strong></td>
+      <td>Correo del Supervisor</td>
+      <td><span class="badge badge-amber">Advertencia</span></td>
+      <td>Existencia del correo corporativo del supervisor de cuenta.</td>
+      <td>Permite avanzar asignando buzón corporativo por defecto.</td>
+    </tr>
+    <tr>
+      <td><strong>REG-04</strong></td>
+      <td>Control Listas Negras / OFAC / PEP</td>
+      <td><span class="badge badge-red">Bloqueante</span></td>
+      <td>Cotejo en listas restrictivas internacionales ONU/OFAC y personas expuestas políticamente (PEP).</td>
+      <td>Retención obligatoria y derivación a la Dirección de Cumplimiento AML.</td>
+    </tr>
+    <tr>
+      <td><strong>REG-05</strong></td>
+      <td>Saldo Pendiente en Core ACSEL</td>
+      <td><span class="badge badge-red">Bloqueante</span></td>
+      <td>Consulta de cuenta corriente en ACSEL. Exige <code>saldoPendiente === 0</code>.</td>
+      <td>Bloquea renovación por morosidad hasta pago o dispensa formal.</td>
+    </tr>
+    <tr>
+      <td><strong>REG-06</strong></td>
+      <td>Prima Nueva &lt; Prima Anterior</td>
+      <td><span class="badge badge-amber">Advertencia</span></td>
+      <td>Valida que la nueva tarifa renovada no sea inferior a la tarifa vigente anterior.</td>
+      <td>Exige registro de justificación técnica por el suscriptor sénior.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<h2>3.4 Pantalla 4: Procesamiento en Core Asegurador ACSEL</h2>
+<p>Ejecuta la actualización transaccional de las pólizas en el Core ACSEL, garantizando atomicidad y registro auditable.</p>
+
+<h3>3.4.1 Requisitos Funcionales de Procesamiento</h3>
+<ul>
+  <li><strong>Filtro Mandatorio:</strong> Solo pueden ser procesadas pólizas con estado <em>"Validado"</em> (0 errores bloqueantes).</li>
+  <li><strong>Generación de Lote Único:</strong> Creación de identificador de transacción tipo <code>BATCH-ACSEL-YYYYMMDD-XXXX</code>.</li>
+  <li><strong>Trazabilidad Obligatoria en Bitácora:</strong> Cada registro procesado debe almacenar de forma inmutable:
+    <ul>
+      <li><strong>Fecha y Hora Exacta:</strong> <code>DD/MM/YYYY HH:mm:ss</code>.</li>
+      <li><strong>Usuario Responsable:</strong> Correo y nombre del usuario que ejecutó la renovación.</li>
+      <li><strong>Resultado:</strong> Exitoso / Fallido con código de respuesta ACSEL y tiempo de respuesta en milisegundos.</li>
+    </ul>
+  </li>
+  <li><strong>Descarga de Bitácora Oficial:</strong> Generación de archivo Excel que incluye: Póliza, Contratante, Plan Renovado, Tarifa Anterior, Tarifa Nueva, Fecha, Hora y Usuario que ejecutó la renovación.</li>
+  <li><strong>Mecanismo de Rollback:</strong> Función de contingencia para revertir el lote a estado previo en caso de detección de incidentes antes de la notificación.</li>
+</ul>
+
+<h2>3.5 Pantalla 5: Comunicación & Avisos Masivos</h2>
+<p>Gestiona la notificación oficial de renovación hacia los clientes, intermediarios y supervisores mediante plantillas dinámicas.</p>
+
+<h3>3.5.1 Plantilla Dinámica y Etiquetas Disponibles</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Etiqueta</th>
+      <th>Significado Funcional</th>
+      <th>Ejemplo</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>{NUM_POLIZA}</code></td><td>Número de póliza ACSEL</td><td>GXP-2026-00341</td></tr>
+    <tr><td><code>{CONTRATANTE}</code></td><td>Razón social o nombre del asegurado</td><td>GRUPO RAMOS, S.A.</td></tr>
+    <tr><td><code>{PRODUCTO_NOMBRE}</code></td><td>Nombre del ramo asegurador</td><td>ULTIMOS GASTOS PLUS (GEXP)</td></tr>
+    <tr><td><code>{FECHA_RENOVACION}</code></td><td>Fecha efectiva de renovación</td><td>2026-10-01</td></tr>
+    <tr><td><code>{TARIFA_RENOV_MENSUAL}</code></td><td>Tarifa mensual renovada en RD$</td><td>RD$ 4,500.00</td></tr>
+    <tr><td><code>{TARIFA_RENOV_ANUAL}</code></td><td>Tarifa anual total renovada</td><td>RD$ 54,000.00</td></tr>
+    <tr><td><code>{PLAN_NOMBRE}</code></td><td>Plan vigente o nuevo plan migrado</td><td>GASTOS EXEQUIALES PLUS RD$100,000.00</td></tr>
+    <tr><td><code>{MODALIDAD_PAGO}</code></td><td>Forma de pago registrada</td><td>Mensual Recurrente / Débito Bancario</td></tr>
+    <tr><td><code>{CORREDOR_NOMBRE}</code></td><td>Nombre de la firma de corretaje</td><td>MARSH FRANCO ACRA</td></tr>
+  </tbody>
+</table>
+
+<h3>3.5.2 Auditoría de Notificaciones</h3>
+<p>Al despachar el correo (individual o masivo), el sistema guarda la fecha, hora exacta y usuario que ejecutó el envío, enviando copia automática (CC) al correo del corredor y al correo del supervisor.</p>
+
+<div class="page-break"></div>
+
+<!-- ========================================== -->
+<!-- 4. ESPECIFICACIÓN TÉCNICA Y DATOS PARA TI  -->
+<!-- ========================================== -->
+<h1>4. Especificación Técnica & Modelo de Datos para Desarrollo TI</h1>
+
+<h2>4.1 Diccionario de Datos: Entidad PolicyRenewal</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Atributo</th>
+      <th>Tipo de Dato</th>
+      <th>Requerido</th>
+      <th>Descripción y Reglas de Validación</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><code>id</code></td><td>UUID / String</td><td>Sí</td><td>Clave primaria interna.</td></tr>
+    <tr><td><code>numeroPoliza</code></td><td>Varchar(30)</td><td>Sí</td><td>Clave única de póliza en Core ACSEL.</td></tr>
+    <tr><td><code>productoCodigo</code></td><td>Varchar(10)</td><td>Sí</td><td>Identificador del producto (ej. 'GEXP').</td></tr>
+    <tr><td><code>contratante</code></td><td>Varchar(150)</td><td>Sí</td><td>Nombre del asegurado titular o empresa.</td></tr>
+    <tr><td><code>tipoDocumentoContratante</code></td><td>Enum</td><td>Sí</td><td>'Cédula' | 'RNC' | 'Pasaporte'.</td></tr>
+    <tr><td><code>documentoContratante</code></td><td>Varchar(25)</td><td>Sí</td><td>Documento de identidad validado.</td></tr>
+    <tr><td><code>correoCliente</code></td><td>Varchar(100)</td><td>Sí</td><td>Email del cliente. Valida sintaxis RFC 5322.</td></tr>
+    <tr><td><code>corredor</code></td><td>Varchar(120)</td><td>Sí</td><td>Nombre del intermediario asignado.</td></tr>
+    <tr><td><code>correoCorredor</code></td><td>Varchar(100)</td><td>No</td><td>Buzón del corredor para copia CC.</td></tr>
+    <tr><td><code>supervisorNegocio</code></td><td>Varchar(120)</td><td>No</td><td>Supervisor corporativo de Seguros Universal.</td></tr>
+    <tr><td><code>correoSupervisor</code></td><td>Varchar(100)</td><td>No</td><td>Buzón corporativo para copia CC.</td></tr>
+    <tr><td><code>cantidadAsegurados</code></td><td>Integer</td><td>Sí</td><td>Cantidad de dependientes/asegurados cubiertos.</td></tr>
+    <tr><td><code>fechaRenovacion</code></td><td>Date (ISO)</td><td>Sí</td><td>Fecha de efecto de la renovación.</td></tr>
+    <tr><td><code>tarifaActualAnual</code></td><td>Decimal(14,2)</td><td>Sí</td><td>Prima anual vigente en Core ACSEL.</td></tr>
+    <tr><td><code>tarifaRenovacionAnual</code></td><td>Decimal(14,2)</td><td>Sí</td><td>Prima anual renovada calculada.</td></tr>
+    <tr><td><code>tipoRenovacion</code></td><td>Enum</td><td>Sí</td><td><strong>'CAMBIO_PLAN' | 'AJUSTE_TASA'</strong>.</td></tr>
+    <tr><td><code>aplicaPorcentajeAjuste</code></td><td>Boolean</td><td>Sí</td><td><strong>false</strong> si es CAMBIO_PLAN; <strong>true</strong> si es AJUSTE_TASA.</td></tr>
+    <tr><td><code>porcentajeIncremento</code></td><td>Decimal(5,2)</td><td>Sí</td><td>Porcentaje aplicado (0.00% si aplicaPorcentajeAjuste === false).</td></tr>
+    <tr><td><code>planRenovacion</code></td><td>Varchar(100)</td><td>Sí</td><td>Plan resultante al cual renovará la póliza.</td></tr>
+    <tr><td><code>saldoPendiente</code></td><td>Decimal(14,2)</td><td>No</td><td>Deuda impaga en ACSEL (dispara REG-05 si &gt; 0).</td></tr>
+    <tr><td><code>enListaNegra</code></td><td>Boolean</td><td>No</td><td>Coincidencia en listas restrictivas (dispara REG-04).</td></tr>
+    <tr><td><code>estado</code></td><td>Enum</td><td>Sí</td><td>'Pendiente' | 'Validado' | 'Error' | 'Renovado y Notificado'.</td></tr>
+  </tbody>
+</table>
+
+<h2>4.2 Catálogo de Migración de Planes Preconfigurado</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Plan Origen</th>
+      <th>Acción</th>
+      <th>Plan Destino</th>
+      <th>Tarifa Base / Vencimiento</th>
+      <th>Regla Tarifaria</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>GASTOS EXEQUIALES PLUS RD$80,000.00</td>
+      <td>CAMBIO_PLAN</td>
+      <td>GASTOS EXEQUIALES PLUS RD$100,000.00</td>
+      <td>RD$ 145.00 mensual / cabeza</td>
+      <td>No aplica % ajuste. Tarifa fijada por nuevo plan.</td>
+    </tr>
+    <tr>
+      <td>ULTIMOS GASTOS PLUS MASIVO RD$80,000</td>
+      <td>CAMBIO_PLAN</td>
+      <td>ULTIMOS GASTOS PLUS MASIVO RD$100,000</td>
+      <td>RD$ 145.00 mensual / cabeza</td>
+      <td>No aplica % ajuste. Tarifa fijada por nuevo plan.</td>
+    </tr>
+    <tr>
+      <td>ULTIMOS GASTOS PLUS CELESTE NG</td>
+      <td>CAMBIO_PLAN</td>
+      <td>ULTIMOS GASTOS PLUS CELESTE PLUS</td>
+      <td>RD$ 175.00 mensual / cabeza</td>
+      <td>No aplica % ajuste. Tarifa fijada por nuevo plan.</td>
+    </tr>
+    <tr>
+      <td><em>Demás planes no configurados</em></td>
+      <td>AJUSTE_TASA</td>
+      <td>Mantiene mismo plan de origen</td>
+      <td>Tarifa anterior * (1 + %/100)</td>
+      <td>Aplica porcentaje de ajuste de tasa (+15.0%).</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>4.3 Especificación de Integración API con Core ACSEL</h2>
+<div class="code-box">
+POST /api/v1/renovacion-masiva/procesar-batch
+Headers:
+  Content-Type: application/json
+  Authorization: Bearer [JWT_TOKEN]
+  X-Universal-User: demo.suscripcion@universal-demo.com.do
+
+Payload Solicitud:
+{
+  "loteId": "LOTE-2026-09-001",
+  "codigoProducto": "GEXP",
+  "totalPolizas": 2,
+  "polizas": [
+    {
+      "numeroPoliza": "GEXP-2026-00101",
+      "tipoRenovacion": "CAMBIO_PLAN",
+      "aplicaPorcentajeAjuste": false,
+      "porcentajeAjuste": 0.0,
+      "planDestino": "GASTOS EXEQUIALES PLUS RD$100,000.00",
+      "tarifaRenovacionAnual": 26100.00,
+      "tarifaRenovacionMensual": 2175.00,
+      "fechaRenovacion": "2026-10-01"
+    },
+    {
+      "numeroPoliza": "GEXP-2026-00102",
+      "tipoRenovacion": "AJUSTE_TASA",
+      "aplicaPorcentajeAjuste": true,
+      "porcentajeAjuste": 15.0,
+      "planDestino": "ULTIMOS GASTOS PLUS FAMILIAR",
+      "tarifaRenovacionAnual": 18400.00,
+      "tarifaRenovacionMensual": 1533.33,
+      "fechaRenovacion": "2026-10-01"
+    }
+  ]
+}
+
+Respuesta Exitosa (200 OK):
+{
+  "transaccionId": "BATCH-ACSEL-20260925-8841",
+  "fechaHoraProceso": "2026-09-25T14:30:15.120-04:00",
+  "usuarioProceso": "demo.suscripcion@universal-demo.com.do",
+  "totalProcesadas": 2,
+  "exitosas": 2,
+  "fallidas": 0,
+  "tiempoEjecucionMs": 340
+}
+</div>
+
+<div class="page-break"></div>
+
+<!-- ========================================== -->
+<!-- 5. CRITERIOS DE ACEPTACIÓN Y QA            -->
+<!-- ========================================== -->
+<h1>5. Criterios de Aceptación (UAT) & Pruebas Funcionales</h1>
+
+<h2>5.1 Casos de Prueba Mandatorios</h2>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Escenario</th>
+      <th>Acción del Usuario / Entrada</th>
+      <th>Comportamiento Esperado del Sistema</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>CP-01</strong></td>
+      <td>Póliza con Cambio Automático de Plan</td>
+      <td>Consultar póliza con plan 'GASTOS EXEQUIALES PLUS RD$80,000.00' y pasar a Simulación. Aplicar ajuste masivo de 18%.</td>
+      <td>La póliza migra a RD$100,000.00. La columna '% Ajuste' exhibe <code>No aplica</code>. Su tarifa NO se incrementa un 18%, mantiene el valor exacto del nuevo plan.</td>
+    </tr>
+    <tr>
+      <td><strong>CP-02</strong></td>
+      <td>Póliza Estándar con Ajuste de Tasa</td>
+      <td>Consultar póliza con plan que no cambia. En Simulación, fijar ajuste general en 15.0%.</td>
+      <td>La póliza conserva su plan. La columna '% Ajuste' exhibe <code>+15.0%</code> y la prima se incrementa en ese factor exacto.</td>
+    </tr>
+    <tr>
+      <td><strong>CP-03</strong></td>
+      <td>Bloqueo de Validación por Correo Inválido (REG-01)</td>
+      <td>Intentar procesar póliza sin correo electrónico de cliente.</td>
+      <td>El sistema clasifica el registro en estado 'Error' y deshabilita el avance hacia el Core ACSEL hasta su corrección.</td>
+    </tr>
+    <tr>
+      <td><strong>CP-04</strong></td>
+      <td>Bloqueo por Lista Negra / OFAC (REG-04)</td>
+      <td>Póliza con cliente coincidente en lista ONU/OFAC.</td>
+      <td>Bloqueo estricto e inclusión en bitácora de cumplimiento para dictamen del Oficial de Cumplimiento AML.</td>
+    </tr>
+    <tr>
+      <td><strong>CP-05</strong></td>
+      <td>Trazabilidad de Bitácora en Descarga Excel</td>
+      <td>Ejecutar proceso de renovación y descargar archivo Excel de bitácora.</td>
+      <td>El archivo contiene obligatoriamente: No. Póliza, Contratante, Plan Renovado, Fecha, Hora y Usuario que ejecutó la renovación.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout-success">
+  <strong>CERTIFICACIÓN FINAL PARA DESARROLLO TI:</strong><br>
+  El presente documento funcional cumple con todos los estándares corporativos de Seguros Universal, detallando de forma exhaustiva las reglas de negocio, interfaces, flujos operativos y modelos de datos acordados para el proyecto. Queda formalmente transferido a la Dirección de Tecnología de la Información para su desarrollo, control de calidad y puesta en producción.
+</div>
+
+<p style="text-align: center; color: #718096; font-size: 9pt; margin-top: 25pt;">
+  — SEGUROS UNIVERSAL, S.A. | DOCUMENTO DE ESPECIFICACIÓN FUNCIONAL GEXP 2026 —
+</p>
+
+</body>
+</html>

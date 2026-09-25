@@ -84,12 +84,23 @@ export interface PolicyRenewal {
   };
   
   porcentajeIncremento: number;
+  aplicaPorcentajeAjuste?: boolean;
+  variacionTarifaPorcentual?: number;
   esExcepcionIndividual?: boolean;
   esExcepcionManual?: boolean;
   motivoExcepcion?: string;
   
   saldoPendiente?: number;
   enListaNegra?: boolean;
+
+  // Plan Transition / Renewal Type
+  tipoRenovacion?: 'CAMBIO_PLAN' | 'AJUSTE_TASA';
+  planRenovacion?: string;
+  descPlanProdRenovacion?: string;
+  codPlanRenovacion?: string;
+  codCobertRenovacion?: string;
+  descCobertRenovacion?: string;
+  detalleCambioPlan?: string;
   
   // Estado y validaciones
   estado: InsuranceStatus;
@@ -268,5 +279,19 @@ export interface FeedbackNote {
     usuario: string;
     detalle: string;
   };
+}
+
+export interface PlanTransitionRule {
+  id: string;
+  productoCodigo: string; // e.g. 'GEXP'
+  planOrigen: string; // e.g. 'GASTOS EXEQUIALES PLUS RD$80,000.00'
+  accionRenovacion: 'CAMBIO_PLAN' | 'AJUSTE_TASA';
+  planDestino?: string; // e.g. 'GASTOS EXEQUIALES PLUS RD$100,000.00'
+  codCobertDestino?: string; // 'RP' | 'GE' | 'GF'
+  descCobertDestino?: string;
+  tarifaBaseMensualPorAsegurado?: number;
+  factorAjuste?: number;
+  motivoCambio?: string;
+  activo: boolean;
 }
 
